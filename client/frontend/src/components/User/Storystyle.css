@@ -1,0 +1,45 @@
+*{
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+
+}
+
+body{
+    min-height: 100vh;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    place-items: center;
+
+}
+
+.container{
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    padding: 2rem;
+    width: 90%;
+    border: 1px solid rgb(204, 204, 202);
+}
+
+.story-container{
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 5rem;
+    grid-gap:2rem
+}
+
+.story-container .content{
+    display: grid;
+    grid-gap:0.5rem;
+    margin: 0;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s ease-in;
+}
+
+.story-container .content .img-container{
+    display: inline-block;
+}
