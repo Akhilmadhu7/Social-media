@@ -1,8 +1,11 @@
 from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from accounts.models import Accounts
+from accounts.serializers import UserProfileSerializer
 
 
 
@@ -17,6 +20,21 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         # Add custom claims
         token['username'] = user.username
         token['is_admin'] = user.is_admin
+        accounts = Accounts.objects.get(username=user.username)
+        if not accounts.is_logged:
+            print('loooooooogged',accounts.is_logged)
+            accounts.is_logged = True
+            accounts.save()
+            print('loggeeeeeeed',accounts.is_logged)
+            token['is_logged'] = user.is_logged
+        else:
+            print('lllllogged',accounts.is_logged)
+            accounts.is_logged = True
+            accounts.save()
+            print('loggggggggged',accounts.is_logged)
+            token['is_logged'] = user.is_logged
+
+    
         # ...
         # else:
         #     print("cominggggggg")
@@ -27,6 +45,26 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+
+class LogoutUserView(APIView):
+
+    def post(self,request):
+        data = request.data
+        user = request.data['username']
+        accounts = Accounts.objects.get(username=user)
+        ser = UserProfileSerializer(data=data)
+        print('use',accounts)
+        if ser.is_valid():
+            if accounts.is_logged:
+                print('out',user.is_logged)
+                accounts.is_logged = False
+                accounts.save()
+                print('logout',accounts.is_logged)
+                return  Response({"mes":"success"}) 
+            else:
+                return Response({'ss':"failed"})     
+        return Response (ser.errors)    
 
 
 @api_view(['Get'])

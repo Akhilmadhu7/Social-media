@@ -1,4 +1,5 @@
 import React from "react";
+import {FaCircle} from 'react-icons/fa'
 
 function ActiveFriends() {
   return (
@@ -14,8 +15,10 @@ function ActiveFriends() {
               className="rounded-full w-1/6 h-1/6"
               alt=""
             />
-            <strong className="ml-3 mt-2">Jasim</strong> {" "} 
-            <small className="text-green-600 ml-12 mt-3">Active Now</small>
+            <strong className="ml-3">Jasim</strong> {" "} 
+            <small className="text-green-600 ml-12 mt-3 flex justify-end w-full">
+              <FaCircle/>
+            </small>
           </li>
           <li class="px-6 py-2 flex border-b border-gray-200 w-fit">
             <img
@@ -23,8 +26,10 @@ function ActiveFriends() {
               className="rounded-full w-1/6 h-1/6"
               alt=""
             />
-            <strong className="ml-3 mt-2">sangeeth</strong> {" "} 
-            <small className="text-green-600 ml-6 mt-3">Active Now</small>
+            <strong className="ml-3">sangeeth</strong> {" "} 
+            <small className="text-green-600 ml-6 mt-3 flex justify-end w-full">
+            <FaCircle/>
+            </small>
           </li>
           <li class="px-6 py-2 flex border-b border-gray-200 w-fit">
             <img
@@ -32,8 +37,10 @@ function ActiveFriends() {
               className="rounded-full w-1/6 h-1/6"
               alt=""
             />
-            <strong className="ml-3 mt-2">ashik</strong> {" "} 
-            <small className="text-green-600 ml-12 mt-3">Active Now</small>
+            <strong className="ml-3">ashik</strong> {" "} 
+            <small className="text-green-600 ml-12 mt-3 flex justify-end w-full">
+            <FaCircle/>
+            </small>
           </li>
           <li class="px-6 py-2 flex border-b border-gray-200 w-fit">
             <img
@@ -41,8 +48,10 @@ function ActiveFriends() {
               className="rounded-full w-1/6 h-1/6"
               alt=""
             />
-            <strong className="ml-3 mt-2">faisal</strong> {" "} 
-            <small className="text-green-600 ml-12 mt-3">Active Now</small>
+            <strong className="ml-3">faisal</strong> {" "} 
+            <small className="text-green-600 ml-12 mt-3 flex justify-end w-full">
+            <FaCircle/>
+            </small>
           </li>
           <li class="px-6 py-2 flex border-b border-gray-200 w-fit">
             <img
@@ -50,8 +59,10 @@ function ActiveFriends() {
               className="rounded-full w-1/6 h-1/6"
               alt=""
             />
-            <strong className="ml-3 mt-2">praveen</strong> {" "} 
-            <small className="text-green-600 ml-8 mt-3">Active Now</small>
+            <strong className="ml-3 ">praveen</strong> {" "} 
+            <small className="text-green-600 mt-3 flex justify-end w-full">
+            <FaCircle/>
+            </small>
           </li>
           {/* <li class="px-6 py-2 w-full rounded-b-lg">And a fifth one</li> */}
         </ul>

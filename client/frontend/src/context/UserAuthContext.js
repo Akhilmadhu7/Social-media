@@ -37,10 +37,13 @@ export const AuthProvider = ({children}) => {
             navigate('/home')
         } 
         else{
+            console.log('response',response);
             Swal.fire("Error","Invalid credentials")
         }
     }
-
+    if (user) {
+        console.log('is logggggg',user.is_logged);
+    }
 
     let logoutUser = ()=>{
 
@@ -48,7 +51,7 @@ export const AuthProvider = ({children}) => {
             title: 'Confirm!',
             text: 'Do you want to Logout ?',
             icon: 'info',
-            confirmButtonText: 'Continue',
+            confirmButtonText: 'Logout',
             showCancelButton:true
         }).then((result)=>{
             if (result.isConfirmed) {

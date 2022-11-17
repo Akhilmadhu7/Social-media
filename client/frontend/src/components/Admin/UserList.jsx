@@ -3,11 +3,13 @@ import React, {useState, useEffect} from "react";
 import Header from "./Header";
 import Swal from "sweetalert2";
 import { FaAngleDoubleLeft, FaAngleDoubleRight } from "react-icons/fa";
+import { useContext } from "react";
+import AuthAdminContext from "../../context/AdminAuthContext";
 
 const baseUrl = 'http://127.0.0.1:8000/'
 
 function UserList() {
-
+    const {authTokens} = useContext(AuthAdminContext)
     const [userData, setUserData] = useState([])
     const [nextUrl, setNextUrl] = useState([])
     const [previousUrl, setPreviousUrl] = useState([])
@@ -20,7 +22,10 @@ function UserList() {
 
     function userList(url){
         setCurrentUrl(url)
-        Axios.get(url).then((res)=>{
+        Axios.get(url,{headers:{
+          'Authorization':`Bearer ${authTokens.access}`,
+          'content-type':'application/json'
+        }}).then((res)=>{
             console.log('tttt',res.data.results);
             setUserData(res.data.results)
             setNextUrl(res.data.next)
@@ -191,7 +196,7 @@ function UserList() {
                 <li className="page-item">
                   <button
                     onClick={() => paginationHandler(previousUrl)}
-                    className="flex page-link relative block py-1.5 px-3 md-rounded border-0 bg-transparent outline-none transition-all duration-300 rounded text-indigo-700 hover:text-white hover:bg-indigo-700  focus:shadow-none"
+                    className="flex page-link relative bock py-1.5 px-3 md-rounded border-0 bg-transparent outline-none transition-all duration-300 rounded text-indigo-700 hover:text-white hover:bg-indigo-700  focus:shadow-none"
                   >
                     {" "}
                     <FaAngleDoubleLeft className="m-1"></FaAngleDoubleLeft>
@@ -204,7 +209,7 @@ function UserList() {
                 <li className="page-item">
                   <button
                     onClick={() => paginationHandler(nextUrl)}
-                    className="flex page-link relative block py-1.5 px-3 md-rounded border-0 bg-transparent outline-none transition-all duration-300 rounded text-indigo-700 hover:text-white hover:bg-indigo-700 focus:shadow-none"
+                    className="flex page-link relative blck py-1.5 px-3 md-rounded border-0 bg-transparent outline-none transition-all duration-300 rounded text-indigo-700 hover:text-white hover:bg-indigo-700 focus:shadow-none"
                   >
                     {" "}
                     Next{" "}

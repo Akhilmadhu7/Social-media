@@ -50,7 +50,7 @@ function Home() {
 
             <div className="w-full pl-5">
               {/* <h5 class="text-gray-900 text-xl font-medium mb-2">Card title</h5> */}
-              <p class="text-gray-700 text-left text-base  mb-4">
+              <p class="text-gray-700 text-left text-xs sm:text-base  mb-4">
                 Some quick example text to build on the card title and make up
                 the bulk of the card's content.
               </p>

@@ -12,24 +12,30 @@ function HomePage() {
 
     let {authTokens, user} = useContext(AuthContext)
     const navigate = useNavigate()
+    // console.log('userrrrrrrrr',user.l_name);
 
-    useEffect( ()=>{
-        if (user) {
-            navigate('/home')
+    // useEffect( ()=>{
+    //     if (user) {
+    //         navigate('/home')
             
-        } else {
-            console.log('aksdjh');
-            navigate('/')
-        }
+    //     } else {
+    //         console.log('aksdjh');
+    //         navigate('/')
+    //     }
 
-    },[])
+    // },[])
 
   return (
-    <div>
+    
+    <div>  
+        {authTokens && 
+        <div>
+        <div className='sticky top-0'>
 
-        <Header></Header>
+        <Header/>
+        </div>
         <div className='bg-slate-200 grid justify-around lg:grid-cols-5 sm-grid-cols-1 gap-x-4'>
-            <div className=' mt-8 bg-rd-500 ml-3 h-fit hidden lg:flex'>
+            <div className=' mt-8 bg-rd-500 ml-3 h-fit hidden lg:flex sticky top-20'>
 
                 <ProfileBar></ProfileBar>
             </div>
@@ -43,12 +49,13 @@ function HomePage() {
                 <Home></Home>
             </div>
             {/* </div> */}
-            <div className='mr-3 mt-8 bg-vioet-400 h-fit hidden lg:flex'>
+            <div className='mr-3 mt-8 bg-vioet-400 h-fit hidden lg:flex  sticky top-20'>
 
                 <ActiveFriends></ActiveFriends>
             </div>
         </div>
-
+        </div>
+}
     </div>
   )
 }
