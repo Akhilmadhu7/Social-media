@@ -38,7 +38,7 @@ function EditProfile() {
   let id = user.user_id;
 
   useEffect(() => {
-    Axios.get(baseUrl + id, {
+    Axios.get(baseUrl+id, {
       headers: {
         Authorization: `Bearer ${authTokens.access}`,
         "Content-type": "multipart/form-data",
@@ -95,7 +95,7 @@ function EditProfile() {
     userFormData.append("profile_pic", userData.profile_pic);
     try {
       console.log("form data", userData);
-      Axios.put(baseUrl + id, userFormData, {
+      Axios.put(baseUrl + id , userFormData, {
         headers: {
           Authorization: `Bearer ${authTokens.access}`,
           "Content-Type": "multipart/form-data",
@@ -103,7 +103,7 @@ function EditProfile() {
       })
         .then((res) => {
           console.log("success", res);
-          navigate("/profile");
+          navigate("/user/profile");
         })
         .catch((err) => {
           console.log("err is ", err);

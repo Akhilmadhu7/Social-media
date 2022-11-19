@@ -11,7 +11,7 @@ import Swal from "sweetalert2";
 const baseUrl = "http://127.0.0.1:8000/";
 
 function UserProfile() {
-  let { user, authTokens } = useContext(AuthContext);
+  let { authTokens,user } = useContext(AuthContext);
   const [userData, setUserData] = useState([]);
   const [modal, setModal] = useState(false);
   const [changePassword, setChangePassword] = useState({
@@ -27,10 +27,12 @@ function UserProfile() {
     formState:{errors}
   } = useForm();
 
-  const id = user.user_id;
+  let id = user.user_id
+  // let data={username : user.username,
+  //   follower : user_id}
 
   useEffect(() => {
-    Axios.get(baseUrl + "accounts/userprofile/" + id, {
+    Axios.get(baseUrl + "accounts/userprofile/"+id, {
       headers: {
         Authorization: `Bearer ${authTokens.access}`,
         "content-type": "applicaion/json",
@@ -38,6 +40,7 @@ function UserProfile() {
     })
       .then((res) => {
         setUserData(res.data.Data);
+        console.log('daaa',res.data);
       })
       .catch((err) => {
         console.log("error", err);
@@ -64,7 +67,7 @@ function UserProfile() {
     e.preventDefault()
     console.log('here it is ');
     try {
-      Axios.put(baseUrl+'accounts/change-password/'+id,changePassword,{
+      Axios.put(baseUrl+'accounts/change-password',changePassword,{
         headers:{
           'Authorization':`Bearer ${authTokens.access}`,
           'Content-Type':'application/json'
@@ -146,7 +149,7 @@ function UserProfile() {
                   {userData.about }
                 </p>
                 : ""}
-                <Link to="/editprofile">
+                <Link to="/user/editprofile">
                   <button
                     href="javascript:;"
                     className="font-normal text-white p-2 rounded-md bg-indigo-600 hover:bg-indigo-700"

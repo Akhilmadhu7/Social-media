@@ -4,11 +4,9 @@ import jwt
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from . serializers import AccountSerializer, UserProfileSerializer, ChangePasswordSerializer
+from . serializers import AccountSerializer, UserProfileSerializer, ChangePasswordSerializer,FollowerSerializer
 from rest_framework import status
-from . models import Accounts
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.generics import ListAPIView
+from . models import Accounts,Follower
 from rest_framework import permissions
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -18,6 +16,7 @@ class Hello(APIView):
     def get(self, request):
         return Response({"Response": "Hello user"})
 
+# Register a new account function
 
 class UserRegister(APIView):
 
@@ -33,42 +32,10 @@ class UserRegister(APIView):
         else:
             print('sdjhfg')
             data['Response'] = serializer.errors
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data, status=status.HTTP_400_BAD_REQUEST) 
 
 
-class Userlist(APIView):
-
-    def get(self, request):
-        try:
-            data = {}
-            userlist = Accounts.objects.exclude(is_admin=True)
-            user_serializer = AccountSerializer(userlist, many=True)
-            data['data'] = user_serializer.data
-            data['Response'] = "Success"
-            return Response(data, status=status.HTTP_200_OK)
-        except:
-            data['Response'] = "Something went wrong"
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['POST'])
-def blockUser(request, id):
-
-    try:
-        user = Accounts.objects.get(id=id)
-    except:
-        return Response({"Message": "User does not exist"})
-    data = {}
-
-    if user.is_active:
-        user.is_active = False
-        data['Response'] = "User blocked succesfully"
-    else:
-        user.is_active = True
-        data['Response'] = "User unblocked succesfully"
-    user.save()
-    return Response(data, status=status.HTTP_200_OK)
-
+#Function for user profile and update userprofile details
 
 class UserProfile(APIView):
 
@@ -77,24 +44,37 @@ class UserProfile(APIView):
 
     def get_object(self, id):
         try:
-            return Accounts.objects.get(id=id)
+            return Accounts.objects.get(id=id, is_active = True) 
 
         except Accounts.DoesNotExist:
-            raise ValueError({"Message": "User does not exist"})
+            Response({"Message": "User does not exist"})
+        
 
-    def get(self, request, id):
+    def get(self, request,id):
         data = {}
-        print('idddd',id)
+        print('sss',request.user.username)
         user = self.get_object(id)
-        user_serializer = UserProfileSerializer(user)
-        data['Response'] = "Success"
-        data['Data'] = user_serializer.data
-        print(user_serializer.data['profile_pic'])
-        return Response(data, status=status.HTTP_200_OK)
+        print('uaa',user.id)
+        if user is not None:
+            user_serializer = UserProfileSerializer(user)
+            if Follower.objects.filter(username=request.user.username,follower=user.id).first():
+                data['follow'] = 'following'
+                print('aaaa')
+            else:
+                print('lll')
+                data['unfollow']  = 'follow'   
+            data['Response'] = "Success"
+            data['Data'] = user_serializer.data
+            print(user_serializer.data['profile_pic'])
+            return Response(data, status=status.HTTP_200_OK)
+        else:
+            data['Response'] = 'User not found' 
+            return Response(data, status=status.HTTP_404_NOT_FOUND)
 
-    def put(self, request, id):
+    def put(self, request,id):
         data = {}
         user = self.get_object(id)
+        print('aaaa',user)
         user_serializer = UserProfileSerializer(user, data=request.data)
         if user_serializer.is_valid():
             user_serializer.save()
@@ -107,18 +87,21 @@ class UserProfile(APIView):
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
 
+# Change password function
+ 
 class ChangePassword(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_object(self, id,):
+    def get_object(self, request):
         try:
-            return Accounts.objects.get(id=id)
+            user_id = request.user.id
+            return Accounts.objects.get(id=user_id)
 
         except Accounts.DoesNotExist:
             raise ValueError({"Message": "User does not exist"})
 
-    def put(self, request, id):
-        self.object = self.get_object(id)
+    def put(self, request):
+        self.object = self.get_object(request)
         serializer = ChangePasswordSerializer(data=request.data)
         if serializer.is_valid():
             if not self.object.check_password(serializer.data.get('password')):
@@ -132,6 +115,8 @@ class ChangePassword(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# Friends suggestion function
+
 class NewFriendsView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
@@ -139,16 +124,73 @@ class NewFriendsView(APIView):
     def get_object(self, request):
         try:
             user = request.user
-            return Accounts.objects.filter(place=user.place).exclude(username=user) | Accounts.objects.filter(state=user.state).exclude(username=user)
+            # followers = []
+            # follower = Accounts.objects.filter(place=user.place).exclude(username=user) & Accounts.objects.filter(is_active=True).exclude(username=user)
+            # for foll in follower:
+            #     followers.append(Follower.objects.exclude(username=user,follower=foll.id))
+            # return followers
+            return Accounts.objects.filter(place=user.place).exclude(username=user) & Accounts.objects.filter(is_active=True).exclude(username=user)
         except Accounts.DoesNotExist:
             raise ValueError({"Error": "User does not exist"})
 
     def get(self, request):
         data = {}
-        print('hello')
         friends = self.get_object(request)
         print(friends)
+        # followers = {}
+        # for fol in friends:
+        #     followers['username'] = request.user.username
+        #     followers['follower'] = fol.id
+        # print('followers',followers)
         serializer = UserProfileSerializer(friends, many=True)
         data['Response'] = serializer.data
         data['Message'] = 'Success'
+
         return Response(data, status=status.HTTP_200_OK)
+
+
+# Follow users function
+
+class FollowUsers(APIView):
+
+    #Follow user
+    def post(self,request):
+        data = {}
+        print('wewewe',request.data)
+        username = request.data['username']
+        print('dd')
+        follower = request.data['follower']
+        print('dddddd')
+        if Follower.objects.filter(username=username,follower=follower).first():
+            print('qqqqqqqqqq')
+            del_follower = Follower.objects.get(username=username,follower=follower)
+            del_follower.delete()
+            return Response({"Response":"Unfollowed succesfully"},status=status.HTTP_200_OK)
+        else:    
+
+            follower_ser = FollowerSerializer(data=request.data)
+            if follower_ser.is_valid():
+                follower_ser.save()
+                data['Data'] = follower_ser.data
+                data['Response'] = 'Following'
+                return Response(data, status=status.HTTP_200_OK)
+            else:
+                data['Errors'] = follower_ser.errors
+                data['Response'] = 'Something went wrong'   
+                return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
+    #Unfollow user
+    def delete(self,request):
+        print(request.data)
+        username = request.data['username']
+        print('dd')
+        follower = request.data['follower']
+        print('dddddd')
+        if Follower.objects.filter(username=username,follower=follower).first():
+            print('qqqqqqqqqq')
+            del_follower = Follower.objects.get(username=username,follower=follower)
+            del_follower.delete()
+            return Response({"Response":"Unfollowed succesfully"},status=status.HTTP_200_OK)
+        else:
+            return Response({"Response":"Something went wrong"},status=status.HTTP_400_BAD_REQUEST)
+              

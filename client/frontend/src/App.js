@@ -32,24 +32,24 @@ function App() {
 
       <Router>
         <AuthProvider>
-            <Routes>
-              {/* <Route  element={<PrivateRoutes/>}> */}
-                <Route element={<SignupPage/>} path='/signup' />
-                <Route element={<LoginPage/>} path='/' />
-                <Route element={<HomePage/>} path='/home' />
-                <Route element={<UserProfilePage/>} path='/profile' />
-                <Route element={<EditProfilePage/>} path='/editprofile' />
-                <Route element={<SearchUsersPage/>} path='/searchuser/:search' />
-                <Route element={<FreindsSuggestPage/>} path='/friends-suggestion' />
-                <Route element={<FriendProfilePage/>} path='/friend-profile/:user_id' />
-              {/* </Route> */}
+          <Routes>
+            <Route element={<LoginPage/>} path='/' />
+            <Route element={<SignupPage/>} path='/signup' />
+            <Route  element={<PrivateRoutes/>} path='/user'>
+                <Route element={<HomePage/>} path='/user/home' />
+                <Route element={<UserProfilePage/>} path='/user/profile' />
+                <Route element={<EditProfilePage/>} path='/user/editprofile' />
+                <Route element={<SearchUsersPage/>} path='/user/searchuser/:search' />
+                <Route element={<FreindsSuggestPage/>} path='/user/friends-suggestion' />
+                <Route element={<FriendProfilePage/>} path='/user/friend-profile/:user_id' />
+            </Route>
             
-            </Routes>
+          </Routes>
         </AuthProvider>  
 
         <AuthAdminProvider>
           <Routes>
-            <Route element={<AdminLogin/>} path='/adminlogin' />
+            <Route element={<AdminLogin/>} path='/admin/login' />
             <Route element={<AdminLayout></AdminLayout>} path='/admin/' >
                 <Route element={<DashboardPage/>} path='/admin/dashboard' />
                 <Route element={<UserListPage/>} path='/admin/userlist' />

@@ -30,7 +30,7 @@ export const AuthAdminProvider = ({children}) =>{
         //     body:JSON.stringify({'username':e.tartget.username.value,'password':e.tartget.password.value})
 
         // })
-        let response = await fetch('http://127.0.0.1:8000/api/token/', {
+        let response = await fetch('http://127.0.0.1:8000/myadmin/token/', {
             method:'POST', 
             headers:{
                 'Content-Type':'application/JSON'
@@ -39,6 +39,7 @@ export const AuthAdminProvider = ({children}) =>{
         })
 
         let data = await response.json()
+        console.log('kkkk',data);
 
         if (response.status === 200){
             setAuthTokens(data)
@@ -75,8 +76,9 @@ export const AuthAdminProvider = ({children}) =>{
             if (result.isConfirmed) {
                 setAdmin(null)
                 setAuthTokens(null)
+                console.log('ppopop');
                 localStorage.removeItem('authTokens')
-                navigate('/adminlogin')
+                navigate('/admin/login')
             }
         })
         
@@ -85,7 +87,7 @@ export const AuthAdminProvider = ({children}) =>{
 
     let updateToken = async ()=>{
 
-        let response = await fetch('http://127.0.0.1:8000/api/token/refresh/',{
+        let response = await fetch('http://127.0.0.1:8000/myadmin/token/refresh/',{
             method:'POST',
             headers:{
                 'Content-Type':'application/JSON'
@@ -126,7 +128,7 @@ export const AuthAdminProvider = ({children}) =>{
         }, fourMinutes)
 
         return ()=> clearInterval(intervel)
-    }, [authTokens, loading])
+    }, [authTokens,loading])
 
 
     let contextData = {

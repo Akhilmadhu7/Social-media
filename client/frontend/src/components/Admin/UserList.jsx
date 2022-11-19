@@ -16,7 +16,7 @@ function UserList() {
     const [currentUrl, setCurrentUrl] = useState([])
 
     useEffect(()=>{
-        userList(baseUrl+'accounts/userpage')
+        userList(baseUrl+'myadmin/userpage')
     },[])
 
 
@@ -50,7 +50,7 @@ function UserList() {
         }).then(res =>{
             if (res.isConfirmed) {
 
-                Axios.post(baseUrl+'accounts/blockuser/'+id).then(res =>{
+                Axios.post(baseUrl+'myadmin/blockuser/'+id).then(res =>{
                     if (res) {
                         console.log(res);
                         userList(url)

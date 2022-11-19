@@ -30,7 +30,7 @@ function Header() {
     console.log();
     if (searchData.searchValue) {
       console.log("aaa", searchData);
-      navigate("/searchuser/" + searchData.searchValue);
+      navigate("/user/searchuser/" + searchData.searchValue);
     }
   };
 
@@ -38,7 +38,7 @@ function Header() {
     <div className=" sticky top-0">
       <nav className="bg-indigo-800 border-gray-200 px-2 sm:px-4 py-2.5   dark:bg-gray-900 w-full">
         <div className="container flex flex-wrap justify-between items-center mx-auto">
-          <Link to="/home" className="flex items-center">
+          <Link to="/user/home" className="flex items-center">
             <img src="" className="mr-3 h-6 sm:h-9" alt="" />
             <span className="self-center text-xl font-semibold whitespace-nowrap text-white">
               Brand
@@ -65,7 +65,7 @@ function Header() {
           <div className=" w-full md:block md:w-auto" id="navbar-default">
             <ul className="flex sm:gap-6 p-4 mt-4  rounded-lg border border-gray-100 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0  dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700 justify-evenly">
               <li>
-                <Link to="/home">
+                <Link to="/user/home">
                   <a
                     className="block py-2 pr-4 pl-3 cursor-pointer text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                     // onClick={() => navigate("/user/home")}
@@ -78,7 +78,7 @@ function Header() {
                 <a
                   className="block py-2 pr-4 pl-3 cursor-pointer text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                   onClick={() => {
-                    navigate("/friends-suggestion");
+                    navigate("/user/friends-suggestion");
                   }}
                 >
                   <FaUserFriends className="text-white" size="20px" />
@@ -106,7 +106,7 @@ function Header() {
                 </a>
               </li>
               <li className="">
-                <Link to="/profile">
+                <Link to="/user/profile">
                   <a
                     className="block py-2 pr-4 pl-3 cursor-pointer text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                     onClick={() => navigate("/user/profile/posts")}

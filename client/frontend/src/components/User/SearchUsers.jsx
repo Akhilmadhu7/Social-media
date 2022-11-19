@@ -44,7 +44,7 @@ function SearchUsers() {
   }
 
   const findFriend = (id)=>{
-    navigate("/friend-profile/"+id)
+    navigate("/user/friend-profile/"+id)
 
   }
 

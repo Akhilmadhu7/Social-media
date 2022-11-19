@@ -5,17 +5,37 @@ import Axios from "axios";
 import { useContext } from "react";
 import AuthContext from "../../context/UserAuthContext";
 
-const baseUrl = "http://127.0.0.1:8000/accounts/new-friends"
+const baseUrl = "http://127.0.0.1:8000/accounts/"
 
 function FriendsSuggestion() {
 
-  let {authTokens} = useContext(AuthContext)
+  let {authTokens,user} = useContext(AuthContext)
   const navigate = useNavigate()
   const [newFriends, setNewFriends] = useState([])
+  const [follow, setFollow] = useState([])
 
   useEffect(()=>{
+    // try {
+    //   Axios.get(baseUrl+"new-friends",{
+    //     headers:{
+    //       Authorization:`Bearer ${authTokens.access}`,
+    //       'content-type':'application/json'
+    //     }
+    //   }).then((res)=>{
+    //     console.log('result',res.data.Response);
+    //     setNewFriends(res.data.Response)
+    //   }).catch((err)=>{
+    //     console.log('err',err);
+    //   })
+    // } catch (error) {
+      
+    // }
+    newfriends(baseUrl+"new-friends")
+  },[])
+
+  function newfriends(url){
     try {
-      Axios.get(baseUrl,{
+      Axios.get(url,{
         headers:{
           Authorization:`Bearer ${authTokens.access}`,
           'content-type':'application/json'
@@ -29,12 +49,48 @@ function FriendsSuggestion() {
     } catch (error) {
       
     }
-  },[])
+  }
 
+  
 
   const findProfile = (id)=>{
     console.log('here is the id',id);
-    navigate("/friend-profile/"+id)
+    navigate("/user/friend-profile/"+id)
+  }
+
+
+  const followUser=(id)=>{
+    // let data={username : user.username,
+    //   follower : id}
+    try {
+      // console.log('daataaaa',data);
+          Axios.post(baseUrl+'follow',{follower:id,username:user.username},{
+              headers:{
+                  Authorization:`Bearer ${authTokens.access}`,
+                  // 'content-type':'application/json'
+              }
+          }).then((res)=>{
+              if (res) {
+                  Axios.get(baseUrl + "userprofile/"+id,{
+                    headers:{
+                        Authorization:`Bearer ${authTokens.access}`,
+                        'content-type':'application/json'
+                    }
+                }).then(res=>{
+                  setFollow(res.data)
+                })
+                  
+              }
+          }).catch(err=>{
+              console.log('errer fol',err);
+          })
+      } catch (error) {
+          console.log('foll err',error.data);
+      }
+  }
+
+  if (follow) {
+    console.log('pppp',follow);
   }
 
 
@@ -70,8 +126,10 @@ function FriendsSuggestion() {
           </div>
          
           <div className="w-full mt-4 sm:mt-8">
-            <button className="bg-blue-500 py-2 px-2 sm:px-4 hover:bg-blue-600 text-white w-full cfont-semibold rounded-lg shadow-lg">
-              Follow
+            <button 
+              onClick={()=>followUser(friends.id)}
+              className="bg-blue-500 py-2 px-2 sm:px-4 hover:bg-blue-600 text-white w-full cfont-semibold rounded-lg shadow-lg">
+              {follow.follow ==='following' ? follow.follow : follow.unfollow}
             </button>
           </div>
         </div>

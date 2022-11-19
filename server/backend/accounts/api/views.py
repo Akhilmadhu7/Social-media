@@ -51,20 +51,21 @@ class LogoutUserView(APIView):
 
     def post(self,request):
         data = request.data
+        print(type(data))
+        print('hello')
         user = request.data['username']
         accounts = Accounts.objects.get(username=user)
-        ser = UserProfileSerializer(data=data)
-        print('use',accounts)
-        if ser.is_valid():
-            if accounts.is_logged:
-                print('out',user.is_logged)
-                accounts.is_logged = False
-                accounts.save()
-                print('logout',accounts.is_logged)
-                return  Response({"mes":"success"}) 
-            else:
-                return Response({'ss':"failed"})     
-        return Response (ser.errors)    
+        if accounts.is_logged:
+            print('ll',accounts.is_logged)
+            accounts.is_logged=False
+            accounts.save()
+            print('ssss',accounts.is_logged)
+            return Response({'Response':"ok"})
+        else:
+            return Response({'m':"went wrong"})    
+       
+
+          
 
 
 @api_view(['Get'])

@@ -2,6 +2,9 @@ import { createContext, useState, useEffect } from "react";
 import {json, Link, useNavigate} from 'react-router-dom';
 import jwt_decode from 'jwt-decode'
 import Swal from "sweetalert2";
+import Axios from 'axios'
+
+const baseUrl = "http://127.0.0.1:8000/accounts/"
 
 const AuthContext = createContext()
 
@@ -34,7 +37,7 @@ export const AuthProvider = ({children}) => {
             setAuthTokens(data)
             setUser(jwt_decode(data.access))
             localStorage.setItem('authTokens', JSON.stringify(data))
-            navigate('/home')
+            navigate('/user/home')
         } 
         else{
             console.log('response',response);
@@ -55,10 +58,28 @@ export const AuthProvider = ({children}) => {
             showCancelButton:true
         }).then((result)=>{
             if (result.isConfirmed) {
-                setUser(null)
-                setAuthTokens(null)
-                localStorage.removeItem('authTokens')
-                navigate('/')
+                let data = user
+                try {
+                    Axios.post('http://127.0.0.1:8000/api/logoutuser/',data).then(res=>{
+                        if (res) {
+                            console.log('res',res);
+                            setUser(null)
+                            setAuthTokens(null)
+                            console.log('routeee');
+                            localStorage.removeItem('authTokens')
+                            navigate('/')
+                        }
+                    }).catch(er=>{
+                        console.log('errrrr',er);
+                    })
+                } catch (error) {
+                    console.log('herer err',error);
+                }
+                // setUser(null)
+                // setAuthTokens(null)
+                // console.log('routeee');
+                // localStorage.removeItem('authTokens')
+                // navigate('/')
             }
         })
         

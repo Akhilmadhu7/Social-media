@@ -1,6 +1,6 @@
-
+from rest_framework.response import Response
 from rest_framework import serializers
-from . models import Accounts
+from . models import Accounts, Follower
 import re
 
 
@@ -102,6 +102,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_full_name(self, user):
         full_name = user.f_name.capitalize() + ' ' + user.l_name.capitalize()
         return full_name
+                  
     
 
 
@@ -127,6 +128,18 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {"new_password":"Must contain 8 characters including numbers"})
         return data    
+
+
+class FollowerSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Follower
+        fields = '__all__'
+
+
+class NewFriendsSerializer(serializers.ModelSerializer):
+    class Meta:
+        pass
 
 
         

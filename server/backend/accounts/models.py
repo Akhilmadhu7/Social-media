@@ -79,3 +79,15 @@ class Accounts(AbstractBaseUser):
 
     def has_module_perms(self, add_label):
         return True
+
+
+
+class Follower(models.Model):
+
+    follower = models.ForeignKey(Accounts,related_name = 'follower', on_delete=models.CASCADE)
+    username = models.CharField(max_length = 120)
+
+    def __str__(self):
+        return self.username
+     
+    

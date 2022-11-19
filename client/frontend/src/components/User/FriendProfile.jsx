@@ -6,29 +6,88 @@ import AuthContext from "../../context/UserAuthContext";
 const baseUrl = "http://127.0.0.1:8000/";
 
 function FriendProfile() {
-  let { authTokens } = useContext(AuthContext);
+  let { authTokens,user } = useContext(AuthContext);
   const [friendprofile, setFreindProfile] = useState([]);
+  const [follow, setfollow] = useState([])
   const { user_id } = useParams();
 
   console.log("iddd", user_id);
 
+  let data={username : user.username,
+    follower : user_id}
+
   useEffect(() => {
-    try {
-      Axios.get(baseUrl + "accounts/userprofile/" + user_id, {
-        headers: {
-          Authorization: `Bearer ${authTokens.access}`,
-          "content-type": "application/json",
-        },
-      })
-        .then((res) => {
-          console.log("rsultrtt", res);
-          setFreindProfile(res.data.Data);
-        })
-        .catch((err) => {
-          console.log("errrr", err);
-        });
-    } catch (error) {}
+    userProfile(baseUrl + "accounts/userprofile/"+user_id)
   }, [user_id]);
+
+  function userProfile(url){
+    try {
+        Axios.get(url , {
+          headers: {
+            Authorization: `Bearer ${authTokens.access}`,
+            "content-type": "application/json",
+          },
+        })
+          .then((res) => {
+            console.log("rsultrtt", res.data);
+            setFreindProfile(res.data.Data);
+            setfollow(res.data)
+          })
+          .catch((err) => {
+            console.log("errrr", err);
+          });
+      } catch (error) {}
+  }
+
+    
+    
+  const followUser = ()=>{
+     try {
+        console.log('daataaaa',data);
+            Axios.post(baseUrl+'accounts/follow',data,{
+                headers:{
+                    Authorization:`Bearer ${authTokens.access}`,
+                    // 'content-type':'application/json'
+                }
+            }).then((res)=>{
+                if (res) {
+                    console.log('follow res',res.data);
+                    userProfile(baseUrl + "accounts/userprofile/"+user_id)
+                    
+                }
+            }).catch(err=>{
+                console.log('errer fol',err);
+            })
+        } catch (error) {
+            console.log('foll err',error.data);
+        }
+    // } else {
+    //     try {
+    //         console.log('daataaaa',data);
+    //         Axios.delete(baseUrl+'accounts/follow',data,{
+    //             headers:{
+    //                 Authorization:`Bearer ${authTokens.access}`,
+    //                 // 'content-type':'application/json'
+    //             }
+    //         }).then(res=>{
+    //             if (res) {
+    //                 console.log('unnnnnfollow res',res.data);
+    //                 userProfile(baseUrl + "accounts/userprofile/"+user_id)
+    //             }
+    //         }).catch(err=>{
+    //             console.log('unfolll errrr',err);
+    //         })
+    //     } catch (error) {
+            
+    //     }
+        
+    // }
+
+  }
+
+  if (follow) {
+    console.log('folllll',follow);
+  }
 
   return (
     <div>
@@ -38,8 +97,8 @@ function FriendProfile() {
             <div className="w-full flex justify-center">
               <div className="relative">
                 <img
-                  src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
-                  //   src={userData.profile_pic}
+                //   src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
+                    src={friendprofile.profile_pic}
                   className="shadow-xl rounded-full align-middle border-none absolute -m-16 -ml-20 lg:-ml-16 max-w-[150px]"
                   //   alt={userData.username}
                 />
@@ -92,10 +151,12 @@ function FriendProfile() {
                 </p>
                 <Link>
                   <button
+                  onClick={followUser}
                     href="javascript:;"
                     className="font-normal text-white py-2 px-4 rounded-md bg-indigo-600 hover:bg-indigo-700"
                   >
-                    Follow
+                    {console.log(follow.follow)}
+                    {follow.follow ==='following' ? follow.follow : follow.unfollow}
                   </button>
                 </Link>
               </div>
