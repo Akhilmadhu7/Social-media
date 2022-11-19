@@ -41,7 +41,7 @@ function App() {
                 <Route element={<EditProfilePage/>} path='/user/editprofile' />
                 <Route element={<SearchUsersPage/>} path='/user/searchuser/:search' />
                 <Route element={<FreindsSuggestPage/>} path='/user/friends-suggestion' />
-                <Route element={<FriendProfilePage/>} path='/user/friend-profile/:user_id' />
+                <Route element={<FriendProfilePage/>} path='/user/friend-profile/:username' />
             </Route>
             
           </Routes>

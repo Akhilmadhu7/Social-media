@@ -9,16 +9,18 @@ function FriendProfile() {
   let { authTokens,user } = useContext(AuthContext);
   const [friendprofile, setFreindProfile] = useState([]);
   const [follow, setfollow] = useState([])
-  const { user_id } = useParams();
+  const [followers, setFollowers] = useState()
+  const [following,setFollowing] = useState()
+  const { username } = useParams();
 
-  console.log("iddd", user_id);
+  console.log("iddd", username);
 
-  let data={username : user.username,
-    follower : user_id}
+  let data={username : username,
+    follower : user.user_id}
 
   useEffect(() => {
-    userProfile(baseUrl + "accounts/userprofile/"+user_id)
-  }, [user_id]);
+    userProfile(baseUrl + "accounts/friends-profile/"+username)
+  }, [username]);
 
   function userProfile(url){
     try {
@@ -32,6 +34,8 @@ function FriendProfile() {
             console.log("rsultrtt", res.data);
             setFreindProfile(res.data.Data);
             setfollow(res.data)
+            setFollowers(res.data.followers)
+            setFollowing(res.data.following)
           })
           .catch((err) => {
             console.log("errrr", err);
@@ -52,7 +56,7 @@ function FriendProfile() {
             }).then((res)=>{
                 if (res) {
                     console.log('follow res',res.data);
-                    userProfile(baseUrl + "accounts/userprofile/"+user_id)
+                    userProfile(baseUrl + "accounts/friends-profile/"+username)
                     
                 }
             }).catch(err=>{
@@ -85,8 +89,8 @@ function FriendProfile() {
 
   }
 
-  if (follow) {
-    console.log('folllll',follow);
+  if (followers) {
+    console.log('folllll',followers);
   }
 
   return (
@@ -128,14 +132,14 @@ function FriendProfile() {
                 </div>
                 <div className="p-3 text-center">
                   <span className="text-xl font-bold block uppercase tracking-wide text-slate-700">
-                    2,454
+                    {followers && followers}
                   </span>
                   <span className="text-sm text-slate-400">Followers</span>
                 </div>
 
                 <div className="p-3 text-center">
                   <span className="text-xl font-bold block uppercase tracking-wide text-slate-700">
-                    564
+                    {following && following}
                   </span>
                   <span className="text-sm text-slate-400">Following</span>
                 </div>

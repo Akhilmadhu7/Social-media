@@ -41,7 +41,7 @@ function FriendsSuggestion() {
           'content-type':'application/json'
         }
       }).then((res)=>{
-        console.log('result',res.data.Response);
+        console.log('result',res.data);
         setNewFriends(res.data.Response)
       }).catch((err)=>{
         console.log('err',err);
@@ -53,30 +53,31 @@ function FriendsSuggestion() {
 
   
 
-  const findProfile = (id)=>{
-    console.log('here is the id',id);
-    navigate("/user/friend-profile/"+id)
+  const findProfile = (username)=>{
+    console.log('here is the id',username);
+    navigate("/user/friend-profile/"+username)
   }
 
 
-  const followUser=(id)=>{
+  const followUser=(username)=>{
     // let data={username : user.username,
     //   follower : id}
     try {
       // console.log('daataaaa',data);
-          Axios.post(baseUrl+'follow',{follower:id,username:user.username},{
+          Axios.post(baseUrl+'follow',{follower:user.user_id,username:username},{
               headers:{
                   Authorization:`Bearer ${authTokens.access}`,
                   // 'content-type':'application/json'
               }
           }).then((res)=>{
               if (res) {
-                  Axios.get(baseUrl + "userprofile/"+id,{
+                  Axios.get(baseUrl + "friends-profile/"+username,{
                     headers:{
                         Authorization:`Bearer ${authTokens.access}`,
                         'content-type':'application/json'
                     }
                 }).then(res=>{
+                  console.log('folllllllw',res.data);
                   setFollow(res.data)
                 })
                   
@@ -88,10 +89,13 @@ function FriendsSuggestion() {
           console.log('foll err',error.data);
       }
   }
-
-  if (follow) {
-    console.log('pppp',follow);
+newFriends.map((f)=>{
+  if (f.username==='sangeeth' in follow) {
+    console.log('following');
+  } else {
+    console.log('follow');
   }
+})
 
 
   return (
@@ -113,7 +117,7 @@ function FriendsSuggestion() {
           </div>
         
           <div className="name text-gray-800 text:sm sm:text-2xl font-medium mt-4 hover:cursor-pointer"
-          onClick={()=>findProfile(friends.id)}>
+          onClick={()=>findProfile(friends.username)}>
             <p>{friends.username}</p>
           </div>
           
@@ -127,9 +131,9 @@ function FriendsSuggestion() {
          
           <div className="w-full mt-4 sm:mt-8">
             <button 
-              onClick={()=>followUser(friends.id)}
+              onClick={()=>followUser(friends.username)}
               className="bg-blue-500 py-2 px-2 sm:px-4 hover:bg-blue-600 text-white w-full cfont-semibold rounded-lg shadow-lg">
-              {follow.follow ==='following' ? follow.follow : follow.unfollow}
+              {friends.username in follow ? 'following' : 'follow'}
             </button>
           </div>
         </div>

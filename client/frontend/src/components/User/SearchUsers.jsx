@@ -43,8 +43,8 @@ function SearchUsers() {
     }
   }
 
-  const findFriend = (id)=>{
-    navigate("/user/friend-profile/"+id)
+  const findFriend = (username)=>{
+    navigate("/user/friend-profile/"+username)
 
   }
 
@@ -81,7 +81,7 @@ function SearchUsers() {
                       </div>
                       <div class="flex-1 min-w-0">
                         <p class="text-sm font-medium text-gray-900 truncate dark:text-white hover:cursor-pointer" 
-                          onClick={()=>findFriend(users.id)}>
+                          onClick={()=>findFriend(users.username)}>
                           {users.username}
                         </p>
                         <p class="text-sm text-gray-500 truncate dark:text-gray-400">

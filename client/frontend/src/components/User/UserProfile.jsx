@@ -13,6 +13,8 @@ const baseUrl = "http://127.0.0.1:8000/";
 function UserProfile() {
   let { authTokens,user } = useContext(AuthContext);
   const [userData, setUserData] = useState([]);
+  const [following,setFollowing] = useState()
+  const [followers,setFollowers] = useState()
   const [modal, setModal] = useState(false);
   const [changePassword, setChangePassword] = useState({
     'password':'',
@@ -40,7 +42,10 @@ function UserProfile() {
     })
       .then((res) => {
         setUserData(res.data.Data);
+        setFollowing(res.data.following)
+        setFollowers(res.data.followers)
         console.log('daaa',res.data);
+       
       })
       .catch((err) => {
         console.log("error", err);
@@ -85,6 +90,8 @@ function UserProfile() {
     }
   }
 
+ 
+
   return (
     <div>
       
@@ -125,14 +132,14 @@ function UserProfile() {
                 </div>
                 <div className="p-3 text-center">
                   <span className="text-xl font-bold block uppercase tracking-wide text-slate-700">
-                    2,454
+                    {followers && followers}
                   </span>
                   <span className="text-sm text-slate-400">Followers</span>
                 </div>
 
                 <div className="p-3 text-center">
                   <span className="text-xl font-bold block uppercase tracking-wide text-slate-700">
-                    564
+                    {following && following}
                   </span>
                   <span className="text-sm text-slate-400">Following</span>
                 </div>
