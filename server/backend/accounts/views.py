@@ -62,8 +62,10 @@ class UserProfile(APIView):
             print('folling',user_following)
             data['Response'] = "Success"
             data['Data'] = user_serializer.data
-            data['following'] = user_following
-            data['followers'] = user_followers
+            data['userfollowers'] = {
+                'followers':user_followers,
+                'following':user_following
+            }
             print(user_serializer.data['profile_pic'])
             return Response(data, status=status.HTTP_200_OK)
         else:
@@ -126,7 +128,7 @@ class NewFriendsView(APIView):
             
             user_following = Follower.objects.filter(follower=user.id)
             print('lllll',user_following)
-            all_users = Accounts.objects.filter(place=user.place).exclude(username=user) & Accounts.objects.filter(is_active=True).exclude(username=user)
+            all_users = Accounts.objects.filter(state=user.state).exclude(username=user) & Accounts.objects.filter(is_active=True).exclude(username=user)
             user_following_all = []
             print('jjjjjjj',user_following)
             for users in user_following:
@@ -138,7 +140,6 @@ class NewFriendsView(APIView):
             suggestion_list = [x for x in list(all_users) if (x not in list(user_following_all))]
             print('oooooo',suggestion_list)  
             return suggestion_list  
-            # return Accounts.objects.filter(place=user.place).exclude(username=user) & Accounts.objects.filter(is_active=True).exclude(username=user)
         except Accounts.DoesNotExist:
             raise ValueError({"Error": "User does not exist"})
 
@@ -147,11 +148,6 @@ class NewFriendsView(APIView):
         print('jkjkjrequest,',request.data)
         friends = self.get_object(request)
         print('ggggg',friends)
-        # follo'f',wers = {}
-        # for fol in friends:
-        #     followers['username'] = request.user.username
-        #     followers['follower'] = fol.id
-        # print('followers',followers)
         serializer = UserProfileSerializer(friends, many=True)
         data['Response'] = serializer.data
         data['Message'] = 'Success'
@@ -198,20 +194,6 @@ class FollowUsers(APIView):
                 data['Response'] = 'Something went wrong'   
                 return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
-#     #Unfollow user
-#     def delete(self,request):
-#         print(request.data)
-#         username = request.data['username']
-#         print('dd')
-#         follower = request.data['follower']
-#         print('dddddd')
-#         if Follower.objects.filter(username=username,follower=follower).first():
-#             print('qqqqqqqqqq')
-#             del_follower = Follower.objects.get(username=username,follower=follower)
-#             del_follower.delete()
-#             return Response({"Response":"Unfollowed succesfully"},status=status.HTTP_200_OK)
-#         else:
-#             return Response({"Response":"Something went wrong"},status=status.HTTP_400_BAD_REQUEST)
 
 
 class FriendsProfileView(APIView):
@@ -230,8 +212,10 @@ class FriendsProfileView(APIView):
         if friend_pro is not None:
             user_followers = len(Follower.objects.filter(username=user))
             user_following = len(Follower.objects.filter(follower=friend_pro.id))
-            data['followers'] = user_followers
-            data['following'] = user_following
+            data['userfollowers'] = {
+                'followers':user_followers,
+                'following':user_following
+            }
             if Follower.objects.filter(username=user,follower=request.user.id).first():
                 data['follow'] = 'following'
                 print('aaaa')
@@ -248,5 +232,16 @@ class FriendsProfileView(APIView):
             return Response(data, status=status.HTTP_404_NOT_FOUND)
 
 
+@api_view(['GET'])
+def followers_list(request):
+    username = request.user
+    print('username',username)
+
+    return Response({"Res":"sccc"})
+
+
+@api_view(['GET'])
+def following_list(request):
+    return Response    
        
    

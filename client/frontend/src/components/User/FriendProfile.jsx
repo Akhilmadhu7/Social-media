@@ -9,8 +9,7 @@ function FriendProfile() {
   let { authTokens,user } = useContext(AuthContext);
   const [friendprofile, setFreindProfile] = useState([]);
   const [follow, setfollow] = useState([])
-  const [followers, setFollowers] = useState()
-  const [following,setFollowing] = useState()
+  const [userFollowers, setUserFollowers] = useState([])
   const { username } = useParams();
 
   console.log("iddd", username);
@@ -33,9 +32,8 @@ function FriendProfile() {
           .then((res) => {
             console.log("rsultrtt", res.data);
             setFreindProfile(res.data.Data);
+            setUserFollowers(res.data.userfollowers)
             setfollow(res.data)
-            setFollowers(res.data.followers)
-            setFollowing(res.data.following)
           })
           .catch((err) => {
             console.log("errrr", err);
@@ -65,33 +63,10 @@ function FriendProfile() {
         } catch (error) {
             console.log('foll err',error.data);
         }
-    // } else {
-    //     try {
-    //         console.log('daataaaa',data);
-    //         Axios.delete(baseUrl+'accounts/follow',data,{
-    //             headers:{
-    //                 Authorization:`Bearer ${authTokens.access}`,
-    //                 // 'content-type':'application/json'
-    //             }
-    //         }).then(res=>{
-    //             if (res) {
-    //                 console.log('unnnnnfollow res',res.data);
-    //                 userProfile(baseUrl + "accounts/userprofile/"+user_id)
-    //             }
-    //         }).catch(err=>{
-    //             console.log('unfolll errrr',err);
-    //         })
-    //     } catch (error) {
-            
-    //     }
-        
-    // }
+    
 
   }
 
-  if (followers) {
-    console.log('folllll',followers);
-  }
 
   return (
     <div>
@@ -132,14 +107,14 @@ function FriendProfile() {
                 </div>
                 <div className="p-3 text-center">
                   <span className="text-xl font-bold block uppercase tracking-wide text-slate-700">
-                    {followers && followers}
+                    {userFollowers && userFollowers.followers}
                   </span>
                   <span className="text-sm text-slate-400">Followers</span>
                 </div>
 
                 <div className="p-3 text-center">
                   <span className="text-xl font-bold block uppercase tracking-wide text-slate-700">
-                    {following && following}
+                    {userFollowers && userFollowers.following}
                   </span>
                   <span className="text-sm text-slate-400">Following</span>
                 </div>

@@ -16,7 +16,9 @@ urlpatterns = [
     path('new-friends',views.NewFriendsView.as_view(),name='newfriends'),
     path('follow',views.FollowUsers.as_view(),name='followuser'),
 
-    path('friends-profile/<str:user>',views.FriendsProfileView.as_view(),name='freinds-profile')
+    path('friends-profile/<str:user>',views.FriendsProfileView.as_view(),name='freinds-profile'),
+    path('followers',views.followers_list,name='followers'),
+    path('following',views.following_list,name='following')
 
 
 ]
