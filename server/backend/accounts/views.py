@@ -39,7 +39,7 @@ class UserRegister(APIView):
 
 class UserProfile(APIView):
 
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     parser_classes = (MultiPartParser, FormParser)
 
     def get_object(self, id):
@@ -56,7 +56,7 @@ class UserProfile(APIView):
         user = self.get_object(id)
         print('uaa',user.id)
         if user is not None:
-            user_serializer = UserProfileSerializer(user)
+            user_serializer = UserProfileSerializer(user, context={"request":request})
             user_following = len(Follower.objects.filter(follower=id))
             user_followers = len(Follower.objects.filter(username=user.username))
             print('folling',user_following)
@@ -76,7 +76,8 @@ class UserProfile(APIView):
         data = {}
         user = self.get_object(id)
         print('aaaa',user)
-        user_serializer = UserProfileSerializer(user, data=request.data)
+        print('reqqqq',request.data)
+        user_serializer = UserProfileSerializer(user, data=request.data,  context={"request":request})
         if user_serializer.is_valid():
             user_serializer.save()
             data['Data'] = user_serializer.data
@@ -148,7 +149,7 @@ class NewFriendsView(APIView):
         print('jkjkjrequest,',request.data)
         friends = self.get_object(request)
         print('ggggg',friends)
-        serializer = UserProfileSerializer(friends, many=True)
+        serializer = UserProfileSerializer(friends, many=True, context={"request":request})
         data['Response'] = serializer.data
         data['Message'] = 'Success'
 
@@ -180,7 +181,11 @@ class FollowUsers(APIView):
             print('qqqqqqqqqq')
             del_follower = Follower.objects.get(username=user,follower=follower)
             del_follower.delete()
-            return Response({"Response":"Unfollowed succesfully"},status=status.HTTP_200_OK)
+            data['follow'] = {
+                'follow':'follow'
+            }
+            data['Response'] = 'Unfollowed succesfully'
+            return Response(data,status=status.HTTP_200_OK)
         else:    
             print('yyyyy')
             follower_ser = FollowerSerializer(data=request.data)
@@ -217,12 +222,16 @@ class FriendsProfileView(APIView):
                 'following':user_following
             }
             if Follower.objects.filter(username=user,follower=request.user.id).first():
-                data['follow'] = 'following'
+                data['follow'] = {
+                    'followinguser':'following'
+                }
                 print('aaaa')
             else:
                 print('lll')
-                data['unfollow']  = 'follow' 
-            user_serializer = UserProfileSerializer(friend_pro)
+                data['follow'] = {
+                    'followinguser':'follow'
+                } 
+            user_serializer = UserProfileSerializer(friend_pro, context={"request":request})
             data['Response'] = "Success"
             data['Data'] = user_serializer.data
             print(user_serializer.data['profile_pic'])
@@ -232,16 +241,42 @@ class FriendsProfileView(APIView):
             return Response(data, status=status.HTTP_404_NOT_FOUND)
 
 
+#User Followers function.
 @api_view(['GET'])
 def followers_list(request):
+    data = {}
     username = request.user
-    print('username',username)
+    id = request.user.id
+    print('username',username,id)
+    followers = Follower.objects.filter(username = username)
+    user_followers = []
+    for users in followers:
+        print('ididid',users.follower.id)
+        user_list = Accounts.objects.get(id = users.follower.id)
+        user_followers.append(user_list)
+    print('ssss',user_followers)    
+    followers_ser = UserProfileSerializer(user_followers,many=True)
+    data['Data'] = followers_ser.data
+    data['Response'] = 'Success'
+    return Response(data,status=status.HTTP_200_OK)
 
-    return Response({"Res":"sccc"})
 
-
+#User Following function.
 @api_view(['GET'])
 def following_list(request):
-    return Response    
+    data = {}
+    id = request.user.id
+    following = Follower.objects.filter(follower = id)
+    user_following = []
+    for users in following:
+        user_list = Accounts.objects.get(username=users.username)
+        user_following.append(user_list)
+    following_ser = UserProfileSerializer(user_following,many=True)
+    data['Data'] = following_ser.data
+    data['follow'] = {
+        'follow':'following'
+    }
+    data['Response'] = 'Succcess'
+    return Response (data,status=status.HTTP_200_OK)   
        
    

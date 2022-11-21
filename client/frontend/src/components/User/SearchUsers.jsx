@@ -89,7 +89,7 @@ function SearchUsers() {
                         </p>
                       </div>
                       <div class="inline-flex items-center text-base font-semibold text-indigo-500 hover:text-indigo-600 dark:text-white">
-                        Follow
+                        View
                       </div>
                     </div>
                   </li>

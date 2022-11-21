@@ -11,6 +11,10 @@ function FriendProfile() {
   const [follow, setfollow] = useState([])
   const [userFollowers, setUserFollowers] = useState([])
   const { username } = useParams();
+  const [modalFollowers, setModalFollowers] = useState(false);    //modal for showing followers.
+  const [followersList, setFollowersList] = useState([]);   //state to display all the followers. 
+  const [modalFollowing, setModalFollowing] = useState(false);    // modal for showing following users.
+  const [followingList, setFollowingList] = useState([]);   //state to display all the following users.
 
   console.log("iddd", username);
 
@@ -21,6 +25,8 @@ function FriendProfile() {
     userProfile(baseUrl + "accounts/friends-profile/"+username)
   }, [username]);
 
+
+  // function to call the user profile api.
   function userProfile(url){
     try {
         Axios.get(url , {
@@ -33,7 +39,7 @@ function FriendProfile() {
             console.log("rsultrtt", res.data);
             setFreindProfile(res.data.Data);
             setUserFollowers(res.data.userfollowers)
-            setfollow(res.data)
+            setfollow(res.data.follow)
           })
           .catch((err) => {
             console.log("errrr", err);
@@ -42,7 +48,7 @@ function FriendProfile() {
   }
 
     
-    
+    // function to follow and unfollow user.
   const followUser = ()=>{
      try {
         console.log('daataaaa',data);
@@ -63,9 +69,47 @@ function FriendProfile() {
         } catch (error) {
             console.log('foll err',error.data);
         }
-    
-
   }
+
+
+
+//   // function to call to get the list of followers.
+//   const handleFollowers = () => {
+//     Axios.get(baseUrl + "accounts/followers", {
+//       headers: {
+//         Authorization: `Bearer ${authTokens.access}`,
+//       },
+//     })
+//       .then((res) => {
+//         console.log("folllist", res.data.Data);
+//         setFollowersList(res.data.Data);
+//       })
+//       .catch((error) => {
+//         console.log("errors", error);
+//       });
+//     setModalFollowers(!modalFollowers);
+//   };
+
+
+//   // function to call to get the list of following users.
+//   const handleFollowing = () => {
+//     Axios.get(baseUrl + "accounts/following", {
+//       headers: {
+//         Authorization: `Bearer ${authTokens.access}`,
+//       },
+//     })
+//       .then((res) => {
+//         console.log('fjo dadadfas',res.data);
+//         setFollowingList(res.data.Data);
+//       })
+//       .catch((err) => {
+//         console.log("errrr", err);
+//       });
+//     setModalFollowing(!modalFollowing);
+//   };
+
+
+
 
 
   return (
@@ -109,14 +153,16 @@ function FriendProfile() {
                   <span className="text-xl font-bold block uppercase tracking-wide text-slate-700">
                     {userFollowers && userFollowers.followers}
                   </span>
-                  <span className="text-sm text-slate-400">Followers</span>
+                  <span
+                   className="text-sm text-slate-400">Followers</span>
                 </div>
 
                 <div className="p-3 text-center">
                   <span className="text-xl font-bold block uppercase tracking-wide text-slate-700">
                     {userFollowers && userFollowers.following}
                   </span>
-                  <span className="text-sm text-slate-400">Following</span>
+                  <span
+                   className="text-sm text-slate-400">Following</span>
                 </div>
               </div>
             </div>
@@ -135,7 +181,8 @@ function FriendProfile() {
                     className="font-normal text-white py-2 px-4 rounded-md bg-indigo-600 hover:bg-indigo-700"
                   >
                     {console.log(follow.follow)}
-                    {follow.follow ==='following' ? follow.follow : follow.unfollow}
+                    {/* {follow.follow ==='following' ? follow.follow : follow.unfollow} */}
+                    {follow.followinguser ? follow.followinguser : follow.followinguser}
                   </button>
                 </Link>
               </div>

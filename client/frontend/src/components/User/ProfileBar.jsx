@@ -37,8 +37,8 @@ function ProfileBar() {
           </h5>
           <div className="ml4">
             <img
-              src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
-              // src={userData.profile_pic}
+              // src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
+              src={userData.profile_pic}
               className="rounded-full w-1/2 content-center my-3 ml-14 "
               alt=""
             />

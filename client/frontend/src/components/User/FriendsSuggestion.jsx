@@ -78,7 +78,7 @@ function FriendsSuggestion() {
                     }
                 }).then(res=>{
                   console.log('folllllllw',res.data);
-                  setFollow(res.data)
+                  setFollow(res.data.follow)
                 })
                   
               }
@@ -110,7 +110,8 @@ newFriends.map((f)=>{
         
           <div className="profile mx-auto rounded-full py-2 w-8 sm:w-16">
             <img
-              src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
+              src={friends.profile_pic}
+              // src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
               className="rounded-full"
               alt="profile"
             />
@@ -133,7 +134,8 @@ newFriends.map((f)=>{
             <button 
               onClick={()=>followUser(friends.username)}
               className="bg-blue-500 py-2 px-2 sm:px-4 hover:bg-blue-600 text-white w-full cfont-semibold rounded-lg shadow-lg">
-              {friends.username in follow ? 'following' : 'follow'}
+              {/* {follow.following ? 'following' : 'follow'} */}
+              {follow.followinguser ? follow.followinguser : 'follow'}
             </button>
           </div>
         </div>

@@ -1,6 +1,7 @@
 
 
 from django.db import models
+from datetime import datetime
 
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
@@ -8,6 +9,8 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 def upload_to(instance, filename):
     return 'profile_image/{filename}'.format(filename=filename)
 
+def post_pic(instance, filename):
+    return 'post_image/{filename}'.format(filename=filename)
 
 class UserManager(BaseUserManager):
     def _create_user(self, username, email, password, is_active, is_staff, is_admin, is_superadmin, **extra_fields):
@@ -84,10 +87,23 @@ class Accounts(AbstractBaseUser):
 
 class Follower(models.Model):
 
-    follower = models.ForeignKey(Accounts,related_name = 'follower', on_delete=models.CASCADE)
-    username = models.CharField(max_length = 120)
+    follower = models.ForeignKey(Accounts,related_name = 'follower', on_delete=models.CASCADE) #person who is following(logged in user)
+    username = models.CharField(max_length = 120)  #person who has been followed(visited profile person)
 
     def __str__(self):
         return self.username
      
+
+
+
+class Post(models.Model):
+    user = models.ForeignKey(Accounts,on_delete=models.CASCADE)
+    post_image = models.ImageField(upload_to=post_pic)
+    caption = models.TextField()
+    likes_no = models.IntegerField(default=0)
+    created_at = models.DateTimeField(default = datetime.now)
+
+    def __str__(self):
+        return self.user.username
+    
     
