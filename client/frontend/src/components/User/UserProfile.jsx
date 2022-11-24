@@ -184,7 +184,7 @@ function UserProfile() {
         <div className="px-6">
           <div className="flex flex-wrap justify-center">
             <div className="w-full flex justify-center">
-              <div className="relative">
+              <div className="relative ">
                 <img
                   // src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
                   src={userData.profile_pic}
@@ -405,7 +405,8 @@ function UserProfile() {
                       <div className="avatar-content mb-2.5 sm:mb-0 sm:mr-2.5">
                         <img
                           className="avatar w-20 h-20 rounded-full"
-                          src="https://randomuser.me/api/portraits/men/32.jpg"
+                          src={follower.profile_pic}
+                          // src="https://randomuser.me/api/portraits/men/32.jpg"
                         />
                       </div>
                       <div className="user-body flex flex-col mb-4 sm:mb-0 sm:mr-4">
@@ -458,7 +459,7 @@ function UserProfile() {
         {/* Following  Modal */}
 
         {modalFollowing ? (
-          <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+          <div className="justify-center items-center flex  overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
             <div className="user-list w-full max-w-lg mx-auto bg-white rounded-xl shadow-xl flex flex-col py-4">
               {followingList.map((following) => {
                 return (
@@ -467,7 +468,8 @@ function UserProfile() {
                       <div className="avatar-content mb-2.5 sm:mb-0 sm:mr-2.5">
                         <img
                           className="avatar w-20 h-20 rounded-full"
-                          src="https://randomuser.me/api/portraits/men/32.jpg"
+                          src={following.profile_pic}
+                          // src="https://randomuser.me/api/portraits/men/32.jpg"
                         />
                       </div>
                       <div className="user-body flex flex-col mb-4 sm:mb-0 sm:mr-4">

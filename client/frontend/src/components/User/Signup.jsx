@@ -133,7 +133,7 @@ function Signup() {
                         {errors.l_name.message}
                       </small>
                     )}
-                    
+                    <small className="text-red-600">{errorData.l_name}</small>
                 </div>
               </div>
               <div className="mb-2  justify-around grid sm:grid-cols-1 md:grid-cols-2 gap-4">

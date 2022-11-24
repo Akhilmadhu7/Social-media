@@ -1,6 +1,39 @@
 import React from "react";
+import { useEffect, useState } from "react";
+import { useContext } from "react";
+import {  useParams } from "react-router-dom";
+import Axios from "axios";
+import AuthContext from "../../context/UserAuthContext";
+
+const baseUrl = "http://127.0.0.1:8000/";
 
 function FriendsPost() {
+
+  let {user, authTokens} = useContext(AuthContext)
+  let {userdata} = useParams()
+  let [userPost,setUserPost] = useState({
+    username:""
+  })
+  const [postData, setPostData] = useState([])
+  let username = userdata
+  useEffect(()=>{
+    setUserPost(userdata)
+    try {
+      Axios.get(baseUrl+'accounts/posts',userPost,{
+        headers:{
+          Authorization:`Bearer ${authTokens.access}`,
+          "Content-Type": "application/json",
+        }
+      }).then((res)=>{
+         console.log('postsss',res.data.Data);
+         setPostData(res.data.Data)
+      })
+    } catch (error) {
+      
+    }
+  },[])
+
+
   return (
     <div > 
       <div className="pb-4" >
@@ -15,44 +48,11 @@ function FriendsPost() {
               src="https://wallpapers.com/images/hd/cool-neon-blue-profile-picture-u9y9ydo971k9mdcf.jpg"
               alt=""
             />
-            <img
-              class="block bg-center bg-no-repeat bg-cover w-full h-full rounded-lg"
-              src="https://wallpapers.com/images/hd/cool-neon-blue-profile-picture-u9y9ydo971k9mdcf.jpg"
-              alt=""
-            />
-            <img
-              class="block bg-center bg-no-repeat bg-cover w-full h-full rounded-lg"
-              src="https://wallpapers.com/images/hd/cool-neon-blue-profile-picture-u9y9ydo971k9mdcf.jpg"
-              alt=""
-            />
+           
+           
 
-            <img
-              class="block bg-center bg-no-repeat bg-cover w-full h-full rounded-lg"
-              src="https://wallpapers.com/images/hd/cool-neon-blue-profile-picture-u9y9ydo971k9mdcf.jpg"
-              alt=""
-            />
-            <img
-              class="block bg-center bg-no-repeat bg-cover w-full h-full rounded-lg"
-              src="https://wallpapers.com/images/hd/cool-neon-blue-profile-picture-u9y9ydo971k9mdcf.jpg"
-              alt=""
-            />
-            <img
-              class="block bg-center bg-no-repeat bg-cover w-full h-full rounded-lg"
-              src="https://wallpapers.com/images/hd/cool-neon-blue-profile-picture-u9y9ydo971k9mdcf.jpg"
-              alt=""
-            />
-
-            {/* <img
-              class="block bg-center bg-no-repeat bg-cover w-full h-full rounded-lg"
-              src="https://bd.gaadicdn.com/processedimages/ducati/panigale-v4/640X309/panigale-v4630ca386c0988.jpg?tr=w-300"
-              alt=""
-            />
-            <img
-              class="block bg-center bg-no-repeat bg-cover w-full h-full rounded-lg"
-              src="https://bd.gaadicdn.com/processedimages/ducati/panigale-v4/640X309/panigale-v4630ca386c0988.jpg?tr=w-300"
-              alt=""
-            />
-            <img
+            
+           {/* <img
               class="block bg-center bg-no-repeat bg-cover w-full h-full rounded-lg"
               src="https://bd.gaadicdn.com/processedimages/ducati/panigale-v4/640X309/panigale-v4630ca386c0988.jpg?tr=w-300"
               alt=""

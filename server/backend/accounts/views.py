@@ -4,9 +4,9 @@ import jwt
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from . serializers import AccountSerializer, UserProfileSerializer, ChangePasswordSerializer,FollowerSerializer
+from . serializers import AccountSerializer, UserProfileSerializer, ChangePasswordSerializer,FollowerSerializer,PostSerializer
 from rest_framework import status
-from . models import Accounts,Follower
+from . models import Accounts,Follower,Post
 from rest_framework import permissions
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -57,8 +57,8 @@ class UserProfile(APIView):
         print('uaa',user.id)
         if user is not None:
             user_serializer = UserProfileSerializer(user, context={"request":request})
-            user_following = len(Follower.objects.filter(follower=id))
-            user_followers = len(Follower.objects.filter(username=user.username))
+            user_following = len(Follower.objects.filter(follower=id))  #to get the count of following.
+            user_followers = len(Follower.objects.filter(username=user.username))   #to get the count of followers.
             print('folling',user_following)
             data['Response'] = "Success"
             data['Data'] = user_serializer.data
@@ -127,20 +127,20 @@ class NewFriendsView(APIView):
         try:
             user = request.user
             
-            user_following = Follower.objects.filter(follower=user.id)
+            user_following = Follower.objects.filter(follower=user.id) #getting the data of following users of the logged in user.
             print('lllll',user_following)
             all_users = Accounts.objects.filter(state=user.state).exclude(username=user) & Accounts.objects.filter(is_active=True).exclude(username=user)
             user_following_all = []
             print('jjjjjjj',user_following)
-            for users in user_following:
+            for users in user_following: #looping through the following user
                 print('ppppppp')
-                user_list = Accounts.objects.get(username=users.username)
+                user_list = Accounts.objects.get(username=users.username) #getting the following user from accounts.
                 print('kkkkkk',user_list)
                 user_following_all.append(user_list)
             print('iiiiii',user_following_all)
-            suggestion_list = [x for x in list(all_users) if (x not in list(user_following_all))]
+            suggestion_list = [x for x in list(all_users) if (x not in list(user_following_all))] #collecting the users who has not been followed by logged in user.
             print('oooooo',suggestion_list)  
-            return suggestion_list  
+            return suggestion_list  # returning the users who are related with user profile and not followed by the user
         except Accounts.DoesNotExist:
             raise ValueError({"Error": "User does not exist"})
 
@@ -177,9 +177,9 @@ class FollowUsers(APIView):
         follower = request.data['follower']
         print('dddddd',follower)
         # follower_id = self.get_object(follower)
-        if Follower.objects.filter(username=user,follower=follower).first():
+        if Follower.objects.filter(username=user,follower=follower).first():  #checking if user following or not.
             print('qqqqqqqqqq')
-            del_follower = Follower.objects.get(username=user,follower=follower)
+            del_follower = Follower.objects.get(username=user,follower=follower)  #if following , unfollow. 
             del_follower.delete()
             data['follow'] = {
                 'follow':'follow'
@@ -188,7 +188,7 @@ class FollowUsers(APIView):
             return Response(data,status=status.HTTP_200_OK)
         else:    
             print('yyyyy')
-            follower_ser = FollowerSerializer(data=request.data)
+            follower_ser = FollowerSerializer(data=request.data) #if not following.
             if follower_ser.is_valid():
                 follower_ser.save()
                 data['Data'] = follower_ser.data
@@ -200,7 +200,7 @@ class FollowUsers(APIView):
                 return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
 
-
+#Friends profile view
 class FriendsProfileView(APIView):
 
     def get_object(self,user):
@@ -215,13 +215,13 @@ class FriendsProfileView(APIView):
         print('friend',friend_pro)
         print('foll',request.user.id)
         if friend_pro is not None:
-            user_followers = len(Follower.objects.filter(username=user))
-            user_following = len(Follower.objects.filter(follower=friend_pro.id))
+            user_followers = len(Follower.objects.filter(username=user))    #to get followers count.
+            user_following = len(Follower.objects.filter(follower=friend_pro.id)) #to get following count.
             data['userfollowers'] = {
                 'followers':user_followers,
                 'following':user_following
             }
-            if Follower.objects.filter(username=user,follower=request.user.id).first():
+            if Follower.objects.filter(username=user,follower=request.user.id).first(): #to check if the visiting user following or not this profile.
                 data['follow'] = {
                     'followinguser':'following'
                 }
@@ -255,7 +255,7 @@ def followers_list(request):
         user_list = Accounts.objects.get(id = users.follower.id)
         user_followers.append(user_list)
     print('ssss',user_followers)    
-    followers_ser = UserProfileSerializer(user_followers,many=True)
+    followers_ser = UserProfileSerializer(user_followers,many=True, context={"request":request})
     data['Data'] = followers_ser.data
     data['Response'] = 'Success'
     return Response(data,status=status.HTTP_200_OK)
@@ -269,9 +269,9 @@ def following_list(request):
     following = Follower.objects.filter(follower = id)
     user_following = []
     for users in following:
-        user_list = Accounts.objects.get(username=users.username)
+        user_list = Accounts.objects.get(username=users)
         user_following.append(user_list)
-    following_ser = UserProfileSerializer(user_following,many=True)
+    following_ser = UserProfileSerializer(user_following,many=True, context={"request":request})
     data['Data'] = following_ser.data
     data['follow'] = {
         'follow':'following'
@@ -280,3 +280,131 @@ def following_list(request):
     return Response (data,status=status.HTTP_200_OK)   
        
    
+
+
+class Post_view(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get_object(self,user):
+        try:
+            # a = Accounts.objects.get(username = user)
+            # return Post.objects.filter(user=a.id)
+            return Post.objects.filter(user=user)
+        except:
+            return Response({'Errors':"Post does not exist"})    
+
+    #function for get all post created by user in userprofile page
+    def get(self,request):
+        data = {}
+        print('rewq daa',request.data)
+        # user = request.data['username']
+        user = request.user
+        print('lklk',user)
+        post = self.get_object(user)
+        print('post',post)
+        post_data = PostSerializer(post,many=True,context = {'request':request})
+        print('jjjjjjjj',post_data.data)
+        data['Data'] = post_data.data
+        data['Response'] = 'Success'
+        return Response(data,status=status.HTTP_200_OK)
+
+    #Create Post function.
+    def post(self,request):
+        print('dataaa',request.data)
+        data = {}
+        user_id = request.user.id
+        print('pppp')
+        post_ser = PostSerializer(data=request.data)
+        print('lllll')
+        if post_ser.is_valid():
+            post_ser.save()
+            data['Data'] = post_ser.data
+            data['Response'] = 'Post added succesfully'
+            return Response(data, status=status.HTTP_201_CREATED)
+        else:
+            print('eeee')
+            data['Data'] = post_ser.errors
+            data['Response'] = 'Something went wrong'
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
+
+# @api_view(['GET'])
+# def home_view(request):
+
+#     id = request.user.id
+#     print('user',id)
+#     following_users = Follower.objects.filter(follower = id)
+#     ser = FollowerSerializer(following_users,many=True)
+#     following_userslist = []
+#     feed_list = []
+
+#     for users in following_users:
+#         print('ssssss',users)
+#         accounts = Accounts.objects.get(username = users)
+#         print('acccccc',accounts.id)
+#         following_userslist.append(accounts.id)
+
+    
+#     for users in following_userslist:
+#         print('uuuuuuuu',users)
+#         feed=Post.objects.filter(user = users).values()
+#         feed_list.append(feed)
+#     feed_post = feed_list
+
+#     for f in feed_post:
+#         print('ffffff',f)
+#     serp = PostSerializer(feed_list,many=True)      
+#     print('serserser',serp)
+
+#     return Response(ser.data)
+
+class HomeView(APIView):
+
+    def get_object(self,id):
+        try:
+            following_users = Follower.objects.filter(follower = id)
+            following_userslist = []
+            feed_list = []
+
+            for users in following_users:
+                print('ssssss',users)
+                accounts = Accounts.objects.get(username = users)
+                print('acccccc',accounts.id)
+                following_userslist.append(accounts.id)
+
+            
+            for users in following_userslist:
+                print('uuuuuuuu',users)
+                feed=Post.objects.filter(user = users).values()
+                feed_list.append(feed)
+            return feed_list
+        except:
+            return  Response({"asfd":"asdf"})   
+
+    def get(self,request):
+
+        id  = request.user.id
+        post = self.get_object(id)
+        print('apo engana',post)
+        ser = PostSerializer(post,many=True,context={'request':request})
+        print('ser data',ser.data)
+        return Response({"mes":"hellow"})
+
+
+
+
+class Home_view(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+    def get(self,request):
+        post = Post.objects.all()
+        post_ser = PostSerializer(post,many=True)
+        return Response(post_ser.data)
+
+
+    def post(self,request):
+        post = PostSerializer(data=request.data)
+        if post.is_valid():
+            post.save()
+            return Response(post.data)
+        else:
+            return Response(post.errors)        

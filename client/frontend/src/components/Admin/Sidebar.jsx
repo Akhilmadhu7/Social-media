@@ -22,6 +22,12 @@ function Sidebar(children) {
             path:'/admin/userlist',
             name:'Users',
             icon:<FaUsers/>
+        },
+
+        {
+            path:'/admin/listpost',
+            name:'Posts',
+            icon:<FaUsers/>
         }
     ]
   return (

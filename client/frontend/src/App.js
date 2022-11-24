@@ -24,6 +24,7 @@ import FriendsSuggestion from './components/User/FriendsSuggestion';
 import FreindsSuggestPage from './pages/User/FreindsSuggestPage';
 import FriendProfilePage from './pages/User/FriendProfilePage';
 import PrivateRoutes from './Utils/PrivateRoutes';
+import ListPostPage from './pages/Admin/ListPostPage';
 
 function App() {
   return (
@@ -41,7 +42,7 @@ function App() {
                 <Route element={<EditProfilePage/>} path='/user/editprofile' />
                 <Route element={<SearchUsersPage/>} path='/user/searchuser/:search' />
                 <Route element={<FreindsSuggestPage/>} path='/user/friends-suggestion' />
-                <Route element={<FriendProfilePage/>} path='/user/friend-profile/:username' />
+                <Route element={<FriendProfilePage/>} path='/user/friend-profile/:userdata' />
             </Route>
             
           </Routes>
@@ -53,6 +54,7 @@ function App() {
             <Route element={<AdminLayout></AdminLayout>} path='/admin/' >
                 <Route element={<DashboardPage/>} path='/admin/dashboard' />
                 <Route element={<UserListPage/>} path='/admin/userlist' />
+                <Route element={<ListPostPage/>} path='/admin/listpost' />
             </Route>    
           </Routes>
         </AuthAdminProvider>  

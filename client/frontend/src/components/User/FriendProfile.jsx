@@ -10,20 +10,20 @@ function FriendProfile() {
   const [friendprofile, setFreindProfile] = useState([]);
   const [follow, setfollow] = useState([])
   const [userFollowers, setUserFollowers] = useState([])
-  const { username } = useParams();
+  const { userdata } = useParams();
   const [modalFollowers, setModalFollowers] = useState(false);    //modal for showing followers.
   const [followersList, setFollowersList] = useState([]);   //state to display all the followers. 
   const [modalFollowing, setModalFollowing] = useState(false);    // modal for showing following users.
   const [followingList, setFollowingList] = useState([]);   //state to display all the following users.
 
-  console.log("iddd", username);
+  console.log("iddd", userdata); //useredata contains username of the friend passing through params.
 
-  let data={username : username,
+  let data={username : userdata,
     follower : user.user_id}
 
   useEffect(() => {
-    userProfile(baseUrl + "accounts/friends-profile/"+username)
-  }, [username]);
+    userProfile(baseUrl + "accounts/friends-profile/"+userdata)
+  }, [userdata]);
 
 
   // function to call the user profile api.
@@ -60,7 +60,7 @@ function FriendProfile() {
             }).then((res)=>{
                 if (res) {
                     console.log('follow res',res.data);
-                    userProfile(baseUrl + "accounts/friends-profile/"+username)
+                    userProfile(baseUrl + "accounts/friends-profile/"+userdata)
                     
                 }
             }).catch(err=>{

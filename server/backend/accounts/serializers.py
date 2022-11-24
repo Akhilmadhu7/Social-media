@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework import serializers
-from . models import Accounts, Follower
+from . models import Accounts, Follower, Post
 import re
 
 
@@ -62,7 +62,7 @@ class AccountSerializer(serializers.ModelSerializer):
         if password2_verify is None:
             raise serializers.ValidationError(
                 {"Password2": "Must contain 8 characters including numbers"})
- 
+
         return data
 
     def save(self):
@@ -89,7 +89,8 @@ class AccountSerializer(serializers.ModelSerializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
 
-    profile_pic = serializers.ImageField(max_length = None,allow_null = True,use_url=True, required = False)
+    profile_pic = serializers.ImageField(
+        max_length=None, allow_null=True, use_url=True, required=False)
     full_name = serializers.SerializerMethodField('get_full_name')
 
     class Meta:
@@ -103,9 +104,23 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_full_name(self, user):
         full_name = user.f_name.capitalize() + ' ' + user.l_name.capitalize()
         return full_name
-                  
-    
 
+    def validate(self, data):
+
+        email = data['email']
+
+        # EMAIL VERIFICATION
+        email_pattern = "^[a-zA-Z0-9-_]+@[a-zA-Z0-9]+\.[a-z]{2,3}$"
+        email_verify = re.match(email_pattern, email)
+
+        if email_verify is None:
+            raise serializers.ValidationError(
+                {"email": "Enter valid email"})
+
+        data['username'] = data['username'].lower()
+        data['f_name'] = data['f_name'].capitalize()
+        data['l_name'] = data['l_name'].capitalize()
+        return data
 
 
 class ChangePasswordSerializer(serializers.ModelSerializer):
@@ -113,9 +128,9 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Accounts
-        fields = ['password','new_password']
+        fields = ['password', 'new_password']
 
-    def validate(self,data):
+    def validate(self, data):
         password = data['password']
         new_password = data['new_password']
         password_pattern = re.compile(r'^[a-zA-Z0-9]{8}[0-9]*[A-Za-z]*$')
@@ -123,12 +138,12 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
 
         if password == new_password:
             raise serializers.ValidationError(
-                {"new_password":"New password similar to old password"})
+                {"new_password": "New password similar to old password"})
 
         if password_verify is None:
             raise serializers.ValidationError(
-                {"new_password":"Must contain 8 characters including numbers"})
-        return data    
+                {"new_password": "Must contain 8 characters including numbers"})
+        return data
 
 
 class FollowerSerializer(serializers.ModelSerializer):
@@ -138,12 +153,12 @@ class FollowerSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class NewFriendsSerializer(serializers.ModelSerializer):
+class PostSerializer(serializers.ModelSerializer):
+    user = UserProfileSerializer(read_only = True)
     class Meta:
-        pass
+        model = Post
+        fields = '__all__'
+        read_only_fields = ['user']
 
 
-        
-       
-
-    
+  

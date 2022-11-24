@@ -97,9 +97,9 @@ class Follower(models.Model):
 
 
 class Post(models.Model):
-    user = models.ForeignKey(Accounts,on_delete=models.CASCADE)
+    user = models.ForeignKey(Accounts,related_name='user',on_delete=models.CASCADE)
     post_image = models.ImageField(upload_to=post_pic)
-    caption = models.TextField()
+    caption = models.TextField(blank=True,default='')
     likes_no = models.IntegerField(default=0)
     created_at = models.DateTimeField(default = datetime.now)
 

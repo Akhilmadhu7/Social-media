@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from accounts.models import Accounts
-from accounts.serializers import AccountSerializer
+from accounts.serializers import AccountSerializer,Post
 from rest_framework.views import APIView
 from rest_framework import status
 
@@ -76,4 +76,5 @@ def blockUser(request, id):
         data['Response'] = "User unblocked succesfully"
     user.save()
     return Response(data, status=status.HTTP_200_OK)
+
 

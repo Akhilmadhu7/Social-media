@@ -17,8 +17,12 @@ urlpatterns = [
     path('follow',views.FollowUsers.as_view(),name='followuser'),
 
     path('friends-profile/<str:user>',views.FriendsProfileView.as_view(),name='freinds-profile'),
-    path('followers',views.followers_list,name='followers'),
-    path('following',views.following_list,name='following')
 
+    path('followers',views.followers_list,name='followers'),
+    path('following',views.following_list,name='following'),
+
+    path('posts',views.Post_view.as_view(),name='posts'),
+    path('home',views.Home_view.as_view(),name='home'),
+    path('homepost',views.HomeView.as_view(),name='homepost')
 
 ]

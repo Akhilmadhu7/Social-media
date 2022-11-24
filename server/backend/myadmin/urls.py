@@ -16,4 +16,6 @@ urlpatterns = [
 
     path('userpage',pagination.UserListPage.as_view(),name='userpage'),
     path('blockuser/<int:id>',views.blockUser,name='blockuser'),
+
+    path('listpost',pagination.UserPostView.as_view(),name='listpost')
 ]

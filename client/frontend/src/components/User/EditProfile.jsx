@@ -67,10 +67,13 @@ function EditProfile() {
   }, []);
 
   const handleProfileChange = (e) => {
+    // setUserData(URL.createObjectURL(e.target.files[0]))
     setUserData({
       ...userData,
       profile_pic: e.target.files[0],
+      
     });
+    // setUserData(URL.createObjectURL(e.target.files[0]))
   };
 
   const handleChange = (e) => {
@@ -82,20 +85,21 @@ function EditProfile() {
   };
 
   const onSubmit = (data, e) => {
-    const userFormData = new FormData();
-    userFormData.append("f_name", userData.f_name);
-    userFormData.append("l_name", userData.l_name);
-    userFormData.append("username", userData.username);
-    userFormData.append("email", userData.email);
-    userFormData.append("phone", userData.phone);
-    userFormData.append("place", userData.place);
-    userFormData.append("country", userData.country);
-    userFormData.append("state", userData.state);
-    userFormData.append("about", userData.about);
-    userFormData.append("profile_pic", userData.profile_pic);
+    console.log('edittt',userData);
+    // const userFormData = new FormData();
+    // userFormData.append("f_name", userData.f_name);
+    // userFormData.append("l_name", userData.l_name);
+    // userFormData.append("username", userData.username);
+    // userFormData.append("email", userData.email);
+    // userFormData.append("phone", userData.phone);
+    // userFormData.append("place", userData.place);
+    // userFormData.append("country", userData.country);
+    // userFormData.append("state", userData.state);
+    // userFormData.append("about", userData.about);
+    // userFormData.append("profile_pic", userData.profile_pic);
     try {
       console.log("form data", userData);
-      Axios.put(baseUrl + id , userFormData, {
+      Axios.put(baseUrl + id , userData, {
         headers: {
           Authorization: `Bearer ${authTokens.access}`,
           "Content-Type": "multipart/form-data",
@@ -235,13 +239,13 @@ function EditProfile() {
                       Email
                     </label>
                     <input
-                      //   {...register("email", {
-                      //     required: "Email required",
-                      //     pattern: {
-                      //       value: /^[a-zA-Z0-9-_]+@[a-zA-Z0-9]+\.[a-z]{2,3}$/,
-                      //       message: "Invalid email",
-                      //     },
-                      //   })}
+                        // {...register("email", {
+                        //   required: "Email required",
+                        //   pattern: {
+                        //     value: /^[a-zA-Z0-9-_]+@[a-zA-Z0-9]+\.[a-z]{2,3}$/,
+                        //     message: "Invalid email",
+                        //   },
+                        // })}
                       onChange={handleChange}
                       value={userData.email}
                       type="email"
@@ -307,12 +311,15 @@ function EditProfile() {
                       </small>
                     )}
                     {userData.profile_pic && 
-                     <img src={userData.profile_pic} />
+                     <img
+                      src={userData.profile_pic} 
+                      alt='profile picture'
+                      />
                     } 
                     {/* <div class="shrink-0">
                       <img
                         class="h-16 w-16 object-cover rounded-full"
-                        src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1361&q=80"
+                        src={userData.profile_pic}
                         alt="Current profile photo"
                       />
                     </div>
@@ -325,8 +332,8 @@ function EditProfile() {
                         file:mr-4 file:py-2 file:px-4
                         file:rounded-full file:border-0
                         file:text-sm file:font-semibold
-                        // file:bg-violet-50 
-                        // hover:file:bg-violet-100
+                        file:bg-violet-50 
+                        hover:file:bg-violet-100
                         px-4 py-2 mt-2file: text-indigo-700 bg-white border rounded-md focus:border-indigo-400 focus:ring-indigo-300 focus:outline-none focus:ring focus:ring-opacity-40
                         "
                       />
