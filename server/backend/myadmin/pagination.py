@@ -14,7 +14,7 @@ class UserPagination(PageNumberPagination):
 
 class UserListPage(ListAPIView):
     # permission_classes = [permissions.IsAdminUser]
-    queryset = Accounts.objects.exclude(is_admin = True)   
+    queryset = Accounts.objects.exclude(is_admin = True).order_by('-id') 
     serializer_class = AccountSerializer 
     pagination_class = UserPagination 
 

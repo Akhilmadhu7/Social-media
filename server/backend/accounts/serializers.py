@@ -152,13 +152,19 @@ class FollowerSerializer(serializers.ModelSerializer):
         model = Follower
         fields = '__all__'
 
-
+#To show post with corresponding user details.
 class PostSerializer(serializers.ModelSerializer):
     user = UserProfileSerializer(read_only = True)
     class Meta:
         model = Post
         fields = '__all__'
-        read_only_fields = ['user']
+    # order_by = ['-id']   
+        
 
+#To create new posts.
+class PostCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = '__all__'  
 
-  
+   

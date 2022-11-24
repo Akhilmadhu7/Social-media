@@ -98,12 +98,23 @@ class Follower(models.Model):
 
 class Post(models.Model):
     user = models.ForeignKey(Accounts,related_name='user',on_delete=models.CASCADE)
-    post_image = models.ImageField(upload_to=post_pic)
+    post_image = models.ImageField(upload_to=post_pic,null=True,blank=True)
     caption = models.TextField(blank=True,default='')
     likes_no = models.IntegerField(default=0)
+    # liked_user = models.CharField(max_length=120,default='')
     created_at = models.DateTimeField(default = datetime.now)
 
     def __str__(self):
         return self.user.username
+
+
+class LikePost(models.Model):
+
+    post_id = models.CharField(max_length=120)
+    username = models.CharField(max_length=120)
+
+    def __str__(self):
+        return self.username
+    
     
     

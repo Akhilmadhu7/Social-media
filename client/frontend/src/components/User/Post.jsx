@@ -15,13 +15,13 @@ function Post() {
 
   let {user, authTokens} = useContext(AuthContext)
   const [postData, setPostData] = useState([])
-  let data = user.username
+  let data = {username:user.username}
   useEffect(()=>{
  
     console.log('daaaaaaa',data);
     console.log('typee',typeof(data));
     try {
-      Axios.get(baseUrl+'accounts/posts',{
+      Axios.get(baseUrl+'accounts/posts',data,{
         headers:{
           Authorization:`Bearer ${authTokens.access}`,
           "Content-type": "application/json",
@@ -34,6 +34,8 @@ function Post() {
       
     }
   },[])
+
+
  
   return (
     <div className="pb-8"> 

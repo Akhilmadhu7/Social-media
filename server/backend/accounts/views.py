@@ -4,9 +4,9 @@ import jwt
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from . serializers import AccountSerializer, UserProfileSerializer, ChangePasswordSerializer,FollowerSerializer,PostSerializer
+from . serializers import AccountSerializer, UserProfileSerializer, ChangePasswordSerializer,FollowerSerializer,PostSerializer,PostCreateSerializer
 from rest_framework import status
-from . models import Accounts,Follower,Post
+from . models import Accounts,Follower,Post,LikePost
 from rest_framework import permissions
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -289,16 +289,17 @@ class Post_view(APIView):
         try:
             # a = Accounts.objects.get(username = user)
             # return Post.objects.filter(user=a.id)
-            return Post.objects.filter(user=user)
+            return Post.objects.filter(user=user).order_by('-id')
         except:
             return Response({'Errors':"Post does not exist"})    
 
     #function for get all post created by user in userprofile page
-    def get(self,request):
+    def get(self,request,id):
         data = {}
         print('rewq daa',request.data)
         # user = request.data['username']
         user = request.user
+    
         print('lklk',user)
         post = self.get_object(user)
         print('post',post)
@@ -314,7 +315,7 @@ class Post_view(APIView):
         data = {}
         user_id = request.user.id
         print('pppp')
-        post_ser = PostSerializer(data=request.data)
+        post_ser = PostCreateSerializer(data=request.data)
         print('lllll')
         if post_ser.is_valid():
             post_ser.save()
@@ -328,83 +329,48 @@ class Post_view(APIView):
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
 
-# @api_view(['GET'])
-# def home_view(request):
 
-#     id = request.user.id
-#     print('user',id)
-#     following_users = Follower.objects.filter(follower = id)
-#     ser = FollowerSerializer(following_users,many=True)
-#     following_userslist = []
-#     feed_list = []
-
-#     for users in following_users:
-#         print('ssssss',users)
-#         accounts = Accounts.objects.get(username = users)
-#         print('acccccc',accounts.id)
-#         following_userslist.append(accounts.id)
-
-    
-#     for users in following_userslist:
-#         print('uuuuuuuu',users)
-#         feed=Post.objects.filter(user = users).values()
-#         feed_list.append(feed)
-#     feed_post = feed_list
-
-#     for f in feed_post:
-#         print('ffffff',f)
-#     serp = PostSerializer(feed_list,many=True)      
-#     print('serserser',serp)
-
-#     return Response(ser.data)
-
-class HomeView(APIView):
-
-    def get_object(self,id):
-        try:
-            following_users = Follower.objects.filter(follower = id)
-            following_userslist = []
-            feed_list = []
-
-            for users in following_users:
-                print('ssssss',users)
-                accounts = Accounts.objects.get(username = users)
-                print('acccccc',accounts.id)
-                following_userslist.append(accounts.id)
-
-            
-            for users in following_userslist:
-                print('uuuuuuuu',users)
-                feed=Post.objects.filter(user = users).values()
-                feed_list.append(feed)
-            return feed_list
-        except:
-            return  Response({"asfd":"asdf"})   
-
-    def get(self,request):
-
-        id  = request.user.id
-        post = self.get_object(id)
-        print('apo engana',post)
-        ser = PostSerializer(post,many=True,context={'request':request})
-        print('ser data',ser.data)
-        return Response({"mes":"hellow"})
-
-
-
-
+#To display post as feed.
 class Home_view(APIView):
-    parser_classes = (MultiPartParser, FormParser)
+    # parser_classes = (MultiPartParser, FormParser)
+
     def get(self,request):
-        post = Post.objects.all()
-        post_ser = PostSerializer(post,many=True)
+        data = {}
+        post_data = Post.objects.all().order_by('-id')
+        post_ser = PostSerializer(post_data, many=True,context = {'request':request})
+        # print('datadatadata',post_ser.data)
+        return Response(post_ser.data,status=status.HTTP_200_OK)  
+
+    #Patch method to like post model and add likes user to LikePost model.
+    def patch(self,request):
+        data = request.data
+        print('datadatadata',data)
+        id = data['id']
+        user = data['user']
+        liked_user = data['liked_user']
+        
+        post = Post.objects.get(id=id) 
+        likedPost = LikePost.objects.filter(post_id=id, username=liked_user).first()
+        if likedPost == None:
+            post.post_image = data.get('post_image', post.post_image)
+            post.caption = data.get('caption', post.caption)
+            # post.liked_user = liked_user,post.liked_user
+            post.likes_no = data.get('likes_no', post.likes_no)
+            post.save()
+            print('post.likes_no ',post.likes_no )
+            likepost = LikePost(
+                post_id = id,
+                username = liked_user
+            )
+            likepost.save()
+        else:
+            likedPost.delete()  
+            post.likes_no = post.likes_no - 1
+            post.save()
+              
+        post_ser = PostSerializer(post,context={'request':request})
+        print('post data',post_ser)
+        post_data = Post.objects.all().order_by('-id')
+        post_all = PostSerializer(post_data, many=True,context = {'request':request})
         return Response(post_ser.data)
 
-
-    def post(self,request):
-        post = PostSerializer(data=request.data)
-        if post.is_valid():
-            post.save()
-            return Response(post.data)
-        else:
-            return Response(post.errors)        

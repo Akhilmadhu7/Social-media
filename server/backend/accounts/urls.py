@@ -23,6 +23,5 @@ urlpatterns = [
 
     path('posts',views.Post_view.as_view(),name='posts'),
     path('home',views.Home_view.as_view(),name='home'),
-    path('homepost',views.HomeView.as_view(),name='homepost')
 
 ]
