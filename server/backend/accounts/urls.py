@@ -21,7 +21,9 @@ urlpatterns = [
     path('followers',views.followers_list,name='followers'),
     path('following',views.following_list,name='following'),
 
-    path('posts',views.Post_view.as_view(),name='posts'),
+    # path('posts/<int:id>',views.Post_view.as_view(),name='posts'),
     path('home',views.Home_view.as_view(),name='home'),
+
+    path('userpost/<str:user>',views.UserPostView.as_view(),name='userpost'),
 
 ]

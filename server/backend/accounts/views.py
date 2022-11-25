@@ -66,7 +66,6 @@ class UserProfile(APIView):
                 'followers':user_followers,
                 'following':user_following
             }
-            print(user_serializer.data['profile_pic'])
             return Response(data, status=status.HTTP_200_OK)
         else:
             data['Response'] = 'User not found' 
@@ -282,34 +281,87 @@ def following_list(request):
    
 
 
-class Post_view(APIView):
-    parser_classes = (MultiPartParser, FormParser)
+# class Post_view(APIView):
+#     parser_classes = (MultiPartParser, FormParser)
+
+#     def get_object(self,user):
+#         try:
+#             # a = Accounts.objects.get(username = user)
+#             # return Post.objects.filter(user=a.id)
+#             return Post.objects.filter(user=user).order_by('-id')
+#         except:
+#             return Response({'Errors':"Post does not exist"})    
+
+#     #function for get all post created by user in userprofile page
+#     def get(self,request,id):
+#         data = {}
+#         print('rewq daa',request.data)
+#         # user = request.data['username']
+#         # user = request.user
+    
+#         print('lklk',id)
+#         post = self.get_object(id)
+#         print('post',post)
+#         post_data = PostSerializer(post,many=True,context = {'request':request})
+#         print('jjjjjjjj',post_data.data)
+#         data['Data'] = post_data.data
+#         data['Response'] = 'Success'
+#         return Response(data,status=status.HTTP_200_OK)
+
+    #Create Post function.
+    def post(self,request,id):
+        print('dataaa',request.data)
+        data = {}
+        user_id = request.user.id
+        print('pppp')
+        post_ser = PostCreateSerializer(data=request.data)
+        print('lllll')
+        if post_ser.is_valid():
+            post_ser.save()
+            data['Data'] = post_ser.data
+            data['Response'] = 'Post added succesfully'
+            return Response(data, status=status.HTTP_201_CREATED)
+        else:
+            print('eeee')
+            data['Data'] = post_ser.errors
+            data['Response'] = 'Something went wrong'
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+
+
+ #To display user posts in their profiles.          
+class UserPostView(APIView):
 
     def get_object(self,user):
         try:
-            # a = Accounts.objects.get(username = user)
-            # return Post.objects.filter(user=a.id)
-            return Post.objects.filter(user=user).order_by('-id')
+            user_id = Accounts.objects.get(username = user)
+            print('idd',user_id,user_id.id)
+            return Post.objects.filter(user = user_id.id).order_by('-id')
         except:
-            return Response({'Errors':"Post does not exist"})    
+            return Response({"Errors":"Something went wrong"})    
 
-    #function for get all post created by user in userprofile page
-    def get(self,request,id):
+    def get(self,request,user):
         data = {}
-        print('rewq daa',request.data)
-        # user = request.data['username']
-        user = request.user
-    
-        print('lklk',user)
+        print('usernaem',user)
         post = self.get_object(user)
-        print('post',post)
-        post_data = PostSerializer(post,many=True,context = {'request':request})
-        print('jjjjjjjj',post_data.data)
-        data['Data'] = post_data.data
-        data['Response'] = 'Success'
-        return Response(data,status=status.HTTP_200_OK)
+        post_ser = PostCreateSerializer(post,many=True,context = {'request':request})
+        data['Data'] = post_ser.data
+        return  Response(data,status=status.HTTP_200_OK)
 
-    #Create Post function.
+
+
+#To display post as feed.
+class Home_view(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get(self,request):
+        data = {}
+        post_data = Post.objects.all().order_by('-id')
+        post_ser = PostSerializer(post_data, many=True,context = {'request':request})
+        # print('datadatadata',post_ser.data)
+        return Response(post_ser.data,status=status.HTTP_200_OK)  
+
+
+     #function to upload a Post.
     def post(self,request):
         print('dataaa',request.data)
         data = {}
@@ -329,17 +381,6 @@ class Post_view(APIView):
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-#To display post as feed.
-class Home_view(APIView):
-    # parser_classes = (MultiPartParser, FormParser)
-
-    def get(self,request):
-        data = {}
-        post_data = Post.objects.all().order_by('-id')
-        post_ser = PostSerializer(post_data, many=True,context = {'request':request})
-        # print('datadatadata',post_ser.data)
-        return Response(post_ser.data,status=status.HTTP_200_OK)  
 
     #Patch method to like post model and add likes user to LikePost model.
     def patch(self,request):

@@ -67,7 +67,7 @@ function Header() {
     e.preventDefault()
     console.log('post Data',postData);
     try {
-      Axios.post(baseUrl + "posts", postData, {
+      Axios.post(baseUrl + "home", postData, {
         headers: {
           Authorization: `Bearer ${authTokens.access}`,
           "Content-Type": "multipart/form-data",

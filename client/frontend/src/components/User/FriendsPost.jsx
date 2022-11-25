@@ -15,11 +15,12 @@ function FriendsPost() {
     username:""
   })
   const [postData, setPostData] = useState([])
-  let username = userdata
+  let data = {username:userdata}
   useEffect(()=>{
+    console.log('gggggggggggg',data,userdata);
     setUserPost(userdata)
     try {
-      Axios.get(baseUrl+'accounts/posts',userPost,{
+      Axios.get(baseUrl+'accounts/userpost/'+userdata,{
         headers:{
           Authorization:`Bearer ${authTokens.access}`,
           "Content-Type": "application/json",
@@ -36,7 +37,12 @@ function FriendsPost() {
 
   return (
     <div > 
-      <div className="pb-4" >
+        {postData? 
+        postData.map((post)=>{
+            return(
+
+            
+      <div className="pb-4">
         
         <div className="px-3 py-2 max-w-2xl mx-auto mt-2 bg-white">
         <h1 className="font-bold text-3xl md:text-4xl lg:text-xl font-heading text-gray-900">
@@ -45,7 +51,8 @@ function FriendsPost() {
           <div class="grid grid-cols-3 gap-2 my-3">
             <img
               class="block bg-center bg-no-repeat bg-cover  w-full h-full rounded-lg"
-              src="https://wallpapers.com/images/hd/cool-neon-blue-profile-picture-u9y9ydo971k9mdcf.jpg"
+              src={post.post_image}
+            //   src="https://wallpapers.com/images/hd/cool-neon-blue-profile-picture-u9y9ydo971k9mdcf.jpg"
               alt=""
             />
            
@@ -60,6 +67,9 @@ function FriendsPost() {
           </div>
         </div>
       </div>
+      )
+    })
+      : <p>No post yet</p>}
     </div>
   );
 }

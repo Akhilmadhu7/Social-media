@@ -21,7 +21,7 @@ function Post() {
     console.log('daaaaaaa',data);
     console.log('typee',typeof(data));
     try {
-      Axios.get(baseUrl+'accounts/posts',data,{
+      Axios.get(baseUrl+'accounts/userpost/'+user.username,{
         headers:{
           Authorization:`Bearer ${authTokens.access}`,
           "Content-type": "application/json",
