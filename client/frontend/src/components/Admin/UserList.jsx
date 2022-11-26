@@ -71,7 +71,7 @@ function UserList() {
         <Header></Header>
       <div className="bg-slate-200 rounded-md h-full ring-2 ring-indigo-600 ">
         <div className="">
-          <div className="   p-3 m-autorounded-md  mb-3 ">
+          <div className=" p-3 m-autorounded-md  mb-3 ">
             <div className="">
               <h1 className="text-indigo-700  text-center text-3xl font-semibold underline uppercase decoration-wavy">
                 Users List

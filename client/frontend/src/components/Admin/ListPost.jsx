@@ -8,7 +8,7 @@ function ListPost() {
           <div className="   p-3 m-autorounded-md  mb-3 ">
             <div className="">
               <h1 className="text-indigo-700  text-center text-3xl font-semibold underline uppercase decoration-wavy">
-                Users List
+                Posts
               </h1>
             </div>
           </div>
@@ -32,13 +32,13 @@ function ListPost() {
                           scope="col"
                           class="text-sm font-medium text-gray-900 px-6 py-6 text-left"
                         >
-                          First Name
+                          User
                         </th>
                         <th
                           scope="col"
                           class="text-sm font-medium text-gray-900 px-6 py-6 text-left"
                         >
-                          Last Name
+                          Upload Date
                         </th>
                         <th
                           scope="col"
@@ -52,6 +52,13 @@ function ListPost() {
                         >
                           Username
                         </th>
+
+                        <th
+                              scope="col"
+                              class="text-sm font-medium text-gray-900 px-6 py-4 text-center"
+                            >
+                              Action
+                            </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -73,6 +80,9 @@ function ListPost() {
                         <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                           {/* {users.username} */}
                         </td>
+                        <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                          {/* {users.username} */}
+                        </td>
                       </tr>
                       {/* );
                       })} */}
@@ -90,7 +100,7 @@ function ListPost() {
                 <li className="page-item">
                   <button
                     // onClick={() => paginationHandler(previousUrl)}
-                    className="flex page-link relative block py-1.5 px-3 md-rounded border-0 bg-transparent outline-none transition-all duration-300 rounded text-indigo-700 hover:text-white hover:bg-indigo-700  focus:shadow-none"
+                    className="flex page-link relative bock py-1.5 px-3 md-rounded border-0 bg-transparent outline-none transition-all duration-300 rounded text-indigo-700 hover:text-white hover:bg-indigo-700  focus:shadow-none"
                   >
                     {" "}
                     {/* <FaAngleDoubleLeft className="m-1"></FaAngleDoubleLeft> */}
@@ -103,7 +113,7 @@ function ListPost() {
                 <li className="page-item">
                   <button
                     // onClick={() => paginationHandler(nextUrl)}
-                    className="flex page-link relative block py-1.5 px-3 md-rounded border-0 bg-transparent outline-none transition-all duration-300 rounded text-indigo-700 hover:text-white hover:bg-indigo-700 focus:shadow-none"
+                    className="flex page-link relative blok py-1.5 px-3 md-rounded border-0 bg-transparent outline-none transition-all duration-300 rounded text-indigo-700 hover:text-white hover:bg-indigo-700 focus:shadow-none"
                   >
                     {" "}
                     Next{" "}

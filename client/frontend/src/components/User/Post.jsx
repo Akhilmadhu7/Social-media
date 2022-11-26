@@ -11,7 +11,7 @@ import Swal from "sweetalert2";
 const baseUrl = "http://127.0.0.1:8000/";
 
 
-function Post() {
+function Post({singlePost}) {
 
   let {user, authTokens} = useContext(AuthContext)
   const [postData, setPostData] = useState([])
@@ -58,10 +58,11 @@ function Post() {
 
               <div className="w-full bg-white rounded-lg sahdow-lg overflow-hidden flex flex-col md:flex-row">
             <div className="w-full h-full md:h-64">
-              <img
-                className="object-center object-cover w-full h-full "
+              <img 
+                onClick={()=>singlePost(post.id)}
+                className="object-center object-cover w-full h-full hover:cursor-pointer "
                 src={post.post_image}
-                // src="https://images.unsplash.com/flagged/photo-1570612861542-284f4c12e75f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1170&q=80"
+                
                 alt="photo"
               />
             </div>

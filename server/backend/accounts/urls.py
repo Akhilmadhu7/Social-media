@@ -25,5 +25,6 @@ urlpatterns = [
     path('home',views.Home_view.as_view(),name='home'),
 
     path('userpost/<str:user>',views.UserPostView.as_view(),name='userpost'),
+    path('singlepost/<int:id>',views.SinglePost.as_view(),name='singlepost')
 
 ]

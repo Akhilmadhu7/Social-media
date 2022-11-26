@@ -1,7 +1,7 @@
 import React from "react";
 import { useContext, useEffect, useState } from "react";
 import { FaRegPaperPlane, FaRegComment, FaRegHeart } from "react-icons/fa";
-import { FcLike } from "react-icons/fc";
+import { useNavigate } from "react-router-dom";
 import Axios from "axios";
 
 import AuthContext from "../../context/UserAuthContext";
@@ -10,23 +10,11 @@ const baseUrl = "http://127.0.0.1:8000/accounts/"
 function Home() {
   let { user, authTokens } = useContext(AuthContext);
   const [feeds, setFeeds] = useState([])
+  const navigate = useNavigate()
   console.log("hoekasdj");
 
   useEffect(()=>{
-    // try {
-    //   Axios.get(baseUrl+'home',{
-    //     headers:{
-    //       Authorization:`Bearer ${authTokens.access}`
-    //     }
-    //   }).then((res)=>{
-    //     console.log('res',res.data);
-    //     setFeeds(res.data)
-    //   }).catch((err)=>{
-    //     console.log('err',err);
-    //   })
-    // } catch (error) {
-    //   console.log('error',error);
-    // }
+    
     feed(baseUrl)
   },[])
 
@@ -34,7 +22,8 @@ function Home() {
     try {
       Axios.get(url+'home',{
         headers:{
-          Authorization:`Bearer ${authTokens.access}`
+          Authorization:`Bearer ${authTokens.access}`,
+          'Content-type':''
         }
       }).then((res)=>{
         console.log('res',res.data);
@@ -58,21 +47,36 @@ function Home() {
     try {
       Axios.patch(baseUrl+'home',data,{
         heades:{
-          Authorization:`Bearer ${authTokens.access}`
+          Authorization:`Bearer ${authTokens.access}`,
+          "Content-Type": "multipart/form-data",
         }
       }).then((res)=>{
         console.log('liked res',res.data);
+        // setFeeds(res.data)
         feed(baseUrl)
+      }).catch((err)=>{
+        console.log('err',err);
       })
     } catch (error) {
-      
+      console.log('error',error);
     }
   }
+
+  const findProfile = (username)=>{
+    if (username === user.username) {
+      console.log('usernauseruser',username);
+      navigate("/user/profile")
+    } else {
+      console.log('else else',username);
+      navigate("/user/friend-profile/"+username)
+    }
+  }  
 
 
   return (
     <div>
-      {feeds.map((feed)=>{
+      
+      {feeds ? feeds.map((feed)=>{
 
       return(
       <div className=" bg-white">
@@ -85,7 +89,7 @@ function Home() {
               alt="Avatar"
             />
           </div>
-          <div className=" sm:mt-2 p-3">
+          <div className=" sm:mt-2 p-3 hover:cursor-pointer" onClick={()=>findProfile(feed.user.username)}> 
             <h2 className="  md:text-xl">{feed.user.username} </h2>
           </div>
         </div>
@@ -132,7 +136,8 @@ function Home() {
           </div>
         </div>
       </div>)
-      })}
+      }): null}
+      
     </div>
   );
 }

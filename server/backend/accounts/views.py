@@ -280,84 +280,23 @@ def following_list(request):
        
    
 
-
-# class Post_view(APIView):
-#     parser_classes = (MultiPartParser, FormParser)
-
-#     def get_object(self,user):
-#         try:
-#             # a = Accounts.objects.get(username = user)
-#             # return Post.objects.filter(user=a.id)
-#             return Post.objects.filter(user=user).order_by('-id')
-#         except:
-#             return Response({'Errors':"Post does not exist"})    
-
-#     #function for get all post created by user in userprofile page
-#     def get(self,request,id):
-#         data = {}
-#         print('rewq daa',request.data)
-#         # user = request.data['username']
-#         # user = request.user
-    
-#         print('lklk',id)
-#         post = self.get_object(id)
-#         print('post',post)
-#         post_data = PostSerializer(post,many=True,context = {'request':request})
-#         print('jjjjjjjj',post_data.data)
-#         data['Data'] = post_data.data
-#         data['Response'] = 'Success'
-#         return Response(data,status=status.HTTP_200_OK)
-
-    #Create Post function.
-    def post(self,request,id):
-        print('dataaa',request.data)
-        data = {}
-        user_id = request.user.id
-        print('pppp')
-        post_ser = PostCreateSerializer(data=request.data)
-        print('lllll')
-        if post_ser.is_valid():
-            post_ser.save()
-            data['Data'] = post_ser.data
-            data['Response'] = 'Post added succesfully'
-            return Response(data, status=status.HTTP_201_CREATED)
-        else:
-            print('eeee')
-            data['Data'] = post_ser.errors
-            data['Response'] = 'Something went wrong'
-            return Response(data, status=status.HTTP_400_BAD_REQUEST)
-
-
- #To display user posts in their profiles.          
-class UserPostView(APIView):
-
-    def get_object(self,user):
-        try:
-            user_id = Accounts.objects.get(username = user)
-            print('idd',user_id,user_id.id)
-            return Post.objects.filter(user = user_id.id).order_by('-id')
-        except:
-            return Response({"Errors":"Something went wrong"})    
-
-    def get(self,request,user):
-        data = {}
-        print('usernaem',user)
-        post = self.get_object(user)
-        post_ser = PostCreateSerializer(post,many=True,context = {'request':request})
-        data['Data'] = post_ser.data
-        return  Response(data,status=status.HTTP_200_OK)
-
-
-
 #To display post as feed.
 class Home_view(APIView):
-    parser_classes = (MultiPartParser, FormParser)
+    # parser_classes = (MultiPartParser, FormParser)
 
     def get(self,request):
         data = {}
+        username = request.user
         post_data = Post.objects.all().order_by('-id')
+        # new_post = []
+        # for post in post_data:
+        #     if not LikePost.objects.filter(post_id=post.id , username=username):
+        #         new_post.append(post)
+        # if new_post :
+        #     post_ser = PostSerializer(new_post, many=True,context = {'request':request})
+        # else:    
         post_ser = PostSerializer(post_data, many=True,context = {'request':request})
-        # print('datadatadata',post_ser.data)
+        print('datadatadata',post_ser.data)
         return Response(post_ser.data,status=status.HTTP_200_OK)  
 
 
@@ -413,5 +352,54 @@ class Home_view(APIView):
         print('post data',post_ser)
         post_data = Post.objects.all().order_by('-id')
         post_all = PostSerializer(post_data, many=True,context = {'request':request})
-        return Response(post_ser.data)
+        return Response(post_ser.data,status=status.HTTP_200_OK)
 
+
+
+
+ #To display user posts in their profiles.          
+class UserPostView(APIView):
+
+    def get_object(self,user):
+        try:
+            user_id = Accounts.objects.get(username = user)
+            print('idd',user_id,user_id.id)
+            return Post.objects.filter(user = user_id.id).order_by('-id')
+        except:
+            return Response({"Errors":"Something went wrong"})    
+
+    def get(self,request,user):
+        data = {}
+        print('usernaem',user)
+        post = self.get_object(user)
+        post_ser = PostCreateSerializer(post,many=True,context = {'request':request})
+        data['Data'] = post_ser.data
+        return  Response(data,status=status.HTTP_200_OK)
+
+
+#Function to show single post.
+class SinglePost(APIView):
+
+    def get_object(self,id):
+        try:
+            return Post.objects.get(id = id)
+        except Post.DoesNotExist:
+            return Response({"Errors":"Something went wrong"})
+
+
+    def get(self,request,id):
+        print('requestrequest',request.user)
+        username = request.user
+        data = {}
+        post = self.get_object(id)
+        post_ser = PostSerializer(post,context={"request":request})
+        data['Data'] = post_ser.data
+        if LikePost.objects.filter(post_id=id,username = username).first():
+            data['Like'] = {
+                'like':True
+            }
+        else:
+            data['Like'] = {
+                'like':False
+            }    
+        return Response(data,status=status.HTTP_200_OK)
