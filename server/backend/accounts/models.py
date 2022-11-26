@@ -116,5 +116,16 @@ class LikePost(models.Model):
     def __str__(self):
         return self.username
     
+
+
+class Comment(models.Model):
+
+    post_id = models.ForeignKey(Post, related_name='post', on_delete=models.CASCADE)
+    username = models.CharField(max_length=120)
+    comment = models.TextField()
+    comment_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.username
     
     

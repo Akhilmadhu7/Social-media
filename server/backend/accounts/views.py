@@ -4,9 +4,11 @@ import jwt
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
-from . serializers import AccountSerializer, UserProfileSerializer, ChangePasswordSerializer,FollowerSerializer,PostSerializer,PostCreateSerializer
+from . serializers import (AccountSerializer, UserProfileSerializer,
+                 ChangePasswordSerializer,FollowerSerializer,PostSerializer,
+                 PostCreateSerializer, CommentSerializer)
 from rest_framework import status
-from . models import Accounts,Follower,Post,LikePost
+from . models import Accounts,Follower,Post,LikePost,Comment
 from rest_framework import permissions
 from rest_framework.parsers import MultiPartParser, FormParser
 
@@ -288,14 +290,14 @@ class Home_view(APIView):
         data = {}
         username = request.user
         post_data = Post.objects.all().order_by('-id')
-        # new_post = []
-        # for post in post_data:
-        #     if not LikePost.objects.filter(post_id=post.id , username=username):
-        #         new_post.append(post)
-        # if new_post :
-        #     post_ser = PostSerializer(new_post, many=True,context = {'request':request})
-        # else:    
-        post_ser = PostSerializer(post_data, many=True,context = {'request':request})
+        new_post = []
+        for post in post_data:
+            if not LikePost.objects.filter(post_id=post.id , username=username):
+                new_post.append(post)
+        if new_post :
+            post_ser = PostSerializer(new_post, many=True,context = {'request':request})
+        else:    
+            post_ser = PostSerializer(post_data, many=True,context = {'request':request})
         print('datadatadata',post_ser.data)
         return Response(post_ser.data,status=status.HTTP_200_OK)  
 
@@ -403,3 +405,31 @@ class SinglePost(APIView):
                 'like':False
             }    
         return Response(data,status=status.HTTP_200_OK)
+
+
+
+class Comment_View(APIView):
+
+    def get_object(self,id):
+        try:
+            return Comment.objects.filter(post_id=id)
+        except Comment.DoesNotExist:
+            return Response({"Errors":"Something went wrong"})    
+
+    def get(self,request):
+        print('get request',request.data)
+        post_id = request.data['post_id']
+        comment = self.get_object(post_id)
+        comment_ser = CommentSerializer(comment,many=True)
+        return Response(comment_ser.data,status=status.HTTP_200_OK)
+
+
+    def post(self,request):
+        user = request.user
+        print('request comment',request.data)
+        comment_ser = CommentSerializer(data=request.data)
+        if comment_ser.is_valid():
+            comment_ser.save()
+            return Response(comment_ser.data, status=status.HTTP_201_CREATED) 
+        else:
+            return Response(comment_ser.errors,status=status.HTTP_400_BAD_REQUEST)       

@@ -24,7 +24,10 @@ urlpatterns = [
     # path('posts/<int:id>',views.Post_view.as_view(),name='posts'),
     path('home',views.Home_view.as_view(),name='home'),
 
+    #url for viewing , creating and like post.
     path('userpost/<str:user>',views.UserPostView.as_view(),name='userpost'),
-    path('singlepost/<int:id>',views.SinglePost.as_view(),name='singlepost')
+    path('singlepost/<int:id>',views.SinglePost.as_view(),name='singlepost'),
+
+    path('comment',views.Comment_View.as_view(),name='comment')
 
 ]

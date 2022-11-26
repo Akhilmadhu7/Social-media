@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from rest_framework import serializers
-from . models import Accounts, Follower, Post
+from . models import Accounts, Follower, Post, Comment
 import re
 
 
@@ -167,4 +167,12 @@ class PostCreateSerializer(serializers.ModelSerializer):
         model = Post
         fields = '__all__'  
 
-   
+
+
+class CommentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
+    
