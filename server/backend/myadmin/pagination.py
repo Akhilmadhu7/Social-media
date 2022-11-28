@@ -24,6 +24,9 @@ class UserPostPagination(PageNumberPagination):
 
 
 class UserPostView(ListAPIView):
-    queryset = Post.objects.all()
+    queryset = Post.objects.all().order_by('-id')
     serializer_class = PostSerializer
     pagination_class = UserPostPagination
+
+
+

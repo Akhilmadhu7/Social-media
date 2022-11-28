@@ -9,13 +9,13 @@ import Axios from 'axios'
 
 const baseUrl = "http://127.0.0.1:8000/accounts/";
 
-// import { format } from 'timeago.js'
-// singlemodal={singleModal} singlePost={singlePost} singleData={singleData}
 
-const SinglePost = ({like, setSingleModal, singlePost, singleData }) => {
+
+const SinglePost = ({like, setSingleModal, singlePost, singleData, commentData }) => {
 
   let {user,authTokens} = useContext(AuthContext)
   console.log('sinlepost worked',singleData.post_image);
+  console.log('comments here',commentData);
   const navigate = useNavigate()
 
   const likeHandler = (likes,id)=>{
@@ -41,9 +41,38 @@ const SinglePost = ({like, setSingleModal, singlePost, singleData }) => {
       }
 
   }
+
+
+  const findProfile = (username) => {
+    if (username === user.username) {
+      console.log("usernauseruser", username);
+      setSingleModal(false)
+      navigate("/user/profile");
+    } else {
+      console.log("else else", username);
+      setSingleModal(false)
+      navigate("/user/friend-profile/" + username);
+    }
+  };
   
   const CommentlikeHandler = ()=>{
-
+    
+    // let data = {
+    //   username:user.username,
+    //   post_id:id
+    // }
+    // try {
+    //   Axios.get(baseUrl+'comment',data,{
+    //     headers: {
+    //       'Authorization': `Bearer ${authTokens.access}`,
+    //       // "Content-type": "applicaion/json",
+    //     }
+    //   }).then((res)=>{
+    //     console.log('comment data',res);
+    //   })
+    // } catch (error) {
+      
+    // }
   }
   
 
@@ -66,15 +95,20 @@ const SinglePost = ({like, setSingleModal, singlePost, singleData }) => {
             }} />
           </div>
           <div className='h-full pt-5 pl-6 '>
+           {commentData?.map((comment)=>{
+            return(
+
            
                   <div className=' flex items-center gap-3 pb-4  ' >
                     <div className='pb-1'>
-                      <div className='w-[2rem] rounded-full border-main border-[1px] bg-secondary h-[2rem]' ></div>
+                      <div className='w-[2rem] rounded-full border-main border-[1px] bg-indigo-500 h-[2rem]' ></div>
                     </div>
                     <div className='w-full '>
-                        <p className='text-white text-[10px]'><span className='text-main text-[15px] cursor-pointer' 
-                        >
+                        <p className='text-black text-[10px]'><span className='text-main text-[15px] cursor-pointer' 
+                         onClick={()=>findProfile(comment.username)}>
+                            {comment.username}
                     </span> 
+                    {comment.comment}
                     </p>
 
                       <p className='text-main text-[8px] '>
@@ -94,13 +128,15 @@ const SinglePost = ({like, setSingleModal, singlePost, singleData }) => {
                       </div>
                     </div>
                   </div>
-               
+               )
+           })}
+                
 
           </div>
           <div className='h-[3rem] flex flex-col '>
             <div className=' flex items-center'>
               <FaHeart
-               className={`w-8 ${like.like ? 'text-red-500' : 'text-white'} cursor-pointer`}
+               className={`w-8 ${singleData.is_liked ? 'text-red-500' : 'text-white'} cursor-pointer`}
             //   className={`w-5 ${singleData?.includes(singleData) ? 'text-main' : 'text-red-500'}  text-red-600 cursor-pointer`}
               onClick={() => {
                 likeHandler(singleData.likes_no, singleData.id)

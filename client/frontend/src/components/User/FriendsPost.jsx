@@ -14,7 +14,7 @@ function FriendsPost({singlePost}) {
   const [postData, setPostData] = useState([]);
 
   useEffect(() => {
-
+console.log('usedta',userdata);
     try {
       Axios.get(baseUrl + "accounts/userpost/" + userdata, {
         headers: {

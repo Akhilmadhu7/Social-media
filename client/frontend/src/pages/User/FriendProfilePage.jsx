@@ -13,6 +13,7 @@ const baseUrl = "http://127.0.0.1:8000/accounts/";
 function FriendProfilePage() {
     let {user, authTokens} = useContext(AuthContext)
     const [singleData, setSingleData] = useState([])
+    const [commentData,setCommentData] = useState([])
     const [like, setLike] = useState()
     const [singleModal, setSingleModal] = useState(false)
 
@@ -24,8 +25,10 @@ function FriendProfilePage() {
                     Authorization:`Bearer ${authTokens.access}`
                 }
             }).then((res)=>{
-                console.log('single post',res.data);
+                console.log('single post',res.data.Data);
                 setSingleData(res.data.Data)
+                console.log('commentshere',res.data.Comment);
+                setCommentData(res.data.Comment)
                 setLike(res.data.Like)
                 setSingleModal(true)
 
@@ -41,7 +44,7 @@ function FriendProfilePage() {
       <div className=" bg-slate-100">
         <Header></Header>
         <div className='mt-5'>
-            {singleModal && <SinglePost like={like} setSingleModal={setSingleModal} singlePost={singlePost} singleData={singleData}/>}
+            {singleModal && <SinglePost like={like} setSingleModal={setSingleModal} singlePost={singlePost} singleData={singleData} commentData={commentData}/>}
         </div>
         <FriendProfile></FriendProfile>
         <FriendsPost singlePost={singlePost}></FriendsPost>

@@ -17,6 +17,7 @@ function UserProfilePage() {
     let {user, authTokens} = useContext(AuthContext)
     const [singleData, setSingleData] = useState([])
     const [like, setLike] = useState()
+    const [commentData,setCommentData] = useState([])
     const [singleModal, setSingleModal] = useState(false)
 
     const singlePost = (id)=>{
@@ -29,6 +30,9 @@ function UserProfilePage() {
             }).then((res)=>{
                 console.log('single post',res.data);
                 setSingleData(res.data.Data)
+
+                console.log('commentshere',res.data.Comment);
+                setCommentData(res.data.Comment)
                 setLike(res.data.Like)
                 setSingleModal(true)
 
@@ -43,7 +47,7 @@ function UserProfilePage() {
       <div className=" bg-slate-100">
         <Header></Header>
         <div className='mt-5'>
-            {singleModal && <SinglePost like={like} setSingleModal={setSingleModal} singlePost={singlePost} singleData={singleData}/>}
+            {singleModal && <SinglePost like={like} setSingleModal={setSingleModal} singlePost={singlePost} singleData={singleData} commentData={commentData}/>}
         </div>
         <UserProfile></UserProfile>
         <Post singlePost={singlePost}></Post>

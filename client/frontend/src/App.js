@@ -25,6 +25,7 @@ import FreindsSuggestPage from './pages/User/FreindsSuggestPage';
 import FriendProfilePage from './pages/User/FriendProfilePage';
 import PrivateRoutes from './Utils/PrivateRoutes';
 import ListPostPage from './pages/Admin/ListPostPage';
+import AdminPrivateRoutes from './Utils/AdminPrivateRoutes';
 
 function App() {
   return (
@@ -51,11 +52,13 @@ function App() {
         <AuthAdminProvider>
           <Routes>
             <Route element={<AdminLogin/>} path='/admin/login' />
-            <Route element={<AdminLayout></AdminLayout>} path='/admin/' >
-                <Route element={<DashboardPage/>} path='/admin/dashboard' />
-                <Route element={<UserListPage/>} path='/admin/userlist' />
-                <Route element={<ListPostPage/>} path='/admin/listpost' />
-            </Route>    
+            {/* <Route element={<AdminPrivateRoutes/>} path='/admin/'> */}
+              <Route element={<AdminLayout></AdminLayout>} path='/admin/' >
+                  <Route element={<DashboardPage/>} path='/admin/dashboard' />
+                  <Route element={<UserListPage/>} path='/admin/userlist' />
+                  <Route element={<ListPostPage/>} path='/admin/listpost' />
+              </Route>   
+            {/* </Route>  */}
           </Routes>
         </AuthAdminProvider>  
 

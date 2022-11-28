@@ -101,7 +101,8 @@ class Post(models.Model):
     post_image = models.ImageField(upload_to=post_pic,null=True,blank=True)
     caption = models.TextField(blank=True,default='')
     likes_no = models.IntegerField(default=0)
-    # liked_user = models.CharField(max_length=120,default='')
+    is_liked = models.BooleanField(default=False)
+    report_count = models.IntegerField(default = 0)
     created_at = models.DateTimeField(default = datetime.now)
 
     def __str__(self):

@@ -4,6 +4,7 @@ import Header from "./Header";
 import Swal from "sweetalert2";
 import { FaAngleDoubleLeft, FaAngleDoubleRight } from "react-icons/fa";
 import { useContext } from "react";
+import moment from 'moment';
 import AuthAdminContext from "../../context/AdminAuthContext";
 
 const baseUrl = 'http://127.0.0.1:8000/'
@@ -150,7 +151,7 @@ function UserList() {
                                   {users.l_name}
                                 </td>
                                 <td class="text-sm text-gray-900 font-light px-6 py-1 whitespace-nowrap">
-                                  {users.f_name}  {users.l_name}
+                                {moment((users.date_joined)).format("MMM Do YY") } 
                                 </td>
                                 <td class="text-sm text-gray-900 font-light px-6 py-1 whitespace-nowrap">
                                   {users.email}

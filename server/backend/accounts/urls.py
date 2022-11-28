@@ -27,7 +27,9 @@ urlpatterns = [
     #url for viewing , creating and like post.
     path('userpost/<str:user>',views.UserPostView.as_view(),name='userpost'),
     path('singlepost/<int:id>',views.SinglePost.as_view(),name='singlepost'),
+    path('report-post',views.report_post,name='report-post'),
 
-    path('comment',views.Comment_View.as_view(),name='comment')
+    path('comment',views.Comment_View.as_view(),name='comment'),
+    path('show',views.ShowComment.as_view(),name='comment'),
 
 ]

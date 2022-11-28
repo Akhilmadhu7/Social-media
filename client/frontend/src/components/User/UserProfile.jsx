@@ -21,6 +21,7 @@ function UserProfile() {
   const [modalFollowing, setModalFollowing] = useState(false);    // modal for showing following users.
   const [followingList, setFollowingList] = useState([]);   //state to display all the following users.
   const [followingUser, setFollowingUser] = useState([])    //state to show 'following' in the following users list.
+  const [postCount, setPostCount] = useState()
   const [changePassword, setChangePassword] = useState({
     password: "",
     new_password: "",
@@ -49,6 +50,7 @@ function UserProfile() {
       .then((res) => {
         setUserData(res.data.Data);
         setUserFollowers(res.data.userfollowers);
+        setPostCount(res.data.count)
         console.log("daaa", res.data);
       })
       .catch((err) => {
@@ -211,9 +213,9 @@ function UserProfile() {
               <div className="flex justify-center ">
                 <div className="p-3 text-center">
                   <span className="text-xl font-bold block uppercase tracking-wide text-slate-700">
-                    3,360
+                    {postCount && postCount.post_count}
                   </span>
-                  <span className="text-sm text-slate-400">Photos</span>
+                  <span className="text-sm text-slate-400">Posts</span>
                 </div>
                 <div className="p-3 text-center">
                   <span className="text-xl font-bold block uppercase tracking-wide text-slate-700">

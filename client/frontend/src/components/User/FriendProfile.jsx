@@ -11,6 +11,7 @@ function FriendProfile() {
   const [follow, setfollow] = useState([])
   const [userFollowers, setUserFollowers] = useState([])
   const { userdata } = useParams();
+  const [postCount,setPostCount] = useState()
   const [modalFollowers, setModalFollowers] = useState(false);    //modal for showing followers.
   const [followersList, setFollowersList] = useState([]);   //state to display all the followers. 
   const [modalFollowing, setModalFollowing] = useState(false);    // modal for showing following users.
@@ -40,6 +41,7 @@ function FriendProfile() {
             setFreindProfile(res.data.Data);
             setUserFollowers(res.data.userfollowers)
             setfollow(res.data.follow)
+            setPostCount(res.data.count)
           })
           .catch((err) => {
             console.log("errrr", err);
@@ -71,7 +73,7 @@ function FriendProfile() {
         }
   }
 
-
+// console.log('here is the total count',postCount.post_count);
 
 //   // function to call to get the list of followers.
 //   const handleFollowers = () => {
@@ -145,7 +147,7 @@ function FriendProfile() {
               <div className="flex justify-center ">
                 <div className="p-3 text-center">
                   <span className="text-xl font-bold block uppercase tracking-wide text-slate-700">
-                    3,360
+                   {postCount && postCount.post_count}
                   </span>
                   <span className="text-sm text-slate-400">Photos</span>
                 </div>
