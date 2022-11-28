@@ -184,7 +184,7 @@ function FriendProfile() {
                   >
                     {console.log(follow.follow)}
                     {/* {follow.follow ==='following' ? follow.follow : follow.unfollow} */}
-                    {follow.followinguser ? follow.followinguser : follow.followinguser}
+                    {follow.followinguser ? follow.followinguser : follow.follow}
                   </button>
                 </Link>
               </div>

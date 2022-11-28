@@ -30,6 +30,6 @@ urlpatterns = [
     path('report-post',views.report_post,name='report-post'),
 
     path('comment',views.Comment_View.as_view(),name='comment'),
-    path('show',views.ShowComment.as_view(),name='comment'),
+    path('show/<int:id>',views.ViewComment.as_view(),name='comment'),
 
 ]

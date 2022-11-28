@@ -234,8 +234,8 @@ class FriendsProfileView(APIView):
     def get(self, request, user):
         data = {}
         friend_pro = self.get_object(user)
-        print('friend', friend_pro)
-        print('foll', request.user.id)
+        print('friend', user)
+        print('foll', request.user)
         print('friend ididid', friend_pro.id)
         if friend_pro is not None:
             # to get followers count.
@@ -250,17 +250,22 @@ class FriendsProfileView(APIView):
             post_count = len(
                 Post.objects.filter(user = friend_pro.id)
             )
-            # to check if the visiting user following or not this profile.
+            # to check if the logged in user following or not visiting profile.
             if Follower.objects.filter(username=user, follower=request.user.id).first():
                 data['follow'] = {
                     'followinguser': 'following'
-                }
-                print('aaaa')
+                } 
             else:
-                print('lll')
-                data['follow'] = {
-                    'followinguser': 'follow'
-                }
+                #checking if the visiting profile user is following logged in user or not.
+                if Follower.objects.filter(follower=friend_pro.id, username=request.user).first():
+                    data['follow'] = {
+                        'follow':'followback'
+                    }
+                else:
+                    print('lll')
+                    data['follow'] = {
+                        'follow': 'follow'
+                    }
             user_serializer = UserProfileSerializer(
                 friend_pro, context={"request": request})
             data['Response'] = "Success"
@@ -446,7 +451,9 @@ def report_post(request):
     return Response(post_ser.data)
 
 
-class Comment_View(APIView):
+
+# for viewing comments under specific post.
+class ViewComment(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self, id):
@@ -455,12 +462,17 @@ class Comment_View(APIView):
         except Comment.DoesNotExist:
             return Response({"Errors": "Something went wrong"})
 
-    def get(self, request):
+    def get(self, request, id):
         print('get request', request.user)
-        post_id = request.data['post_id']
-        comment = self.get_object(post_id)
+        comment = self.get_object(id)
         comment_ser = CommentSerializer(comment, many=True)
-        return Response(comment_ser.data, status=status.HTTP_200_OK)
+        return Response(comment_ser.data, status=status.HTTP_200_OK) 
+
+
+#for creating comments under specific post.
+class Comment_View(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
 
     def post(self, request):
         print('get request', request.user)
@@ -474,20 +486,3 @@ class Comment_View(APIView):
             return Response(comment_ser.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-# for checking comments.
-class ShowComment(APIView):
-    # permission_classes = [permissions.IsAuthenticated]
-
-    def get_object(self, id):
-        try:
-            return Comment.objects.filter(post_id=id)
-        except Comment.DoesNotExist:
-            return Response({"Errors": "Something went wrong"})
-
-    def get(self, request):
-        print('get request', request.user)
-        post_id = request.data['post_id']
-        comment = self.get_object(post_id)
-        comment_ser = CommentSerializer(comment, many=True)
-        return Response(comment_ser.data, status=status.HTTP_200_OK)
