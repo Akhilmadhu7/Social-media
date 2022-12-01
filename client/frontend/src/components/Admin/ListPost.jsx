@@ -15,12 +15,15 @@ function ListPost() {
   const [postData, setPostData] = useState([]);
   const [nextUrl, setNextUrl] = useState();
   const [previousUrl, setPreviousUrl] = useState();
+  const [currentUrl, setCurrentUrl] = useState()
 
   useEffect(() => {
     postList(baseUrl + "myadmin/listpost");
   }, []);
 
+  //fucntion list all post.
   const postList = (url) => {
+    setCurrentUrl(url)
     try {
       Axios.get(url, {
         headers: {
@@ -40,6 +43,40 @@ function ListPost() {
       console.log("error", error);
     }
   };
+
+  const paginationHandler = (url)=>{
+    postList(url)
+
+  }
+
+  const handlePostBlock = (id,url)=>{
+    let data = {
+        post_id:id
+    }
+    Swal.fire({
+        title: "Confirm!",
+        text: "Do you want to report ?",
+        icon: "info",
+        confirmButtonText: "Continue",
+        showCancelButton: true,
+    }).then((res)=>{
+        if (res.isConfirmed) {
+            try {
+                Axios.post(baseUrl+'myadmin/report-post',data,{
+                    headers:{
+                        Authorization:`Bearer ${authTokens.access}`
+                    }
+                }).then((res)=>{
+                   if (res) {
+                    postList(url)
+                   } 
+                })
+            } catch (error) {
+                
+            }
+        }
+    })
+  }
 
   return (
     <div>
@@ -78,14 +115,14 @@ function ListPost() {
                           scope="col"
                           class="text-sm font-medium text-gray-900 px-6 py-4 text-center"
                         >
-                          Upload Date
+                          Uploaded Date
                         </th>
-                        <th
+                        {/* <th
                           scope="col"
                           class="text-sm font-medium text-gray-900 px-6 py-4 text-center"
                         >
                           View Post
-                        </th>
+                        </th> */}
                         <th
                           scope="col"
                           class="text-sm font-medium text-gray-900 px-6 py-4 text-center"
@@ -115,26 +152,37 @@ function ListPost() {
                               {/* {format(post.created_at)} */}
                             {moment((post.created_at)).format("MMM Do YY") } 
                             </td>
-                            <td class="text-sm text-gray-900 font-light px-6 py-1 whitespace-nowrap">
+                            {/* <td class="text-sm text-gray-900 font-light px-6 py-1 whitespace-nowrap">
                             <button
-                                // onClick={()=>handleBlockUser(users.id,currentUrl)}
+                                onClick={()=>handlePostBlock(post.id,currentUrl)}
 
                                 className="m-3 px-6 py-3 text-white transition-colors duration-200 transform bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:bg-green-600"
                               >
                                 View
                               </button>
-                            </td>
+                            </td> */}
                             <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                              {post.likes_no}
+                              {post.report_count}
                             </td>
                             <td class="text-sm text-gray-900 font-light px-6 py-1 whitespace-nowrap">
-                              <button
-                                // onClick={()=>handleBlockUser(users.id,currentUrl)}
-
-                                className="m-3 px-6 py-3 text-white transition-colors duration-200 transform bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:bg-green-600"
+                                {post.is_reported ? (
+                                    <button
+                                    onClick={()=>handlePostBlock(post.id,currentUrl)}
+                                    
+                                    className="m-3 px-6 py-3 text-white transition-colors duration-200 transform bg-green-500 rounded-md hover:bg-green-600 focus:outline-none focus:bg-green-600"
+                                  >
+                                    Unblock
+                                  </button> 
+                                ) : (
+                                    <button
+                                onClick={()=>handlePostBlock(post.id,currentUrl)}
+                                
+                                className="m-3 px-8 py-3 text-white transition-colors duration-200 transform bg-red-500 rounded-md hover:bg-red-600 focus:outline-none focus:bg-red-600"
                               >
-                                Unblock
+                                Block
                               </button>
+                                )}
+                              
                             </td>
                           </tr>
                         );
@@ -149,10 +197,10 @@ function ListPost() {
         <div className="flex justify-center py-1">
           <nav aria-label="Page navigation example">
             <ul className="flex list-style-none">
-              {/* {previousUrl && ( */}
+              {previousUrl && (
               <li className="page-item">
                 <button
-                  // onClick={() => paginationHandler(previousUrl)}
+                  onClick={() => paginationHandler(previousUrl)}
                   className="flex page-link relative bock py-1.5 px-3 md-rounded border-0 bg-transparent outline-none transition-all duration-300 rounded text-indigo-700 hover:text-white hover:bg-indigo-700  focus:shadow-none"
                 >
                   {" "}
@@ -160,19 +208,19 @@ function ListPost() {
                   Previous
                 </button>
               </li>
-              {/* )} */}
+               )} 
 
-              {/* {nextUrl && ( */}
+               {nextUrl && ( 
               <li className="page-item">
                 <button
-                  // onClick={() => paginationHandler(nextUrl)}
+                  onClick={() => paginationHandler(nextUrl)}
                   className="flex page-link relative blok py-1.5 px-3 md-rounded border-0 bg-transparent outline-none transition-all duration-300 rounded text-indigo-700 hover:text-white hover:bg-indigo-700 focus:shadow-none"
                 >
                   {" "}
                   Next <FaAngleDoubleRight className="m-1"></FaAngleDoubleRight>
                 </button>
               </li>
-              {/* )} */}
+               )} 
             </ul>
           </nav>
         </div>

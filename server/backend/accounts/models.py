@@ -102,6 +102,7 @@ class Post(models.Model):
     caption = models.TextField(blank=True,default='')
     likes_no = models.IntegerField(default=0)
     is_liked = models.BooleanField(default=False)
+    is_reported = models.BooleanField(default=False)
     report_count = models.IntegerField(default = 0)
     created_at = models.DateTimeField(default = datetime.now)
 

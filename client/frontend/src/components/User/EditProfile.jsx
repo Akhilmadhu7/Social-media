@@ -30,7 +30,6 @@ function EditProfile() {
     place: "",
     state: "",
     country: "",
-    profile_pic: "",
     about: "",
   });
   
@@ -56,25 +55,15 @@ function EditProfile() {
           place: res.data.Data.place,
           state: res.data.Data.state,
           country: res.data.Data.country,
-          profile_pic: res.data.Data.profile_pic,
           about: res.data.Data.about,
         });
-        console.log("image", userData.profile_pic);
       })
       .catch((err) => {
         console.log("error", err);
       });
   }, []);
 
-  const handleProfileChange = (e) => {
-    // setUserData(URL.createObjectURL(e.target.files[0]))
-    setUserData({
-      ...userData,
-      profile_pic: e.target.files[0],
-      
-    });
-    // setUserData(URL.createObjectURL(e.target.files[0]))
-  };
+
 
   const handleChange = (e) => {
     console.log("data", e.target.name, "---", e.target.value);
@@ -86,17 +75,6 @@ function EditProfile() {
 
   const onSubmit = (data, e) => {
     console.log('edittt',userData);
-    // const userFormData = new FormData();
-    // userFormData.append("f_name", userData.f_name);
-    // userFormData.append("l_name", userData.l_name);
-    // userFormData.append("username", userData.username);
-    // userFormData.append("email", userData.email);
-    // userFormData.append("phone", userData.phone);
-    // userFormData.append("place", userData.place);
-    // userFormData.append("country", userData.country);
-    // userFormData.append("state", userData.state);
-    // userFormData.append("about", userData.about);
-    // userFormData.append("profile_pic", userData.profile_pic);
     try {
       console.log("form data", userData);
       Axios.put(baseUrl + id , userData, {
@@ -290,61 +268,7 @@ function EditProfile() {
                     )}
                     <small className="text-red-600">{errorData.phone}</small>
                   </div>
-                  <div className="mx-4 items-center text-left my-2 col-span-2 md:col-span-1 px-[45px] md:px-0 ">
-                     <label
-                      for="email"
-                      className="block text-sm font-semibold text-gray-800 "
-                    >
-                      Profile Picture
-                    </label>
-                    <input
-                   
-                      onChange={handleProfileChange}
-                      type="file"
-                      name="profile_pic"
-                    
-                      className="block w-full px-4 py-2 mt-2 text-indigo-700 bg-white border rounded-md focus:border-indigo-400 focus:ring-indigo-300 focus:outline-none focus:ring focus:ring-opacity-40"
-                    />
-                    {errors.profile_pic && (
-                      <small className="text-red-500">
-                        {errors.profile_pic.message}
-                      </small>
-                    )}
-                    {userData.profile_pic && 
-                     <img
-                      src={userData.profile_pic} 
-                      alt='profile picture'
-                      />
-                    } 
-                    {/* <div class="shrink-0">
-                      <img
-                        class="h-16 w-16 object-cover rounded-full"
-                        src={userData.profile_pic}
-                        alt="Current profile photo"
-                      />
-                    </div>
-                    <label class="block text-sm font-semibold text-gray-800">
-                      <span class="sr-only">Choose profile photo</span>
-                      <input
-                        type="file"
-                        name="profile_pic"
-                        class="block w-full text-m text-ind\\igo-700
-                        file:mr-4 file:py-2 file:px-4
-                        file:rounded-full file:border-0
-                        file:text-sm file:font-semibold
-                        file:bg-violet-50 
-                        hover:file:bg-violet-100
-                        px-4 py-2 mt-2file: text-indigo-700 bg-white border rounded-md focus:border-indigo-400 focus:ring-indigo-300 focus:outline-none focus:ring focus:ring-opacity-40
-                        "
-                      />
-                    </label>
-                    <small className="text-red-600">
-                      {errorData.profile_pic}
-                    </small> */}
-                  </div>
-                </div>
 
-                <div className=" justify-around grid grid-cols-3">
                   <div className="mx-4 text-left my-2 col-span-3 md:col-span-1 px-[45px] md:px-0 ">
                     <label
                       for="email"
@@ -354,8 +278,9 @@ function EditProfile() {
                     </label>
                     <input
                       //   {...register("place", { required: "Field required" })}
+                    //   {userData.country !== "null" ? userData.country : ""}
                       onChange={handleChange}
-                      value={userData.place}
+                      value={userData.place !== 'null' ? userData.place : ''}
                       type="text"
                       name="place"
                       className="block w-full px-4 py-2 mt-2 text-indigo-700 bg-white border rounded-md focus:border-indigo-400 focus:ring-indigo-300 focus:outline-none focus:ring focus:ring-opacity-40"
@@ -366,7 +291,13 @@ function EditProfile() {
                       </small>
                     )}
                   </div>
-                  <div className="mx-4 text-left my-2  col-span-3 md:col-span-1 px-[45px] md:px-0 ">
+                  
+                  
+                </div>
+
+                <div className=" justify-around grid grid-cols-2">
+                 
+                  <div className="mx-4 text-left my-2  col-span-2 md:col-span-1 px-[45px] md:px-0 ">
                     <label
                       for="email"
                       className="block text-sm font-semibold text-gray-800 "
@@ -376,7 +307,7 @@ function EditProfile() {
                     <input
                       //   {...register("state", { required: "Field required" })}
                       onChange={handleChange}
-                      value={userData.state}
+                      value={userData.state !== 'null' ? userData.state : ''}
                       type="text"
                       name="state"
                       className="block w-full px-4 py-2 mt-2 text-indigo-700 bg-white border rounded-md focus:border-indigo-400 focus:ring-indigo-300 focus:outline-none focus:ring focus:ring-opacity-40"
@@ -388,7 +319,7 @@ function EditProfile() {
                     )}
                   </div>
 
-                  <div className="mx-4 text-left my-2  col-span-3 md:col-span-1 px-[45px] md:px-0 ">
+                  <div className="mx-4 text-left my-2  col-span-2 md:col-span-1 px-[45px] md:px-0 ">
                     <label
                       for="email"
                       className="block text-sm font-semibold text-gray-800 "
@@ -398,7 +329,7 @@ function EditProfile() {
                     <input
                       //   {...register("country", { required: "Field required" })}
                       onChange={handleChange}
-                      value={userData.country}
+                      value={userData.country !== 'null' ? userData.country : ''}
                       type="text"
                       name="country"
                       className="block w-full px-4 py-2 mt-2 text-indigo-700 bg-white border rounded-md focus:border-indigo-400 focus:ring-indigo-300 focus:outline-none focus:ring focus:ring-opacity-40"
@@ -425,7 +356,7 @@ function EditProfile() {
                         //   required: "Field required",
                         // })}
                         onChange={handleChange}
-                        value={userData.about}
+                        value={userData.about !== 'null' ? userData.about : ''}
                         name="about"
                         className="block w-full px-4 py-2 mt-2 text-indigo-700 bg-white border rounded-md focus:border-indigo-400 focus:ring-indigo-300 focus:outline-none focus:ring focus:ring-opacity-40"
                       ></textarea>

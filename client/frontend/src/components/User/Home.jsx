@@ -14,7 +14,7 @@ function Home() {
   const [feeds, setFeeds] = useState([]);
   const [allComment, setAllComment] = useState([]);
   const [comment, setComment] = useState([]);
-  const [commentModal, setCommentModal] = useState(false);
+  const [commentModal, setCommentModal] = useState({id:'',status:false});
   const navigate = useNavigate();
   console.log("hoekasdj");
 
@@ -78,8 +78,24 @@ function Home() {
     }
   };
 
+  const showCommentModal = (id)=>{
+    if (commentModal.status === true) {
+      setCommentModal({
+        id:'',
+        status:false
+      })
+    } else {
+      setCommentModal({
+        id:id,
+        status:true
+      })
+      commentHandler(id)
+    }
+    
+  }
+
   function commentHandler(id) {
-    setCommentModal(!commentModal);
+    // setCommentModal(!commentModal);
     try {
       Axios.get(baseUrl + "show/" + id, {
         headers: {
@@ -110,6 +126,7 @@ function Home() {
       }).then((res) => {
         console.log("comment res", res);
         commentHandler(id);
+        setComment('')
       });
     } catch (error) {}
   };
@@ -127,12 +144,15 @@ function Home() {
               <div className=" bg-white">
                 <div className="flex">
                   <div className="">
+                    {feed.user.profile_pic  ? 
                     <img
                       src={feed.user.profile_pic}
                       // src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
                       className="rounded-full w-8 sm:w-16  m-2 "
                       alt="Avatar"
-                    />
+                    /> :
+                    <svg className="w-12 h-12 text-gray-400  rounded-full m-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+            }
                   </div>
                   <div
                     className=" sm:mt-2 p-3 hover:cursor-pointer"
@@ -144,7 +164,10 @@ function Home() {
 
                 <div className="flex justify-center mb-5 ">
                   <div className="rounded-lg shadow-lg bg-white w-full flex flex-col items-center">
-                    <img className="w-full" src={feed.post_image} alt="" />
+                    <div  className="h-auto w-full md:h-[500px]"> 
+
+                      <img className=" h-auto w-full md:h-full" src={feed.post_image} alt="" />
+                    </div>
 
                     <div className="flex bg-gren-400 w-full">
                       <button
@@ -159,7 +182,7 @@ function Home() {
                         )}
                       </button>
                       <button
-                        onClick={() => commentHandler(feed.id)}
+                        onClick={() => showCommentModal(feed.id)}
                         className="my-2 ml-2  sm:m-4 bg-idigo-400"
                         type="submit"
                       >
@@ -196,27 +219,28 @@ function Home() {
                       {/* <button type="button" class=" inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">Button</button> */}
                     </div>
 
-                    {commentModal && (
-                      <div class="antiliased mx-uto bg-gray-100  mb-3 max-w-screen-sm">
+                    {commentModal.id == feed.id && commentModal.status == true && (
+                      <div class="antiliased mx-uto bg-gay-100  mb-3 w-full px-4">
                         <h3 class="mb-4 text-lg font-semibold text-gray-900">
                           Comments
                         </h3>
 
-                        <div class="space-y-4">
+                        <div class="space-y-4 h-[200px] md:h-[300px] overflow-y-scroll">
                           {allComment.map((commnets) => {
                             return (
                               <div class="flex">
                                 <div class="flex-shrink-0 mr-3">
                                   <img
                                     class="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10"
-                                    src="https://images.unsplash.com/photo-1604426633861-11b2faead63c?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=200&q=80"
+                                    // src="https://images.unsplash.com/photo-1604426633861-11b2faead63c?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=200&q=80"
                                     alt=""
                                   />
                                 </div>
-                                <div class="flex-1 border rounded-lg px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
+                                <div class="flex-1 text-left border rounded-lg px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
                                   <strong>{commnets.username}</strong>{" "}
                                   <span class="text-xs text-gray-400">
-                                    3:34 PM
+                                  {/* {format(comment.comment_date)} */}
+                                  {/* {comment.created_at} */}
                                   </span>
                                   <p class="text-sm">{commnets.comment}</p>
                                 </div>
@@ -225,7 +249,7 @@ function Home() {
                           })}
                         </div>
                         <div className="pb-2 pt-4 bg-white">
-                          <div className="flex items-center h-[50px] border-indigo-500 border-[2px] bg-gray-200 rounded-l-3xl rounded-r-3xl">
+                          <div className="flex items-center h-[50px] border-indigo-500 border-[2px] bg-gray-100 rounded-l-3xl rounded-r-3xl">
                             <div className="w-[70px] h-[70px] rounded-full overflow-hidden relative left-[-10px]">
                               {/* <img
                                  className="rounded-full"

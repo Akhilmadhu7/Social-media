@@ -7,6 +7,8 @@ import Axios from "axios";
 import Header from "./Header";
 import AuthContext from "../../context/UserAuthContext";
 import Swal from "sweetalert2";
+import { IoMdPhotos } from "react-icons/io";
+import  {FaEdit}  from "react-icons/fa";
 
 const baseUrl = "http://127.0.0.1:8000/";
 
@@ -21,7 +23,10 @@ function UserProfile() {
   const [modalFollowing, setModalFollowing] = useState(false);    // modal for showing following users.
   const [followingList, setFollowingList] = useState([]);   //state to display all the following users.
   const [followingUser, setFollowingUser] = useState([])    //state to show 'following' in the following users list.
-  const [postCount, setPostCount] = useState()
+  const [postCount, setPostCount] = useState()  //state to store the total no:of posts.
+  const [imageModal, setImageModal] = useState(false)  //modal for upload / change image.
+  const [profileImage, setProfileImage] = useState([])  //state to store the new uploaded image.
+  const [imgPreview, setImgPreview] = useState('')  //state to show the preview of the profile pic when change.
   const [changePassword, setChangePassword] = useState({
     password: "",
     new_password: "",
@@ -41,22 +46,32 @@ function UserProfile() {
 
   // function  to call the details of the user.
   useEffect(() => {
-    Axios.get(baseUrl + "accounts/userprofile/" + id, {
-      headers: {
-        Authorization: `Bearer ${authTokens.access}`,
-        "content-type": "applicaion/json",
-      },
-    })
-      .then((res) => {
-        setUserData(res.data.Data);
-        setUserFollowers(res.data.userfollowers);
-        setPostCount(res.data.count)
-        console.log("daaa", res.data);
-      })
-      .catch((err) => {
-        console.log("error", err);
-      });
+    
+    userProfile(baseUrl)
   }, []);
+
+  const userProfile = (url)=>{
+    try {
+      Axios.get(url + "accounts/userprofile/" + id, {
+        headers: {
+          Authorization: `Bearer ${authTokens.access}`,
+          "content-type": "applicaion/json",
+        },
+      })
+        .then((res) => {
+          setUserData(res.data.Data);
+          setUserFollowers(res.data.userfollowers);
+          setPostCount(res.data.count)
+          console.log("daaa", res.data);
+        })
+        .catch((err) => {
+          console.log("error", err);
+        });
+      
+    } catch (error) {
+      
+    }
+  }
 
   //to store the password data from the field.
   const handleChangePassword = (e) => {
@@ -147,35 +162,49 @@ function UserProfile() {
     navigate("/user/friend-profile/" + username);
   };
 
+  const imgModalHandler = ()=>{
+    setImgPreview(null)
+    setImageModal(!imageModal)
+  }
 
-  //Unfollow user from the following user list.
-//   const unfollowUser = (username)=>{
-//     try {
-//        console.log('daataaaa',);
-//            Axios.post(baseUrl+'accounts/follow',{
-//             username:username,
-//             follower:user.user_id
-//            },{
-//                headers:{
-//                    Authorization:`Bearer ${authTokens.access}`,
-                   
-//                }
-//            }).then((res)=>{
-//                if (res) {
-//                    console.log('follow res',res.data);
-//                    handleFollowing()
-//                   //  userProfile(baseUrl + "accounts/friends-profile/"+username)
-                   
-//                }
-//            }).catch(err=>{
-//                console.log('errer fol',err);
-//            })
-//        } catch (error) {
-//            console.log('foll err',error.data);
-//        }
-   
 
-//  }
+  //function to update the new profile picture into state and show the image preview.
+  const handleProfileImage = (e)=>{
+    setImgPreview({
+      ...imgPreview,
+      profile_pic: e.target.files[0]
+    })
+    setImgPreview(URL.createObjectURL(e.target.files[0]));
+    setProfileImage({
+      ...profileImage,
+      profile_pic:e.target.files[0]
+    })
+    // setProfileImage(URL.createObjectURL(e.target.files[0]));
+  }
+
+   //function to change profile picture.
+  const uploadImage = (e)=>{
+
+    e.preventDefault()
+    
+    try {
+        Axios.patch(baseUrl+'accounts/userprofile/'+id,profileImage,{
+          headers:{
+            Authorization:`Bearer ${authTokens.access}`,
+            "Content-Type": "multipart/form-data",
+          }
+        }).then((res)=>{
+          console.log('responseimage',res.data);
+          userProfile(baseUrl)
+          setImageModal(!imageModal)
+        }).catch((err)=>{
+          console.log('errrr',err);
+        })
+    } catch (error) {
+      console.log('error',error);
+    }
+  }
+
 
 
 
@@ -185,14 +214,15 @@ function UserProfile() {
       <div className="relative max-w-md mx-auto md:max-w-2xl pt-10 mt6 min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded-xl mt-16">
         <div className="px-6">
           <div className="flex flex-wrap justify-center">
-            <div className="w-full flex justify-center">
+            <div className="w-full flex justify-center relative">
               <div className="relative ">
                 <img
-                  // src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
                   src={userData.profile_pic}
                   className="shadow-xl rounded-full align-middle border-none absolute -m-16 -ml-20 lg:-ml-16 max-w-[150px]"
                   alt={userData.username}
                 />
+                {/* onClick={setImageModal(!imageModal)} */}
+                <FaEdit onClick={imgModalHandler}  className="text-indigo-500 absolute top-16 left-20 hover:cursor-pointer"/>
               </div>
             </div>
 
@@ -518,6 +548,86 @@ function UserProfile() {
           </div>
         ) : null}
       </div>
+              {/* Modal for upload post */}
+
+      {imageModal && (
+        <div
+          id="popup-modal"
+          tabindex="-1"
+          class="overflow-y-auto ml-32  fixed top-0 right-0 left-0 z-50 md:inset-0 h-modal md:h-full justify-center items-center"
+          aria-hidden="true"
+        >
+          <div class="relative ml-96 mt-52 w-full max-w-md h-full md:h-auto">
+            <div class="relative bg-white rounded-lg shadow ">
+              <form action=""
+               onSubmit={uploadImage}
+              >
+                <button
+                  onClick={imgModalHandler
+                  }
+                  type="button"
+                  class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
+                  data-modal-toggle="popup-modal"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="w-5 h-5"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                  <span class="sr-only">Close modal</span>
+                </button>
+                <div class="p-6 text-center">
+                  {imgPreview  ? <img src={imgPreview} alt='profile picture'/> :
+                  <h1 class="mb-5 text-3xl font-normal underline text-gray-500 dark:text-gray-400 px-24 ">
+                   
+                    <IoMdPhotos size="200px" 
+                    />
+                  </h1>
+                    }
+                  <div className="pl-16 flex flex-col">
+                    
+
+                    <label
+                      htmlFor="fileUpload"
+                      class="w-3/4 ml-4 text-center text-white bg-indigo-600 hover:bg-indigo-700  font-medium rounded-lg text-sm  px-5 py-2 mt-2"
+                    >
+                      Upload Image
+                    </label>
+                    <input
+                      id="fileUpload"
+                      name="profile_pic"
+                      type="file"
+                      placeholder="imageupload"
+                      onChange={handleProfileImage}
+                      autocomplete=""
+                      required
+                      class="hidden w-5/6 h-10 bg-white relative rounded-xl block w-full appearance-none  border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                    />
+
+                  </div>
+                  <button
+                    data-modal-toggle="popup-modal"
+                    type="submit"
+                    class="text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4  font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2 mt-2"
+                  >
+                    Upload 
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal end */}
+
     </div>
   );
 }

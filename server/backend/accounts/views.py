@@ -48,7 +48,7 @@ class UserProfile(APIView):
     def get_object(self, id):
         try:
             return Accounts.objects.get(id=id, is_active=True)
-
+            return
         except Accounts.DoesNotExist:
             Response({"Message": "User does not exist"})
 
@@ -99,6 +99,15 @@ class UserProfile(APIView):
             data["Response"] = "Something went wrong"
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
+    def patch(self,request,id):
+        user = self.get_object(id)
+        print('request image',request.data['profile_pic'])
+        user.profile_pic = request.data.get('profile_pic',user.profile_pic)
+        user.save()
+        profile_ser = UserProfileSerializer(user,context={'request':request})
+        print('prfoileserere',profile_ser.data['profile_pic'])
+        
+        return Response(profile_ser.data,status=status.HTTP_202_ACCEPTED)
 
 # Change password function
 
@@ -328,7 +337,7 @@ class Home_view(APIView):
     def get(self, request):
         data = {}
         username = request.user
-        post_data = Post.objects.all().order_by('-id')
+        post_data = Post.objects.filter(is_reported=False).order_by('-id')
         
         post_ser = PostSerializer(
             post_data, many=True, context={'request': request})
@@ -356,7 +365,6 @@ class Home_view(APIView):
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
     # Patch method to like post model and add likes user to LikePost model.
-
     def patch(self, request):
         data = request.data
         print('datadatadata', data)
@@ -392,16 +400,15 @@ class Home_view(APIView):
             post_data, many=True, context={'request': request})
         return Response(post_ser.data, status=status.HTTP_200_OK)
 
+
  # To display user posts in their profiles.
-
-
 class UserPostView(APIView):
 
     def get_object(self, user):
         try:
             user_id = Accounts.objects.get(username=user)
             print('idd', user_id, user_id.id)
-            return Post.objects.filter(user=user_id.id).order_by('-id')
+            return Post.objects.filter(user=user_id.id, is_reported = False).order_by('-id')
         except:
             return Response({"Errors": "Something went wrong"})
 
@@ -467,6 +474,18 @@ class ViewComment(APIView):
         comment = self.get_object(id)
         comment_ser = CommentSerializer(comment, many=True)
         return Response(comment_ser.data, status=status.HTTP_200_OK) 
+
+    def delete(self,request,id):
+        data = {}
+        id = id
+        print(request.user)
+        try:
+            comment = Comment.objects.get(id=id,username = request.user)
+        except Comment.DoesNotExist:
+            return Response({"Error":"Comment does not exist"})
+        comment.delete()
+        data['Response'] = 'Comment deleted succesfully'
+        return Response(data, status=status.HTTP_200_OK)    
 
 
 #for creating comments under specific post.

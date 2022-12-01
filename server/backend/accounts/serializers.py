@@ -170,6 +170,7 @@ class PostCreateSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    # user = UserProfileSerializer(read_only = True)
 
     class Meta:
         model = Comment

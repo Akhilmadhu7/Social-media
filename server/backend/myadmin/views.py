@@ -78,3 +78,19 @@ def blockUser(request, id):
     return Response(data, status=status.HTTP_200_OK)
 
 
+#function to block post.
+@api_view(['POST'])
+def report_post(request):
+    post_id = request.data['post_id']
+    try:
+        post = Post.objects.get(id=post_id)
+    except Post.DoesNotExist:
+        return Response({"Error":"Post does not Exist"})    
+    if post.is_reported == False:
+        print('kkk',post.is_reported)
+        post.is_reported = True
+    else:
+        post.is_reported = False    
+    post.save()
+    print('oooo',post.is_reported)
+    return Response({"Response":"Post reported succesfully"})
