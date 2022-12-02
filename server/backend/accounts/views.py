@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from . serializers import (AccountSerializer, UserProfileSerializer,
                            ChangePasswordSerializer, FollowerSerializer, PostSerializer,
-                           PostCreateSerializer, CommentSerializer)
+                           PostCreateSerializer, CommentSerializer, CommentCreateSerializer)
 from rest_framework import status
 from . models import Accounts, Follower, Post, LikePost, Comment
 from rest_framework import permissions
@@ -394,10 +394,6 @@ class Home_view(APIView):
             post.save()
 
         post_ser = PostSerializer(post, context={'request': request})
-        print('post data', post_ser)
-        post_data = Post.objects.all().order_by('-id')
-        post_all = PostSerializer(
-            post_data, many=True, context={'request': request})
         return Response(post_ser.data, status=status.HTTP_200_OK)
 
 
@@ -440,7 +436,7 @@ class SinglePost(APIView):
         post_ser = PostSerializer(post, context={"request": request})
         data['Data'] = post_ser.data
         comment = Comment.objects.filter(post_id = id)    
-        comment_ser = CommentSerializer(comment,many=True)
+        comment_ser = CommentSerializer(comment,many=True, context={'request': request})
         data['Comment'] = comment_ser.data
         return Response(data, status=status.HTTP_200_OK)
 
@@ -458,36 +454,6 @@ def report_post(request):
     return Response(post_ser.data)
 
 
-
-# for viewing comments under specific post.
-class ViewComment(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_object(self, id):
-        try:
-            return Comment.objects.filter(post_id=id)
-        except Comment.DoesNotExist:
-            return Response({"Errors": "Something went wrong"})
-
-    def get(self, request, id):
-        print('get request', request.user)
-        comment = self.get_object(id)
-        comment_ser = CommentSerializer(comment, many=True)
-        return Response(comment_ser.data, status=status.HTTP_200_OK) 
-
-    def delete(self,request,id):
-        data = {}
-        id = id
-        print(request.user)
-        try:
-            comment = Comment.objects.get(id=id,username = request.user)
-        except Comment.DoesNotExist:
-            return Response({"Error":"Comment does not exist"})
-        comment.delete()
-        data['Response'] = 'Comment deleted succesfully'
-        return Response(data, status=status.HTTP_200_OK)    
-
-
 #for creating comments under specific post.
 class Comment_View(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -497,11 +463,47 @@ class Comment_View(APIView):
         print('get request', request.user)
         user = request.user
         print('request comment', request.data)
-        comment_ser = CommentSerializer(data=request.data)
+        comment_ser = CommentCreateSerializer(data=request.data, context={'request': request})
         if comment_ser.is_valid():
             comment_ser.save()
             return Response(comment_ser.data, status=status.HTTP_201_CREATED)
         else:
             return Response(comment_ser.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+# for viewing comments under specific post.
+class ViewComment(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self, id, request):
+        try:
+            return Comment.objects.filter(post_id=id)
+        except Comment.DoesNotExist:
+            return Response({"Errors": "Something went wrong"})
+
+    def get(self, request, id):
+        print('get request', request.user.id)
+        comment = self.get_object(id,request)
+        comment_ser = CommentSerializer(comment, many=True, context={"request": request})
+        return Response(comment_ser.data, status=status.HTTP_200_OK) 
+
+    #for deleting comments.
+    def delete(self,request,id):
+        data = {}
+        id = id
+        print(request.user)
+        try:
+            comment = Comment.objects.get(id=id,user = request.user.id)
+        except Comment.DoesNotExist:
+            return Response({"Error":"Comment does not exist"})
+        comment.delete()
+        data['Response'] = 'Comment deleted succesfully'
+        return Response(data, status=status.HTTP_200_OK)    
+
+
+
 
 

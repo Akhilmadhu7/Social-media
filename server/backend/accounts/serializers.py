@@ -123,6 +123,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return data
 
 
+
+#Serializer for changing password.
 class ChangePasswordSerializer(serializers.ModelSerializer):
     new_password = serializers.CharField(required=True)
 
@@ -146,11 +148,14 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         return data
 
 
+
+#Serializer for followers.
 class FollowerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Follower
         fields = '__all__'
+
 
 #To show post with corresponding user details.
 class PostSerializer(serializers.ModelSerializer):
@@ -168,12 +173,21 @@ class PostCreateSerializer(serializers.ModelSerializer):
         fields = '__all__'  
 
 
-
+#Serializer to show comments with user detials
 class CommentSerializer(serializers.ModelSerializer):
-    # user = UserProfileSerializer(read_only = True)
+
+    users = UserProfileSerializer(read_only = True)
 
     class Meta:
         model = Comment
         fields = '__all__'
 
-    
+        depth = 1
+
+
+#Serializer for create comment.
+class CommentCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Comment
+        fields = '__all__'

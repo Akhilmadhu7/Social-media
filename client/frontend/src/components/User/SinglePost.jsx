@@ -65,7 +65,7 @@ const SinglePost = ({
 
   const addComment = (id) => {
     let data = {
-      username: user.username,
+      user: user.user_id,
       comment: comment,
       post_id: id,
     };
@@ -130,8 +130,9 @@ const SinglePost = ({
               return (
                 <div className=" flex items-center border-y gap-3 p-3 ">
                   <div className="pb-1">
-                    <div className="w-[2rem] rounded-full border-main border-[1px] bg-indigo-500 h-[2rem]"></div>
-                    {/* <img src={comment.} alt="" /> */}
+                    <div className="w-[2rem] r"></div>
+                    <img className="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10"
+                     src={comment.user.profile_pic} alt="" />
                   </div>
                   <div className="w-full  ">
                     <p className="text-black text-left text-[10px]">
@@ -139,7 +140,7 @@ const SinglePost = ({
                         className="text-main text-[13px] cursor-pointer"
                         onClick={() => findProfile(comment.username)}
                       >
-                        {comment.username}
+                        {comment.user.username}
                       </span>
                       <span className="ml-6 text-[15px]">{comment.comment}</span>
                     </p>
@@ -147,7 +148,7 @@ const SinglePost = ({
                     <p className="text-main text-[8px] "></p>
                   </div>
                   <div className="text-center flex">
-                    <div>{user.username === comment.username ? 
+                    <div>{user.username === comment.user.username ? 
                       <MdOutlineDeleteForever className="text-black hover:cursor-pointer hover:text-red-500"
                       onClick={()=>deleteComment(comment.id)}
                       // className={`w-3 ${singleData ? 'text-main' : 'text-white'} cursor-pointer`} onClick={() => {
@@ -182,7 +183,7 @@ const SinglePost = ({
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   type="text"
-                  className="w-full bg-red-500 text-black border-transparent bg-transparent outline-none h-full"
+                  className="w-full px-2 bg-red-500 text-black border-transparent bg-transparent outline-none h-full"
                 />
               </div>
               </div>

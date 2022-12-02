@@ -5,6 +5,7 @@ import { IoMdHeart } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
 import { format } from "timeago.js";
 import Axios from "axios";
+import {MdOutlineDeleteForever} from 'react-icons/md'
 
 import AuthContext from "../../context/UserAuthContext";
 
@@ -113,7 +114,7 @@ function Home() {
 
   const addComment = (id) => {
     let data = {
-      username: user.username,
+      user: user.user_id,
       comment: comment,
       post_id: id,
     };
@@ -135,6 +136,24 @@ function Home() {
     console.log("hello modal");
     setCommentModal(!commentModal);
   };
+
+
+  const deleteComment = (id,post_id)=>{
+    try {
+      Axios.delete(baseUrl+'show/'+id,{
+        headers:{
+          Authorization:`Bearer ${authTokens.access}`
+        }
+      }).then((res)=>{
+        console.log('comment deleted',res.data);
+        commentHandler(post_id)
+      })
+    } catch (error) {
+      console.log('error',error);
+    }
+  }
+  
+
 
   return (
     <div>
@@ -220,29 +239,38 @@ function Home() {
                     </div>
 
                     {commentModal.id == feed.id && commentModal.status == true && (
-                      <div class="antiliased mx-uto bg-gay-100  mb-3 w-full px-4">
+                      <div class="antiliased mx-uto bg-gry-100  mb-3 w-full px-4">
                         <h3 class="mb-4 text-lg font-semibold text-gray-900">
                           Comments
                         </h3>
 
                         <div class="space-y-4 h-[200px] md:h-[300px] overflow-y-scroll">
-                          {allComment.map((commnets) => {
+                          {allComment.map((commemts) => {
                             return (
                               <div class="flex">
                                 <div class="flex-shrink-0 mr-3">
                                   <img
-                                    class="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10"
+                                    className="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10"
+                                    src={commemts.user.profile_pic}
                                     // src="https://images.unsplash.com/photo-1604426633861-11b2faead63c?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=200&h=200&q=80"
-                                    alt=""
+                                    alt="Profile picture"
                                   />
                                 </div>
-                                <div class="flex-1 text-left border rounded-lg px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
-                                  <strong>{commnets.username}</strong>{" "}
+                                <div className="flex-1 text-left border rounded-lg px-4 py-2 sm:px-6 sm:py-4 leading-relaxed">
+                                  <strong>{commemts.user.username}</strong>{" "}
+                                  <div className="content-end">
+                                  {user.username === commemts.user.username ? 
+                                    <MdOutlineDeleteForever className="text-black hover:cursor-pointer hover:text-red-500"
+                                    onClick={()=>deleteComment(commemts.id,feed.id)}
+                                    
+                                    />: null}
+                                  </div>
+                                  
                                   <span class="text-xs text-gray-400">
                                   {/* {format(comment.comment_date)} */}
                                   {/* {comment.created_at} */}
                                   </span>
-                                  <p class="text-sm">{commnets.comment}</p>
+                                  <p class="text-sm">{commemts.comment}</p>
                                 </div>
                               </div>
                             );
