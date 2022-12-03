@@ -15,21 +15,20 @@ import { IoMdPhotos, IoMdNotifications, IoMdLogOut } from "react-icons/io";
 
 const baseUrl = "http://127.0.0.1:8000/accounts/";
 
-
 function Header() {
   let { user, logoutUser, authTokens } = useContext(AuthContext);
   const [modalPost, setModalPost] = useState(false);
   const navigate = useNavigate();
-  const [imgPreview, setImgPreview] = useState('') //to show the image preview.
+  const [imgPreview, setImgPreview] = useState(""); //to show the image preview.
   const [searchData, setSearchData] = useState({
     searchValue: "",
-  });  //to store the search string.
+  }); //to store the search string.
   const [postData, setPostData] = useState({
     caption: "",
     post_image: "",
     user: user.user_id,
   }); // to store the uploading post data.
- 
+
   //to update the search data on change.
   const handleChange = (e) => {
     console.log(e.target.value);
@@ -51,8 +50,8 @@ function Header() {
   const handlePostImage = (e) => {
     setImgPreview({
       ...imgPreview,
-      post_image: e.target.files[0]
-    })
+      post_image: e.target.files[0],
+    });
     setImgPreview(URL.createObjectURL(e.target.files[0]));
     console.log("[stimfa", e.target.name, e.target.value);
     setPostData({
@@ -94,7 +93,6 @@ function Header() {
       console.log("errors", error);
     }
   };
-
 
   return (
     <div className=" sticky top-0">
@@ -155,18 +153,18 @@ function Header() {
                   <FaUserFriends className="text-white" size="20px" />
                 </a>
               </li>
-              {/* <li>
-                                <a className="block py-2 pr-4 pl-3 cursor-pointer text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent" ><IoMdAddCircle size="20px" /></a>
-                            </li> */}
+             
               <li>
-                <a
-                  className="block py-2 pr-4 pl-3 cursor-pointer text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
-                  onClick={() => {
-                    navigate("/user/message");
-                  }}
-                >
-                  <FaFacebookMessenger className="text-white" size="20px" />
-                </a>
+                <Link to="/user/chat">
+                  <a
+                    className="block py-2 pr-4 pl-3 cursor-pointer text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                    // onClick={() => {
+                    //   navigate("/user/message");
+                    // }}
+                  >
+                    <FaFacebookMessenger className="text-white" size="20px" />
+                  </a>
+                </Link>
               </li>
               <li>
                 <a
@@ -239,11 +237,13 @@ function Header() {
                   <span class="sr-only">Close modal</span>
                 </button>
                 <div class="p-6 text-center">
-                  {imgPreview ? <img src={imgPreview} alt="post image" />  : 
-                  <h1 class="mb-5 text-3xl font-normal underline text-gray-500 dark:text-gray-400 px-24 ">
-                    <IoMdPhotos size="200px" />
-                  </h1>
-                  }
+                  {imgPreview ? (
+                    <img src={imgPreview} alt="post image" />
+                  ) : (
+                    <h1 class="mb-5 text-3xl font-normal underline text-gray-500 dark:text-gray-400 px-24 ">
+                      <IoMdPhotos size="200px" />
+                    </h1>
+                  )}
                   <div className="pl-16 flex flex-col">
                     <textarea
                       id="caption-address"
@@ -271,8 +271,6 @@ function Header() {
                       required
                       class="hidden w-5/6 h-10 bg-white relative rounded-xl block w-full appearance-none  border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                     />
-
-                    
                   </div>
                   <button
                     data-modal-toggle="popup-modal"

@@ -26,6 +26,7 @@ import FriendProfilePage from './pages/User/FriendProfilePage';
 import PrivateRoutes from './Utils/PrivateRoutes';
 import ListPostPage from './pages/Admin/ListPostPage';
 import AdminPrivateRoutes from './Utils/AdminPrivateRoutes';
+import ChatPage from './pages/User/ChatPage';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
                 <Route element={<SearchUsersPage/>} path='/user/searchuser/:search' />
                 <Route element={<FreindsSuggestPage/>} path='/user/friends-suggestion' />
                 <Route element={<FriendProfilePage/>} path='/user/friend-profile/:userdata' />
+                <Route element={<ChatPage/>} path='/user/chat' />
             </Route>
             
           </Routes>
