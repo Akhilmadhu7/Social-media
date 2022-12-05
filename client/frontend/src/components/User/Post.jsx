@@ -7,34 +7,38 @@ import Axios from "axios";
 import Header from "./Header";
 import AuthContext, { AuthProvider } from "../../context/UserAuthContext";
 import Swal from "sweetalert2";
+import SinglePost from "./SinglePost";
 
 const baseUrl = "http://127.0.0.1:8000/";
 
 
-function Post({singlePost}) {
+function Post({singlePost,postData}) {
 
-  let {user, authTokens} = useContext(AuthContext)
-  const [postData, setPostData] = useState([])
-  let data = {username:user.username}
-  useEffect(()=>{
+  // let {user, authTokens} = useContext(AuthContext)
+  // const [postData, setPostData] = useState([])
+  // let data = {username:user.username}
+  // useEffect(()=>{
  
-    console.log('daaaaaaa',data);
-    console.log('typee',typeof(data));
-    try {
-      Axios.get(baseUrl+'accounts/userpost/'+user.username,{
-        headers:{
-          Authorization:`Bearer ${authTokens.access}`,
-          "Content-type": "application/json",
-        }
-      }).then((res)=>{
-         console.log('postsss',res.data.Data);
-         setPostData(res.data.Data)
-      })
-    } catch (error) {
+  //   console.log('daaaaaaa',data);
+  //   console.log('typee',typeof(data));
+  //   try {
+  //     Axios.get(baseUrl+'accounts/userpost/'+user.username,{
+  //       headers:{
+  //         Authorization:`Bearer ${authTokens.access}`,
+  //         "Content-type": "application/json",
+  //       }
+  //     }).then((res)=>{
+  //        console.log('postsss',res.data.Data);
+  //        setPostData(res.data.Data)
+  //     })
+  //   } catch (error) {
       
-    }
-  },[])
-
+  //   }
+  // },[])
+  const postSingle = (id)=>{
+    console.log('here post id',id);
+    singlePost(id)
+  }
 
  
   return (
@@ -59,7 +63,8 @@ function Post({singlePost}) {
               <div className="w-full bg-white rounded-lg sahdow-lg overflow-hidden flex flex-col md:flex-row">
             <div className="w-full h-full md:h-64">
               <img 
-                onClick={()=>singlePost(post.id)}
+                // onClick={()=>singlePost(post.id)}
+                onClick={()=>postSingle(post.id)}
                 className="object-center object-cover w-full h-full hover:cursor-pointer "
                 src={post.post_image}
                 

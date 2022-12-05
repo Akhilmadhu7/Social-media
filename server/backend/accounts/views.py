@@ -18,9 +18,9 @@ class Hello(APIView):
     def get(self, request):
         return Response({"Response": "Hello user"})
 
+
+
 # Register a new account function
-
-
 class UserRegister(APIView):
 
     def post(self, request):
@@ -39,7 +39,6 @@ class UserRegister(APIView):
 
 
 # Function for user profile and update userprofile details
-
 class UserProfile(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
@@ -99,6 +98,8 @@ class UserProfile(APIView):
             data["Response"] = "Something went wrong"
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
+
+    #for updating profile picture.
     def patch(self,request,id):
         user = self.get_object(id)
         print('request image',request.data['profile_pic'])
@@ -106,11 +107,20 @@ class UserProfile(APIView):
         user.save()
         profile_ser = UserProfileSerializer(user,context={'request':request})
         print('prfoileserere',profile_ser.data['profile_pic'])
-        
         return Response(profile_ser.data,status=status.HTTP_202_ACCEPTED)
 
-# Change password function
 
+    #for deleting profile picture.
+    def delete(self,request,id):
+        data = {}
+        user = self.get_object(id) 
+        user.profile_pic.delete()
+        data['Data'] = 'Profile picture deleted'
+        return Response(data, status=status.HTTP_200_OK)   
+
+
+
+# Change password function
 class ChangePassword(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -138,7 +148,6 @@ class ChangePassword(APIView):
 
 
 # Friends suggestion function
-
 class NewFriendsView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
@@ -184,7 +193,6 @@ class NewFriendsView(APIView):
 
 
 # Follow users function
-
 class FollowUsers(APIView):
 
     def get_object(self, id):
@@ -196,7 +204,7 @@ class FollowUsers(APIView):
     # Follow user
     def post(self, request):
         data = {}
-        print('wewewe', request.data)
+        print('wewewe it works here', request.data)
         # user= self.get_object(request.data['username'])
         user = request.data['username']
         print('oooo', user)
@@ -207,14 +215,15 @@ class FollowUsers(APIView):
         # checking if user following or not.
         if Follower.objects.filter(username=user, follower=follower).first():
             print('qqqqqqqqqq')
-            # if following , unfollow.
+            # if following , unfollow the profile.
             del_follower = Follower.objects.get(
                 username=user, follower=follower)
             del_follower.delete()
             data['follow'] = {
                 'follow': 'follow'
             }
-            data['Response'] = 'Unfollowed succesfully'
+            # data['Response'] = 'Unfollowed succesfully'
+            data['follow'] = 'follow'
             return Response(data, status=status.HTTP_200_OK)
         else:
             print('yyyyy')
@@ -223,7 +232,8 @@ class FollowUsers(APIView):
             if follower_ser.is_valid():
                 follower_ser.save()
                 data['Data'] = follower_ser.data
-                data['Response'] = 'Following'
+                # data['Response'] = 'Following'
+                data['follow'] = 'following'
                 return Response(data, status=status.HTTP_200_OK)
             else:
                 data['Errors'] = follower_ser.errors
@@ -259,7 +269,7 @@ class FriendsProfileView(APIView):
             post_count = len(
                 Post.objects.filter(user = friend_pro.id)
             )
-            # to check if the logged in user following or not visiting profile.
+            # checking if the logged in user following or not the visiting profile.
             if Follower.objects.filter(username=user, follower=request.user.id).first():
                 data['follow'] = {
                     'followinguser': 'following'
@@ -426,19 +436,45 @@ class SinglePost(APIView):
         try:
             return Post.objects.get(id=id)
         except Post.DoesNotExist:
-            return Response({"Errors": "Something went wrong"})
+            return None
 
     def get(self, request, id):
         print('requestrequest', request.user)
         username = request.user
         data = {}
         post = self.get_object(id)
-        post_ser = PostSerializer(post, context={"request": request})
-        data['Data'] = post_ser.data
-        comment = Comment.objects.filter(post_id = id)    
-        comment_ser = CommentSerializer(comment,many=True, context={'request': request})
-        data['Comment'] = comment_ser.data
-        return Response(data, status=status.HTTP_200_OK)
+        if post is not None:
+            post_ser = PostSerializer(post, context={"request": request})
+            data['Data'] = post_ser.data
+            comment = Comment.objects.filter(post_id = id)    
+            comment_ser = CommentSerializer(comment,many=True, context={'request': request})
+            data['Comment'] = comment_ser.data
+            return Response(data, status=status.HTTP_200_OK)
+        else:
+            print('existst')
+            data['Response'] = 'No Post exists'
+            return Response(data,status=status.HTTP_204_NO_CONTENT)
+
+    #function to report post.
+    def patch(self,request,id):
+        data = {} 
+        post = self.get_object(id)
+        post.report_count   =  post.report_count + 1
+        post.save()
+        data['Data'] = post.report_count  
+        data['Response'] = 'Reported succesfully'
+        return Response(data,status=status.HTTP_200_OK) 
+
+                
+    #for deleting post
+    def delete(self,request,id):
+        print('delete id',id)
+        data = {}
+        post = self.get_object(id)
+        post.delete()
+        data['Response'] = 'Post deleted succesfully'
+        return Response(data,status=status.HTTP_200_OK)
+            
 
 #Function to report a post.
 @api_view(['PATCH'])
@@ -455,7 +491,7 @@ def report_post(request):
 
 
 #for creating comments under specific post.
-class Comment_View(APIView):
+class AddComment_View(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
 
@@ -472,8 +508,6 @@ class Comment_View(APIView):
 
 
 
-
-
 # for viewing comments under specific post.
 class ViewComment(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -482,7 +516,7 @@ class ViewComment(APIView):
         try:
             return Comment.objects.filter(post_id=id)
         except Comment.DoesNotExist:
-            return Response({"Errors": "Something went wrong"})
+            return Response({"Error": "Something went wrong"})
 
     def get(self, request, id):
         print('get request', request.user.id)
@@ -493,7 +527,6 @@ class ViewComment(APIView):
     #for deleting comments.
     def delete(self,request,id):
         data = {}
-        id = id
         print(request.user)
         try:
             comment = Comment.objects.get(id=id,user = request.user.id)
@@ -505,5 +538,18 @@ class ViewComment(APIView):
 
 
 
-
+#fucntion to delete account.
+@api_view(['DELETE'])
+def deactivate_account(request,id):
+    data = {}
+    print('here is the user',request.user)
+    try:
+        account = Accounts.objects.get(id=id,username=request.user)
+        print('lllllll',account.username)
+    except:
+        return Response({"Error":"Something went wrong"}) 
+    account.delete()
+    data['Response'] = "Account deactivated succesfully"
+    return Response(data,status=status.HTTP_200_OK)       
+        
 

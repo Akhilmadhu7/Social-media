@@ -1,4 +1,4 @@
-import React, {useContext, useState} from "react";
+import React, {useContext, useState, useEffect} from "react";
 import Header from "../../components/User/Header";
 import Post from "../../components/User/Post";
 import UserProfile from "../../components/User/UserProfile";
@@ -42,15 +42,62 @@ function UserProfilePage() {
         }
         }
 
+
+
+
+
+
+        const [postData, setPostData] = useState([])
+  let data = {username:user.username}
+  useEffect(()=>{
+ 
+    console.log('daaaaaaa',data);
+    console.log('typee',typeof(data));
+    allPost()
+    // try {
+    //   Axios.get(baseUrl+'userpost/'+user.username,{
+    //     headers:{
+    //       Authorization:`Bearer ${authTokens.access}`,
+    //       "Content-type": "application/json",
+    //     }
+    //   }).then((res)=>{
+    //      console.log('postsss',res.data.Data);
+    //      setPostData(res.data.Data)
+    //   })
+    // } catch (error) {
+      
+    // }
+  },[])
+
+  const allPost = ()=>{
+    console.log('daaaaaaa',data);
+    console.log('typee',typeof(data));
+    try {
+      Axios.get(baseUrl+'userpost/'+user.username,{
+        headers:{
+          Authorization:`Bearer ${authTokens.access}`,
+          "Content-type": "application/json",
+        }
+      }).then((res)=>{
+         console.log('postsss',res.data.Data);
+         setPostData(res.data.Data)
+      })
+    } catch (error) {
+      
+    }
+  }
+
+
+
   return (
     <div>
       <div className=" bg-slate-100">
         <Header></Header>
         <div className='mt-5'>
-            {singleModal && <SinglePost like={like} setSingleModal={setSingleModal} singlePost={singlePost} singleData={singleData} commentData={commentData}/>}
+            {singleModal && <SinglePost like={like} setSingleModal={setSingleModal} allPost={allPost} singlePost={singlePost} singleData={singleData} commentData={commentData}/>}
         </div>
         <UserProfile></UserProfile>
-        <Post singlePost={singlePost}></Post>
+        <Post singlePost={singlePost} postData={postData}></Post>
       </div>
     </div>
   );

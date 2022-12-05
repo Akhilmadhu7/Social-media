@@ -8,30 +8,31 @@ import Header from "./Header";
 import AuthContext from "../../context/UserAuthContext";
 import Swal from "sweetalert2";
 import { IoMdPhotos } from "react-icons/io";
-import  {FaEdit}  from "react-icons/fa";
+import { FaEdit } from "react-icons/fa";
 
 const baseUrl = "http://127.0.0.1:8000/";
 
 function UserProfile() {
   let { authTokens, user } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [userData, setUserData] = useState([]);   //state to store the user details.
-  const [userFollowers, setUserFollowers] = useState([]);   // state to display the count of followers and following users.
-  const [modal, setModal] = useState(false);    //modal for password changing.
-  const [modalFollowers, setModalFollowers] = useState(false);    //modal for showing followers.
-  const [followersList, setFollowersList] = useState([]);   //state to display all the followers. 
-  const [modalFollowing, setModalFollowing] = useState(false);    // modal for showing following users.
-  const [followingList, setFollowingList] = useState([]);   //state to display all the following users.
-  const [followingUser, setFollowingUser] = useState([])    //state to show 'following' in the following users list.
-  const [postCount, setPostCount] = useState()  //state to store the total no:of posts.
-  const [imageModal, setImageModal] = useState(false)  //modal for upload / change image.
-  const [profileImage, setProfileImage] = useState([])  //state to store the new uploaded image.
-  const [imgPreview, setImgPreview] = useState('')  //state to show the preview of the profile pic when change.
+  const [userData, setUserData] = useState([]); //state to store the user details.
+  const [userFollowers, setUserFollowers] = useState([]); // state to display the count of followers and following users.
+  const [modal, setModal] = useState(false); //modal for password changing.
+  const [modalFollowers, setModalFollowers] = useState(false); //modal for showing followers.
+  const [followersList, setFollowersList] = useState([]); //state to display all the followers.
+  const [modalFollowing, setModalFollowing] = useState(false); // modal for showing following users.
+  const [followingList, setFollowingList] = useState([]); //state to display all the following users.
+  const [followingUser, setFollowingUser] = useState([]); //state to show 'following' in the following users list.
+  const [postCount, setPostCount] = useState(); //state to store the total no:of posts.
+  const [imageModal, setImageModal] = useState(false); //modal for upload / change image.
+  const [profileImage, setProfileImage] = useState([]); //state to store the new uploaded image.
+  const [imgPreview, setImgPreview] = useState(""); //state to show the preview of the profile pic when change.
+  const [deleteAccountModal, setDeleteAccountModal] = useState(false); //modal for deactivate account.
   const [changePassword, setChangePassword] = useState({
     password: "",
     new_password: "",
-  });   //state to store the password data
-  const [passwordError, setPasswordError] = useState([]);   //state to display the password error from backend
+  }); //state to store the password data
+  const [passwordError, setPasswordError] = useState([]); //state to display the password error from backend
 
   const {
     register,
@@ -46,11 +47,10 @@ function UserProfile() {
 
   // function  to call the details of the user.
   useEffect(() => {
-    
-    userProfile(baseUrl)
+    userProfile(baseUrl);
   }, []);
 
-  const userProfile = (url)=>{
+  const userProfile = (url) => {
     try {
       Axios.get(url + "accounts/userprofile/" + id, {
         headers: {
@@ -61,17 +61,14 @@ function UserProfile() {
         .then((res) => {
           setUserData(res.data.Data);
           setUserFollowers(res.data.userfollowers);
-          setPostCount(res.data.count)
+          setPostCount(res.data.count);
           console.log("daaa", res.data);
         })
         .catch((err) => {
           console.log("error", err);
         });
-      
-    } catch (error) {
-      
-    }
-  }
+    } catch (error) {}
+  };
 
   //to store the password data from the field.
   const handleChangePassword = (e) => {
@@ -81,7 +78,6 @@ function UserProfile() {
       [e.target.name]: e.target.value,
     });
   };
-
 
   // function to call to get the list of followers.
   const handleFollowers = () => {
@@ -100,7 +96,6 @@ function UserProfile() {
     setModalFollowers(!modalFollowers);
   };
 
-
   // function to call to get the list of following users.
   const handleFollowing = () => {
     Axios.get(baseUrl + "accounts/following", {
@@ -109,16 +104,15 @@ function UserProfile() {
       },
     })
       .then((res) => {
-        console.log('fjo dadadfas',res.data);
+        console.log("fjo dadadfas", res.data);
         setFollowingList(res.data.Data);
-        setFollowingUser(res.data.follow)
+        setFollowingUser(res.data.follow);
       })
       .catch((err) => {
         console.log("errrr", err);
       });
     setModalFollowing(!modalFollowing);
   };
-
 
   // function to set false the password modal.
   const handleModal = () => {
@@ -156,58 +150,113 @@ function UserProfile() {
     }
   };
 
-    // function to call the friend profile component.
+
+  // function to call the friend profile component.
   const findProfile = (username) => {
     console.log("here is the id", username);
     navigate("/user/friend-profile/" + username);
   };
 
-  const imgModalHandler = ()=>{
-    setImgPreview(null)
-    setImageModal(!imageModal)
-  }
+  const imgModalHandler = () => {
+    setImgPreview(null);
+    setImageModal(!imageModal);
+  };
 
 
   //function to update the new profile picture into state and show the image preview.
-  const handleProfileImage = (e)=>{
+  const handleProfileImage = (e) => {
     setImgPreview({
       ...imgPreview,
-      profile_pic: e.target.files[0]
-    })
+      profile_pic: e.target.files[0],
+    });
     setImgPreview(URL.createObjectURL(e.target.files[0]));
     setProfileImage({
       ...profileImage,
-      profile_pic:e.target.files[0]
-    })
+      profile_pic: e.target.files[0],
+    });
     // setProfileImage(URL.createObjectURL(e.target.files[0]));
-  }
+  };
 
-   //function to change profile picture.
-  const uploadImage = (e)=>{
 
-    e.preventDefault()
-    
+  //function to change profile picture.
+  const uploadImage = (e) => {
+    e.preventDefault();
+
     try {
-        Axios.patch(baseUrl+'accounts/userprofile/'+id,profileImage,{
-          headers:{
-            Authorization:`Bearer ${authTokens.access}`,
-            "Content-Type": "multipart/form-data",
-          }
-        }).then((res)=>{
-          console.log('responseimage',res.data);
-          userProfile(baseUrl)
-          setImageModal(!imageModal)
-        }).catch((err)=>{
-          console.log('errrr',err);
+      Axios.patch(baseUrl + "accounts/userprofile/" + id, profileImage, {
+        headers: {
+          Authorization: `Bearer ${authTokens.access}`,
+          "Content-Type": "multipart/form-data",
+        },
+      })
+        .then((res) => {
+          console.log("responseimage", res.data);
+          userProfile(baseUrl);
+          setImageModal(!imageModal);
         })
+        .catch((err) => {
+          console.log("errrr", err);
+        });
     } catch (error) {
-      console.log('error',error);
+      console.log("error", error);
     }
+  };
+
+
+  //function to deactivate account.
+  const deactivateAccount = (id) => {
+    console.log("deactivate id", id);
+    Swal.fire({
+      title: "Confirm!",
+      text: "Do you want to Deactivate account ?",
+      icon: "info",
+      confirmButtonText: "Deactivate",
+      showCancelButton: true,
+    }).then((res)=>{
+      if (res.isConfirmed) {
+        try {
+          Axios.delete(baseUrl+'accounts/deactivate-account/'+id,{
+            headers:{
+              Authorization:`Bearer ${authTokens.access}`
+            }
+          }).then((res)=>{
+            console.log('response',res);
+            navigate('/')
+          })
+        } catch (error) {
+          console.log('error',error);
+        }
+      }
+    })
+    
+  };
+
+  //function to delete current profile picture.
+  const deleteProfilePic = (id)=>{
+    Swal.fire({
+      title: "Confirm!",
+      text: "Delete profile picture ?",
+      icon: "info",
+      confirmButtonText: "Delete",
+      showCancelButton: true,
+    }).then((res)=>{
+      if (res.isConfirmed) {
+        try {
+          Axios.delete(baseUrl+"accounts/userprofile/" + id,{
+            headers:{
+              Authorization:`Bearer ${authTokens.access}`
+            }
+          }).then((res)=>{
+            console.log('profile deleted',res.data);
+            userProfile(baseUrl);
+            setImageModal(!imageModal);
+          })
+        } catch (error) {
+          console.log('error',error);
+        }
+      }
+    })
   }
-
-
-
-
 
   return (
     <div>
@@ -216,13 +265,54 @@ function UserProfile() {
           <div className="flex flex-wrap justify-center">
             <div className="w-full flex justify-center relative">
               <div className="relative ">
-                <img
-                  src={userData.profile_pic}
-                  className="shadow-xl rounded-full align-middle border-none absolute -m-16 -ml-20 lg:-ml-16 max-w-[150px]"
-                  alt={userData.username}
-                />
+                {userData.profile_pic ? (
+                  <img
+                    src={userData.profile_pic}
+                    className="shadow-xl rounded-full align-middle border-none absolute -m-16 -ml-20 lg:-ml-16 max-w-[150px]"
+                    alt={userData.username}
+                  />
+                ) : (
+                  <svg
+                    className="shadow-xl rounded-full align-middle border-none absolute -m-16 -ml-20 lg:-ml-16 max-w-[150px] text-gray-400 "
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                )}
                 {/* onClick={setImageModal(!imageModal)} */}
-                <FaEdit onClick={imgModalHandler}  className="text-indigo-500 absolute top-16 left-20 hover:cursor-pointer"/>
+                <FaEdit
+                  onClick={imgModalHandler}
+                  className="text-indigo-500 absolute top-16 left-20 hover:cursor-pointer"
+                />
+                <div className="absolute top-12 left-52 ">
+                  <div className=" relative ">
+                    <button
+                      onClick={() => setDeleteAccountModal(!deleteAccountModal)}
+                      className="text-2xl font-bold"
+                    >
+                      ...
+                    </button>
+                    {deleteAccountModal && (
+                      <div className="flex justify-center absolute top-10 left-0">
+                        <div className="block px-6 py-2 rounded-lg shadow-lg bg-gray-100 ma-w-m">
+                          <h5 className="text-gray-900 text-xl leading-tight font-medium mb-2"></h5>
+                          <p
+                            onClick={() => deactivateAccount(user.user_id)}
+                            className="text-base mb-4 text-red-500 hover:cursor-pointer "
+                          >
+                            Deactivate Account
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -411,24 +501,7 @@ function UserProfile() {
 
         {modalFollowers ? (
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-            {/* <div className="flex flex-col items-center justify-center min-h-screen p-16 bg-slate-200">  */}
-            {/* <h1 className="my-10 font-medium text-3xl sm:text-4xl font-back">
-    Follow a Members
-    <span className="day" style="display: inline-block">
-      ?
-    </span>
-    <span className="night" style="display: none">
-      ?
-    </span>
-  </h1> */}
-            {/* <div className="mb-4">
-    <button
-      className="toggle-theme btn inline-block select-none no-underline align-middle cursor-pointer whitespace-nowrap px-4 py-1.5 rounded text-base font-medium leading-6 tracking-tight text-white text-center border-0 bg-[#6911e7] hover:bg-[#590acb] duration-300"
-      type="button"
-    >
-      Dark
-    </button>
-  </div> */}
+            
             <div className="user-list w-full max-w-lg mx-auto bg-white rounded-xl shadow-xl flex flex-col py-4">
               {followersList.map((follower) => {
                 return (
@@ -438,7 +511,6 @@ function UserProfile() {
                         <img
                           className="avatar w-20 h-20 rounded-full"
                           src={follower.profile_pic}
-                          // src="https://randomuser.me/api/portraits/men/32.jpg"
                         />
                       </div>
                       <div className="user-body flex flex-col mb-4 sm:mb-0 sm:mr-4">
@@ -463,7 +535,7 @@ function UserProfile() {
                     </div>
 
                     <div className="user-option mx-auto sm:ml-auto sm:mr-0">
-                      <button 
+                      <button
                         onClick={() => {
                           findProfile(follower.username);
                         }}
@@ -501,7 +573,6 @@ function UserProfile() {
                         <img
                           className="avatar w-20 h-20 rounded-full"
                           src={following.profile_pic}
-                          // src="https://randomuser.me/api/portraits/men/32.jpg"
                         />
                       </div>
                       <div className="user-body flex flex-col mb-4 sm:mb-0 sm:mr-4">
@@ -531,7 +602,7 @@ function UserProfile() {
                         className="btn inline-block select-none no-underline align-middle cursor-pointer whitespace-nowrap px-4 py-1.5 rounded text-base font-medium leading-6 tracking-tight text-white text-center border-0 bg-[#6911e7] hover:bg-[#590acb] duration-300"
                         type="button"
                       >
-                        {followingUser.follow ? followingUser.follow : 'follow'}
+                        {followingUser.follow ? followingUser.follow : "follow"}
                       </button>
                     </div>
                   </div>
@@ -548,7 +619,7 @@ function UserProfile() {
           </div>
         ) : null}
       </div>
-              {/* Modal for upload post */}
+      {/* Modal for upload post */}
 
       {imageModal && (
         <div
@@ -559,12 +630,9 @@ function UserProfile() {
         >
           <div class="relative ml-96 mt-52 w-full max-w-md h-full md:h-auto">
             <div class="relative bg-white rounded-lg shadow ">
-              <form action=""
-               onSubmit={uploadImage}
-              >
+              <form action="" onSubmit={uploadImage}>
                 <button
-                  onClick={imgModalHandler
-                  }
+                  onClick={imgModalHandler}
                   type="button"
                   class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
                   data-modal-toggle="popup-modal"
@@ -585,16 +653,14 @@ function UserProfile() {
                   <span class="sr-only">Close modal</span>
                 </button>
                 <div class="p-6 text-center">
-                  {imgPreview  ? <img src={imgPreview} alt='profile picture'/> :
-                  <h1 class="mb-5 text-3xl font-normal underline text-gray-500 dark:text-gray-400 px-24 ">
-                   
-                    <IoMdPhotos size="200px" 
-                    />
-                  </h1>
-                    }
+                  {imgPreview ? (
+                    <img src={imgPreview} alt="profile picture" />
+                  ) : (
+                    <h1 class="mb-5 text-3xl font-normal underline text-gray-500 dark:text-gray-400 px-24 ">
+                      <IoMdPhotos size="200px" />
+                    </h1>
+                  )}
                   <div className="pl-16 flex flex-col">
-                    
-
                     <label
                       htmlFor="fileUpload"
                       class="w-3/4 ml-4 text-center text-white bg-indigo-600 hover:bg-indigo-700  font-medium rounded-lg text-sm  px-5 py-2 mt-2"
@@ -611,15 +677,24 @@ function UserProfile() {
                       required
                       class="hidden w-5/6 h-10 bg-white relative rounded-xl block w-full appearance-none  border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                     />
-
                   </div>
                   <button
                     data-modal-toggle="popup-modal"
                     type="submit"
                     class="text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4  font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2 mt-2"
                   >
-                    Upload 
+                    Upload
                   </button>
+                  {userData.profile_pic && 
+                  <button
+                    onClick={()=>deleteProfilePic(user.user_id)}
+                    data-modal-toggle="popup-modal"
+                    type="submit"
+                    class="text-white bg-red-600 hover:bg-red-700 focus:ring-4  font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2 mt-2"
+                  >
+                    Delete
+                  </button>
+                  }
                 </div>
               </form>
             </div>
@@ -627,7 +702,6 @@ function UserProfile() {
         </div>
       )}
       {/* Modal end */}
-
     </div>
   );
 }

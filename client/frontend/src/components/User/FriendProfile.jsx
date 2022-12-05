@@ -6,113 +6,106 @@ import AuthContext from "../../context/UserAuthContext";
 const baseUrl = "http://127.0.0.1:8000/";
 
 function FriendProfile() {
-  let { authTokens,user } = useContext(AuthContext);
+  let { authTokens, user } = useContext(AuthContext);
   const [friendprofile, setFreindProfile] = useState([]);
-  const [follow, setfollow] = useState([])
-  const [userFollowers, setUserFollowers] = useState([])
+  const [follow, setfollow] = useState([]);
+  const [userFollowers, setUserFollowers] = useState([]);
   const { userdata } = useParams();
-  const [postCount,setPostCount] = useState()
-  const [modalFollowers, setModalFollowers] = useState(false);    //modal for showing followers.
-  const [followersList, setFollowersList] = useState([]);   //state to display all the followers. 
-  const [modalFollowing, setModalFollowing] = useState(false);    // modal for showing following users.
-  const [followingList, setFollowingList] = useState([]);   //state to display all the following users.
+  const [postCount, setPostCount] = useState();
+  const [modalFollowers, setModalFollowers] = useState(false); //modal for showing followers.
+  const [followersList, setFollowersList] = useState([]); //state to display all the followers.
+  const [modalFollowing, setModalFollowing] = useState(false); // modal for showing following users.
+  const [followingList, setFollowingList] = useState([]); //state to display all the following users.
 
   console.log("iddd", userdata); //useredata contains username of the friend passing through params.
 
-  let data={username : userdata,
-    follower : user.user_id}
+  let data = { username: userdata, follower: user.user_id };
 
   useEffect(() => {
-    userProfile(baseUrl + "accounts/friends-profile/"+userdata)
+    userProfile(baseUrl + "accounts/friends-profile/" + userdata);
   }, [userdata]);
 
-
   // function to call the user profile api.
-  function userProfile(url){
+  function userProfile(url) {
     try {
-        Axios.get(url , {
-          headers: {
-            Authorization: `Bearer ${authTokens.access}`,
-            "content-type": "application/json",
-          },
+      Axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${authTokens.access}`,
+          "content-type": "application/json",
+        },
+      })
+        .then((res) => {
+          console.log("rsultrtt", res.data);
+          setFreindProfile(res.data.Data);
+          setUserFollowers(res.data.userfollowers);
+          setfollow(res.data.follow);
+          setPostCount(res.data.count);
         })
-          .then((res) => {
-            console.log("rsultrtt", res.data);
-            setFreindProfile(res.data.Data);
-            setUserFollowers(res.data.userfollowers)
-            setfollow(res.data.follow)
-            setPostCount(res.data.count)
-          })
-          .catch((err) => {
-            console.log("errrr", err);
-          });
-      } catch (error) {}
+        .catch((err) => {
+          console.log("errrr", err);
+        });
+    } catch (error) {}
   }
 
-    
-    // function to follow and unfollow user.
-  const followUser = ()=>{
-     try {
-        console.log('daataaaa',data);
-            Axios.post(baseUrl+'accounts/follow',data,{
-                headers:{
-                    Authorization:`Bearer ${authTokens.access}`,
-                    // 'content-type':'application/json'
-                }
-            }).then((res)=>{
-                if (res) {
-                    console.log('follow res',res.data);
-                    userProfile(baseUrl + "accounts/friends-profile/"+userdata)
-                    
-                }
-            }).catch(err=>{
-                console.log('errer fol',err);
-            })
-        } catch (error) {
-            console.log('foll err',error.data);
-        }
-  }
+  // function to follow and unfollow user.
+  const followUser = () => {
+    try {
+      console.log("daataaaa", data);
+      Axios.post(baseUrl + "accounts/follow", data, {
+        headers: {
+          Authorization: `Bearer ${authTokens.access}`,
+          // 'content-type':'application/json'
+        },
+      })
+        .then((res) => {
+          if (res) {
+            console.log("follow res", res.data);
+            userProfile(baseUrl + "accounts/friends-profile/" + userdata);
+          }
+        })
+        .catch((err) => {
+          console.log("errer fol", err);
+        });
+    } catch (error) {
+      console.log("foll err", error.data);
+    }
+  };
 
-// console.log('here is the total count',postCount.post_count);
+  // console.log('here is the total count',postCount.post_count);
 
-//   // function to call to get the list of followers.
-//   const handleFollowers = () => {
-//     Axios.get(baseUrl + "accounts/followers", {
-//       headers: {
-//         Authorization: `Bearer ${authTokens.access}`,
-//       },
-//     })
-//       .then((res) => {
-//         console.log("folllist", res.data.Data);
-//         setFollowersList(res.data.Data);
-//       })
-//       .catch((error) => {
-//         console.log("errors", error);
-//       });
-//     setModalFollowers(!modalFollowers);
-//   };
+  //   // function to call to get the list of followers.
+  //   const handleFollowers = () => {
+  //     Axios.get(baseUrl + "accounts/followers", {
+  //       headers: {
+  //         Authorization: `Bearer ${authTokens.access}`,
+  //       },
+  //     })
+  //       .then((res) => {
+  //         console.log("folllist", res.data.Data);
+  //         setFollowersList(res.data.Data);
+  //       })
+  //       .catch((error) => {
+  //         console.log("errors", error);
+  //       });
+  //     setModalFollowers(!modalFollowers);
+  //   };
 
-
-//   // function to call to get the list of following users.
-//   const handleFollowing = () => {
-//     Axios.get(baseUrl + "accounts/following", {
-//       headers: {
-//         Authorization: `Bearer ${authTokens.access}`,
-//       },
-//     })
-//       .then((res) => {
-//         console.log('fjo dadadfas',res.data);
-//         setFollowingList(res.data.Data);
-//       })
-//       .catch((err) => {
-//         console.log("errrr", err);
-//       });
-//     setModalFollowing(!modalFollowing);
-//   };
-
-
-
-
+  //   // function to call to get the list of following users.
+  //   const handleFollowing = () => {
+  //     Axios.get(baseUrl + "accounts/following", {
+  //       headers: {
+  //         Authorization: `Bearer ${authTokens.access}`,
+  //       },
+  //     })
+  //       .then((res) => {
+  //         console.log('fjo dadadfas',res.data);
+  //         setFollowingList(res.data.Data);
+  //       })
+  //       .catch((err) => {
+  //         console.log("errrr", err);
+  //       });
+  //     setModalFollowing(!modalFollowing);
+  //   };
 
   return (
     <div>
@@ -121,12 +114,26 @@ function FriendProfile() {
           <div className="flex flex-wrap justify-center">
             <div className="w-full flex justify-center">
               <div className="relative">
-                <img
-                //   src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
+                {friendprofile.profile_pic ? (
+                  <img
                     src={friendprofile.profile_pic}
-                  className="shadow-xl rounded-full align-middle border-none absolute -m-16 -ml-20 lg:-ml-16 max-w-[150px]"
-                  //   alt={userData.username}
-                />
+                    className="shadow-xl rounded-full align-middle border-none absolute -m-16 -ml-20 lg:-ml-16 max-w-[150px]"
+                    //   alt={userData.username}
+                  />
+                ) : (
+                  <svg
+                    className="shadow-xl rounded-full align-middle border-none absolute -m-16 -ml-20 lg:-ml-16 max-w-[150px] text-gray-400 "
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                )}
               </div>
             </div>
 
@@ -147,7 +154,7 @@ function FriendProfile() {
               <div className="flex justify-center ">
                 <div className="p-3 text-center">
                   <span className="text-xl font-bold block uppercase tracking-wide text-slate-700">
-                   {postCount && postCount.post_count}
+                    {postCount && postCount.post_count}
                   </span>
                   <span className="text-sm text-slate-400">Photos</span>
                 </div>
@@ -155,16 +162,14 @@ function FriendProfile() {
                   <span className="text-xl font-bold block uppercase tracking-wide text-slate-700">
                     {userFollowers && userFollowers.followers}
                   </span>
-                  <span
-                   className="text-sm text-slate-400">Followers</span>
+                  <span className="text-sm text-slate-400">Followers</span>
                 </div>
 
                 <div className="p-3 text-center">
                   <span className="text-xl font-bold block uppercase tracking-wide text-slate-700">
                     {userFollowers && userFollowers.following}
                   </span>
-                  <span
-                   className="text-sm text-slate-400">Following</span>
+                  <span className="text-sm text-slate-400">Following</span>
                 </div>
               </div>
             </div>
@@ -178,13 +183,15 @@ function FriendProfile() {
                 </p>
                 <Link>
                   <button
-                  onClick={followUser}
+                    onClick={followUser}
                     href="javascript:;"
                     className="font-normal text-white py-2 px-4 rounded-md bg-indigo-600 hover:bg-indigo-700"
                   >
                     {console.log(follow.follow)}
                     {/* {follow.follow ==='following' ? follow.follow : follow.unfollow} */}
-                    {follow.followinguser ? follow.followinguser : follow.follow}
+                    {follow.followinguser
+                      ? follow.followinguser
+                      : follow.follow}
                   </button>
                 </Link>
               </div>

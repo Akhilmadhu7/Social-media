@@ -13,7 +13,7 @@ function ProfileBar() {
   const id = user.user_id;
 
   useEffect(() => {
-    Axios.get(baseUrl + "accounts/userprofile/"+id, {
+    Axios.get(baseUrl + "accounts/userprofile/" + id, {
       headers: {
         Authorization: `Bearer ${authTokens.access}`,
         "content-type": "applicaion/json",
@@ -21,7 +21,7 @@ function ProfileBar() {
     })
       .then((res) => {
         setUserData(res.data.Data);
-        console.log('logged',user.is_logged);
+        console.log("logged", user.is_logged);
       })
       .catch((err) => {
         console.log("error", err);
@@ -36,17 +36,33 @@ function ProfileBar() {
             My Profile
           </h5>
           <div className="ml4">
-            <img
-              // src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
-              src={userData.profile_pic}
-              className="rounded-full w-1/2 content-center my-3 ml-14 "
-              alt=""
-            />
+            {userData.profile_pic ? (
+              <img
+                // src="https://mdbcdn.b-cdn.net/img/new/avatars/2.webp"
+                src={userData.profile_pic}
+                className="rounded-full w-1/2 content-center my-3 ml-14 "
+                alt=""
+              />
+            ) : (
+              <svg
+                // className="w-12 h-12 text-gray-400  rounded-full m-2"
+                className="rounded-full w-1/2 text-gray-400  content-center my-3 ml-14 "
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+            )}
           </div>
           {user && <h3 className="font-semibold">{user.username}</h3>}
           <h6>{userData && userData.full_name}</h6>
           <p class="text-gray-700 text-base mb-4">
-          {userData.about !== "null" ? userData.about : ""}
+            {userData.about !== "null" ? userData.about : ""}
           </p>
           <Link to="/user/profile">
             <button
