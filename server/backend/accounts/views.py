@@ -160,7 +160,8 @@ class NewFriendsView(APIView):
             user_following = Follower.objects.filter(follower=user.id)
             print('lllll', user_following)
             all_users = Accounts.objects.filter(state=user.state).exclude(
-                username=user) & Accounts.objects.filter(is_active=True).exclude(username=user)
+                username=user) & Accounts.objects.filter(is_active=True).exclude(
+                username=user) & Accounts.objects.filter(is_deactivated=True).exclude(username=user)
             user_following_all = []
             print('jjjjjjj', user_following)
             for users in user_following:  # looping through the following user
@@ -548,8 +549,18 @@ def deactivate_account(request,id):
         print('lllllll',account.username)
     except:
         return Response({"Error":"Something went wrong"}) 
-    account.delete()
-    data['Response'] = "Account deactivated succesfully"
-    return Response(data,status=status.HTTP_200_OK)       
+    if account.is_deactivated == False:    
+        account.is_deactivated = True
+        data['Response'] = "Account deactivated succesfully"
+        account.save()
+        data['active or not'] = account.is_deactivated
+        return Response(data,status=status.HTTP_200_OK) 
+    else:
+        account.is_deactivated = False
+        data['Response'] = 'Account activated succcesfully'
+        account.save()
+        data['active or not'] = account.is_deactivated
+        return Response(data,status=status.HTTP_200_OK) 
+          
         
 

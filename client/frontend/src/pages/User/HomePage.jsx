@@ -43,7 +43,7 @@ function HomePage() {
             <div className=' col-span-3 mt-8 bg-gren-400 '>
                 <div className='bg-white rounded-md '>
 
-                <Story ></Story>
+                {/* <Story ></Story> */}
                 </div>
         
                 <Home></Home>

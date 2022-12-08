@@ -96,7 +96,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Accounts
         fields = ['id', 'username', 'f_name', 'l_name', 'full_name', 'email', 'phone', 'profile_pic', 'cover_pic',
-                  'birth_date', 'about', 'place', 'state', 'country', 'is_logged', 'date_joined'
+                  'birth_date', 'about', 'place', 'state', 'country', 'is_deactivated', 'date_joined'
                   ]
 
         exlcude = ['password']
@@ -138,13 +138,13 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         password_pattern = re.compile(r'^[a-zA-Z0-9]{8}[0-9]*[A-Za-z]*$')
         password_verify = password_pattern.search(new_password)
 
-        if password == new_password:
-            raise serializers.ValidationError(
-                {"new_password": "New password similar to old password"})
-
         if password_verify is None:
             raise serializers.ValidationError(
                 {"new_password": "Must contain 8 characters including numbers"})
+
+        if password == new_password:
+            raise serializers.ValidationError(
+                {"new_password": "New password similar to old password"})
         return data
 
 

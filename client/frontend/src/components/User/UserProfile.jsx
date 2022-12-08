@@ -122,7 +122,6 @@ function UserProfile() {
     }
   };
 
-
   //function to call the changepassword  api.
   const changePasswordSubmit = (e) => {
     e.preventDefault();
@@ -150,7 +149,6 @@ function UserProfile() {
     }
   };
 
-
   // function to call the friend profile component.
   const findProfile = (username) => {
     console.log("here is the id", username);
@@ -161,7 +159,6 @@ function UserProfile() {
     setImgPreview(null);
     setImageModal(!imageModal);
   };
-
 
   //function to update the new profile picture into state and show the image preview.
   const handleProfileImage = (e) => {
@@ -176,7 +173,6 @@ function UserProfile() {
     });
     // setProfileImage(URL.createObjectURL(e.target.files[0]));
   };
-
 
   //function to change profile picture.
   const uploadImage = (e) => {
@@ -202,7 +198,6 @@ function UserProfile() {
     }
   };
 
-
   //function to deactivate account.
   const deactivateAccount = (id) => {
     console.log("deactivate id", id);
@@ -212,51 +207,50 @@ function UserProfile() {
       icon: "info",
       confirmButtonText: "Deactivate",
       showCancelButton: true,
-    }).then((res)=>{
+    }).then((res) => {
       if (res.isConfirmed) {
         try {
-          Axios.delete(baseUrl+'accounts/deactivate-account/'+id,{
-            headers:{
-              Authorization:`Bearer ${authTokens.access}`
-            }
-          }).then((res)=>{
-            console.log('response',res);
-            navigate('/')
-          })
+          Axios.delete(baseUrl + "accounts/deactivate-account/" + id, {
+            headers: {
+              Authorization: `Bearer ${authTokens.access}`,
+            },
+          }).then((res) => {
+            console.log("response", res);
+            navigate("/");
+          });
         } catch (error) {
-          console.log('error',error);
+          console.log("error", error);
         }
       }
-    })
-    
+    });
   };
 
   //function to delete current profile picture.
-  const deleteProfilePic = (id)=>{
+  const deleteProfilePic = (id) => {
     Swal.fire({
       title: "Confirm!",
       text: "Delete profile picture ?",
       icon: "info",
       confirmButtonText: "Delete",
       showCancelButton: true,
-    }).then((res)=>{
+    }).then((res) => {
       if (res.isConfirmed) {
         try {
-          Axios.delete(baseUrl+"accounts/userprofile/" + id,{
-            headers:{
-              Authorization:`Bearer ${authTokens.access}`
-            }
-          }).then((res)=>{
-            console.log('profile deleted',res.data);
+          Axios.delete(baseUrl + "accounts/userprofile/" + id, {
+            headers: {
+              Authorization: `Bearer ${authTokens.access}`,
+            },
+          }).then((res) => {
+            console.log("profile deleted", res.data);
             userProfile(baseUrl);
             setImageModal(!imageModal);
-          })
+          });
         } catch (error) {
-          console.log('error',error);
+          console.log("error", error);
         }
       }
-    })
-  }
+    });
+  };
 
   return (
     <div>
@@ -501,7 +495,6 @@ function UserProfile() {
 
         {modalFollowers ? (
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-            
             <div className="user-list w-full max-w-lg mx-auto bg-white rounded-xl shadow-xl flex flex-col py-4">
               {followersList.map((follower) => {
                 return (
@@ -570,10 +563,25 @@ function UserProfile() {
                   <div className="user-row flex flex-col items-center justify-between cursor-pointer  p-4 duration-300 sm:flex-row sm:py-4 sm:px-8 hover:bg-[#f6f8f9]">
                     <div className="user flex items-center text-center flex-col sm:flex-row sm:text-left">
                       <div className="avatar-content mb-2.5 sm:mb-0 sm:mr-2.5">
-                        <img
-                          className="avatar w-20 h-20 rounded-full"
-                          src={following.profile_pic}
-                        />
+                        {following.profile_pic ? (
+                          <img
+                            className="avatar w-20 h-20 rounded-full"
+                            src={following.profile_pic}
+                          />
+                        ) : (
+                          <svg
+                            className="w-12 h-12 text-gray-400  rounded-full m-2"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                              clip-rule="evenodd"
+                            ></path>
+                          </svg>
+                        )}
                       </div>
                       <div className="user-body flex flex-col mb-4 sm:mb-0 sm:mr-4">
                         <a
@@ -685,16 +693,16 @@ function UserProfile() {
                   >
                     Upload
                   </button>
-                  {userData.profile_pic && 
-                  <button
-                    onClick={()=>deleteProfilePic(user.user_id)}
-                    data-modal-toggle="popup-modal"
-                    type="submit"
-                    class="text-white bg-red-600 hover:bg-red-700 focus:ring-4  font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2 mt-2"
-                  >
-                    Delete
-                  </button>
-                  }
+                  {userData.profile_pic && (
+                    <button
+                      onClick={() => deleteProfilePic(user.user_id)}
+                      data-modal-toggle="popup-modal"
+                      type="submit"
+                      class="text-white bg-red-600 hover:bg-red-700 focus:ring-4  font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2 mt-2"
+                    >
+                      Delete
+                    </button>
+                  )}
                 </div>
               </form>
             </div>

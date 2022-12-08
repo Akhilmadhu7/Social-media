@@ -223,7 +223,7 @@ function Home() {
                   >
                     <h2 className="  md:text-xl">{feed.user.username} </h2>
                   </div>
-                  <div className="relative bg-red-500">
+                  <div className="relative bg-rd-500 ml-auto pr-3">
                     <button
                       onClick={() => setReportModal(!reportModal)}
                       className="text-2xl"
@@ -231,7 +231,7 @@ function Home() {
                       ...
                     </button>
                     {reportModal && (
-                      <div className="flex justify-center absolute top-10 left-0">
+                      <div className="flex justify-center absolute top-10 right-0">
                         <div className="block px-6 py-2 rounded-lg shadow-lg bg-white max-w-m">
                           <h5 className="text-gray-900 text-xl leading-tight font-medium mb-2"></h5>
                           <p

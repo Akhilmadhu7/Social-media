@@ -60,7 +60,7 @@ class Accounts(AbstractBaseUser):
     place = models.CharField(max_length=200, null=True, blank=True)
     state = models.CharField(max_length=200, null=True, blank=True)
     country = models.CharField(max_length=200, null=True, blank=True)
-    is_logged = models.BooleanField(default=False)
+    is_deactivated = models.BooleanField(default=False)
 
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now_add=True)
@@ -86,7 +86,6 @@ class Accounts(AbstractBaseUser):
 
 
 class Follower(models.Model):
-
     follower = models.ForeignKey(Accounts,related_name = 'follower', on_delete=models.CASCADE) #person who is following(logged in user)
     username = models.CharField(max_length = 120)  #person who has been followed(visited profile person)
 
@@ -110,8 +109,8 @@ class Post(models.Model):
         return self.user.username
 
 
-class LikePost(models.Model):
 
+class LikePost(models.Model):
     post_id = models.CharField(max_length=120)
     username = models.CharField(max_length=120)
 
