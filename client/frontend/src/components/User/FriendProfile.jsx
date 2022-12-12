@@ -172,6 +172,9 @@ function FriendProfile() {
                   <span className="text-sm text-slate-400">Following</span>
                 </div>
               </div>
+              <button className="bg-blue-500 text-white p-2 rounded-md">
+                Message
+              </button>
             </div>
           </div>
 

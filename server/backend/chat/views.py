@@ -11,12 +11,49 @@ from . serializers import ChatSerializer
 # Create your views here.
 
 
+# @api_view(['GET'])
+# def chatusers_list(request):
+#     print('usernameis here')
+#     users = Accounts.objects.all()
+#     user_ser = UserProfileSerializer(users,many=True)
+#     return Response(user_ser.data, status=status.HTTP_200_OK)
+
+
+
 @api_view(['GET'])
 def chatusers_list(request):
-    print('usernameis here')
-    users = Accounts.objects.all()
-    user_ser = UserProfileSerializer(users,many=True)
-    return Response(user_ser.data, status=status.HTTP_200_OK)
+    print('req')
+    print('ussss',request.user)
+    # users = Account.objects.exclude(username = request.user.username)
+    accounts = Accounts.objects.exclude(username=request.user.username)
+    chat_list = set()
+    chat = []
+    
+    # chat_users = ChatModel.objects.filter(Q(sender=request.user) | Q(reciever=request.user)).distinct()
+    chat_users = ChatModel.objects.filter(thread_name__icontains=str(request.user.id)).order_by('-id')
+    
+    
+    for chat_user in chat_users:
+        if str(request.user.id) in chat_user.thread_name:
+            print('hjhj',chat_user.reciever,'ll',chat_user.sender)
+            chat_list.add(chat_user.sender)
+            chat_list.add(chat_user.reciever)
+            
+            
+    
+    user_list = []
+    for user in accounts:
+        if user.username in chat_list:
+            print('username',user)   
+            user_list.append(user) 
+
+       
+    
+
+    user_ser = UserProfileSerializer(user_list, many=True,context={'request':request})
+    return Response(user_ser.data)
+
+
 
 
 
@@ -35,3 +72,6 @@ def chat_data(request,username):
     # print('message_obj',chat_ser.data) 
     return Response(chat_ser.data) 
     # return Response('data data')    
+
+
+

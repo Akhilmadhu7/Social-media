@@ -37,24 +37,33 @@ function ChatPage() {
     const data = JSON.parse(e.data)
     setOnMessage(data)
     chatData(username)
+    getUserChatList(baseUrl)
   }
 
   
 
 //To call the total numbers of chat users list.
 useEffect(()=>{
-    Axios.get(baseUrl+'chat/chat-list',{
-      headers:{
-        Authorization:`Bearer ${authTokens.access}`
-      }
-    }).then((res)=>{
-      console.log('result',res.data);
-      setUserChatList(res.data)
-    })
+    getUserChatList(baseUrl)
   },[])
+
+//To call the total numbers of chat users list.
+  const getUserChatList = (url)=>{
+
+    Axios.get(url+'chat/chat-list',{
+        headers:{
+          Authorization:`Bearer ${authTokens.access}`
+        }
+      }).then((res)=>{
+        console.log('result',res.data);
+        setUserChatList(res.data)
+      })
+
+  }
 
    //to get the username and id of the person the logged in user want to chat.
    const get_id = (id,username)=>{
+    const socket = new WebSocket('ws://127.0.0.1:8000/ws/'+myid+'/'+id+'/')
     console.log('other id is',id,username);
     setId(id)
     setUsername(username)
@@ -69,6 +78,7 @@ useEffect(()=>{
       'username':msg_username,
       'reciever_user':username
   }))
+  getUserChatList(baseUrl)
 }
 
   //to get the chat data of the loggedin user and other person.
