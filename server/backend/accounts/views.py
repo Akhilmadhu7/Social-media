@@ -161,7 +161,7 @@ class NewFriendsView(APIView):
             print('lllll', user_following)
             all_users = Accounts.objects.filter(state=user.state).exclude(
                 username=user) & Accounts.objects.filter(is_active=True).exclude(
-                username=user) & Accounts.objects.filter(is_deactivated=True).exclude(username=user)
+                username=user) & Accounts.objects.filter(is_deactivated=False).exclude(username=user)
             user_following_all = []
             print('jjjjjjj', user_following)
             for users in user_following:  # looping through the following user
@@ -247,17 +247,20 @@ class FriendsProfileView(APIView):
 
     def get_object(self, user):
         try:
-            return Accounts.objects.get(username=user)
+            return Accounts.objects.get(username=user,is_deactivated=False)
         except:
-            return Response({"Response": "User does not exist"})
+            print('nonenoenoe')
+            return None
+            # return Response({"Response": "User does not exist"})
 
     def get(self, request, user):
         data = {}
         friend_pro = self.get_object(user)
-        print('friend', user)
-        print('foll', request.user)
-        print('friend ididid', friend_pro.id)
+        print('propropropropro',friend_pro)
         if friend_pro is not None:
+            print('friend', user)
+            print('foll', request.user)
+            print('friend ididid', friend_pro.id)
             # to get followers count.
             user_followers = len(Follower.objects.filter(username=user))
             # to get following count.
@@ -344,19 +347,32 @@ def following_list(request):
 # To display post as feed.
 class Home_view(APIView):
     # parser_classes = (MultiPartParser, FormParser)
+    
 
     def get(self, request):
         data = {}
         username = request.user
         post_data = Post.objects.filter(is_reported=False).order_by('-id')
-        
+        user_list = []
+        post_list = []
+        accounts = Accounts.objects.all()
+        for user in accounts:
+            if user.is_deactivated == False:
+                user_list.append(user)
+            else :
+                pass       
+        for post in post_data:
+            if post.user in user_list:
+                post_list.append(post)      
+            else:
+                pass    
         post_ser = PostSerializer(
-            post_data, many=True, context={'request': request})
+            post_list, many=True, context={'request': request})
         # data['Data'] = post_ser.data    
 
         return Response(post_ser.data, status=status.HTTP_200_OK)
 
-     # function to upload a Post.
+    # function to upload a Post.
     def post(self, request):
         print('dataaa', request.data)
         data = {}
@@ -413,20 +429,24 @@ class UserPostView(APIView):
 
     def get_object(self, user):
         try:
-            user_id = Accounts.objects.get(username=user)
+            user_id = Accounts.objects.get(username=user,is_deactivated=False)
             print('idd', user_id, user_id.id)
             return Post.objects.filter(user=user_id.id, is_reported = False).order_by('-id')
         except:
-            return Response({"Errors": "Something went wrong"})
+            return None
 
     def get(self, request, user):
         data = {}
         print('usernaem', user)
         post = self.get_object(user)
-        post_ser = PostCreateSerializer(
-            post, many=True, context={'request': request})
-        data['Data'] = post_ser.data
-        return Response(data, status=status.HTTP_200_OK)
+        if post is not None:
+            post_ser = PostCreateSerializer(
+                post, many=True, context={'request': request})
+            data['Data'] = post_ser.data
+            return Response(data, status=status.HTTP_200_OK)
+        else:
+            data['Response'] = 'Account does not exist'
+            return Response(data, status=status.HTTP_404_NOT_FOUND)    
 
 
 

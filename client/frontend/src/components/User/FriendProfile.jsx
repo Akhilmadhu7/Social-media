@@ -182,6 +182,7 @@ function FriendProfile() {
                   {friendprofile.about !== "null" ? friendprofile.about : ""}
                 </p>
                 <Link>
+                {friendprofile.username ? 
                   <button
                     onClick={followUser}
                     href="javascript:;"
@@ -193,6 +194,7 @@ function FriendProfile() {
                       ? follow.followinguser
                       : follow.follow}
                   </button>
+                  : 'Account not found'}
                 </Link>
               </div>
             </div>

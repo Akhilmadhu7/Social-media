@@ -15,10 +15,19 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         
         token = super().get_token(user)
+        
 
         # Add custom claims
         token['username'] = user.username
         token['is_admin'] = user.is_admin
+        accounts = Accounts.objects.get(username=user.username)
+        if accounts.is_deactivated == True: 
+            print(accounts.is_deactivated,'userserser',accounts.username)
+            accounts.is_deactivated = False
+            accounts.save()
+            print(accounts.is_deactivated,'userserser',accounts.username)
+        return token
+        
         # accounts = Accounts.objects.get(username=user.username)
         # if not accounts.is_logged:
         #     print('loooooooogged',accounts.is_logged)
@@ -37,7 +46,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
          
         
 
-        return token
+        
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
@@ -50,12 +59,7 @@ class LogoutUserView(APIView):
         print(type(data))
         print('hello')
         user = request.data['username']
-        accounts = Accounts.objects.get(username=user)
-        # if accounts.is_logged:
-        #     print('ll',accounts.is_logged)
-        #     accounts.is_logged=False
-        #     accounts.save()
-        #     print('ssss',accounts.is_logged)
+        # accounts = Accounts.objects.get(username=user)
         return Response({'Response':"ok"})
         # else:
         #     return Response({'m':"went wrong"})    

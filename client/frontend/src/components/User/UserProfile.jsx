@@ -93,7 +93,10 @@ function UserProfile() {
       .catch((error) => {
         console.log("errors", error);
       });
-    setModalFollowers(!modalFollowers);
+      if (followersList) {
+        
+        setModalFollowers(!modalFollowers);
+      }
   };
 
   // function to call to get the list of following users.
@@ -111,7 +114,10 @@ function UserProfile() {
       .catch((err) => {
         console.log("errrr", err);
       });
-    setModalFollowing(!modalFollowing);
+      if (followingList !== []) {
+        
+        setModalFollowing(!modalFollowing);
+      }
   };
 
   // function to set false the password modal.
@@ -335,24 +341,38 @@ function UserProfile() {
                   <span className="text-xl font-bold block uppercase tracking-wide text-slate-700">
                     {userFollowers && userFollowers.followers}
                   </span>
+                  {userFollowers.followers !==0 ?
                   <span
                     onClick={handleFollowers}
                     className="text-sm text-slate-400 hover:cursor-pointer"
                   >
                     Followers
-                  </span>
+                  </span> :
+                  <span
+                  className="text-sm text-slate-400 hover:cursor-pointer"
+                >
+                  Followers
+                </span>
+                  }
                 </div>
 
                 <div className="p-3 text-center">
                   <span className="text-xl font-bold block uppercase tracking-wide text-slate-700">
                     {userFollowers && userFollowers.following}
                   </span>
-                  <span
-                    onClick={handleFollowing}
+                  {userFollowers.following !== 0 ?
+                  <span 
+                  onClick={handleFollowing} 
+                    className="text-sm text-slate-400  hover:cursor-pointer"
+                  >
+                    Following
+                  </span> :
+                  <span 
                     className="text-sm text-slate-400  hover:cursor-pointer"
                   >
                     Following
                   </span>
+}
                 </div>
               </div>
             </div>

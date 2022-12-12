@@ -164,6 +164,7 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = '__all__'
     # order_by = ['-id']   
+    
         
 
 #To create new posts.
