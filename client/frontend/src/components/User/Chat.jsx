@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import AuthContext from "../../context/UserAuthContext";
 import { useNavigate } from "react-router-dom";
+import { format } from "timeago.js";
 
 function Chat({ chatMessage, get_message, username }) {
   let { user } = useContext(AuthContext);
@@ -32,7 +33,7 @@ function Chat({ chatMessage, get_message, username }) {
                           <p class="text-sm">{chat.message}</p>
                         </div>
                         <span class="text-xs text-gray-500 leading-none">
-                          2 min ago
+                        {format(chat.timestamp)}
                         </span>
                       </div>
                     </div>
@@ -43,7 +44,7 @@ function Chat({ chatMessage, get_message, username }) {
                           <p class="text-sm">{chat.message}</p>
                         </div>
                         <span class="text-xs text-gray-500 leading-none">
-                          2 min ago
+                          {format(chat.timestamp)}
                         </span>
                       </div>
                       <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-300"></div>

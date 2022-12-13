@@ -119,7 +119,7 @@ function ChatList({ userChatList, get_id }) {
                             {list.username}
                           </h4>
                           <div class="text-[13px]">
-                            The video chat ended · 2hrs
+                          {/* {chatMessage !== '' && chatMessage} */}
                           </div>
                         </div>
                       </div>

@@ -4,11 +4,13 @@ import ChatList from '../../components/User/ChatList'
 import Header from '../../components/User/Header'
 import Axios from "axios";
 import AuthContext from '../../context/UserAuthContext';
+import {useParams} from 'react-router-dom'
 
 const baseUrl = "http://127.0.0.1:8000/";
 
 function ChatPage() {
     let {user, authTokens} = useContext(AuthContext)
+    const {otherid,otherusername} = useParams()
     const [userChatList,setUserChatList] = useState([])
     const [username, setUsername] =useState() 
     const [id, setId] = useState()
@@ -16,6 +18,11 @@ function ChatPage() {
     const [chatMessage, setChatMessage] = useState([])
 
     const myid = user.user_id
+
+    // if (otherid!=='' && otherusername!=='') {
+    //     console.log('here is message id',otherid,otherusername);
+    // }
+    
 
   const socket = new WebSocket('ws://127.0.0.1:8000/ws/'+myid+'/'+id+'/')
 
@@ -44,6 +51,12 @@ function ChatPage() {
 
 //To call the total numbers of chat users list.
 useEffect(()=>{
+    if (otherid!=='' && otherusername!=='') {
+        console.log('here is message id',otherid,otherusername);
+        // setId(id)
+        // setUsername(username)
+        get_id(otherid,otherusername)
+    }
     getUserChatList(baseUrl)
   },[])
 
@@ -61,15 +74,16 @@ useEffect(()=>{
 
   }
 
-   //to get the username and id of the person the logged in user want to chat.
+   //to get the username and id of the person which the logged in user want to chat.
    const get_id = (id,username)=>{
-    const socket = new WebSocket('ws://127.0.0.1:8000/ws/'+myid+'/'+id+'/')
+    
     console.log('other id is',id,username);
     setId(id)
     setUsername(username)
     chatData(username)
   }
 
+  //to get the message send by the user and the username of sender(loggedin user) and reciever.
   const get_message = (message,msg_username)=>{
     console.log('message',message,msg_username);
     // socket.onmessage = JSON.parse(message)
@@ -91,6 +105,7 @@ useEffect(()=>{
     }).then((res)=>{
       console.log('chat data',res.data);
       setChatMessage(res.data)
+      console.log('last message',chatMessage.slice(-1));
     })
   }
 

@@ -46,7 +46,7 @@ function App() {
                 <Route element={<FreindsSuggestPage/>} path='/user/friends-suggestion' />
                 <Route element={<FriendProfilePage/>} path='/user/friend-profile/:userdata' />
                 <Route element={<ChatPage/>} path='/user/chat' />
-                <Route element={<ChatPage/>} path='/user/chat/:id' />
+                <Route element={<ChatPage/>} path='/user/chat/:otherid/:otherusername' /> 
             </Route>
             
           </Routes>

@@ -7,6 +7,7 @@ from accounts.models import Accounts
 from accounts.serializers import UserProfileSerializer
 from . models import ChatModel
 from . serializers import ChatSerializer
+from django.db.models import Q
 
 # Create your views here.
 
@@ -27,15 +28,13 @@ def chatusers_list(request):
     # users = Account.objects.exclude(username = request.user.username)
     accounts = Accounts.objects.exclude(username=request.user.username)
     chat_list = set()
-    chat = []
     
-    # chat_users = ChatModel.objects.filter(Q(sender=request.user) | Q(reciever=request.user)).distinct()
-    chat_users = ChatModel.objects.filter(thread_name__icontains=str(request.user.id)).order_by('-id')
+    chat_users = ChatModel.objects.filter(Q(sender=request.user) | Q(reciever=request.user))
     
     
     for chat_user in chat_users:
         if str(request.user.id) in chat_user.thread_name:
-            print('hjhj',chat_user.reciever,'ll',chat_user.sender)
+            # print('hjhj',chat_user.reciever,'ll',chat_user.sender)
             chat_list.add(chat_user.sender)
             chat_list.add(chat_user.reciever)
             
@@ -46,7 +45,6 @@ def chatusers_list(request):
         if user.username in chat_list:
             print('username',user)   
             user_list.append(user) 
-
        
     
 

@@ -94,6 +94,35 @@ function Header() {
     }
   };
 
+  const id = user.user_id
+
+  const socket = new WebSocket('ws://127.0.0.1:8000/ws/'+id+'/')
+
+
+  socket.onopen = function(e){
+    console.log('Connection Established for notification',e);
+  }
+
+  socket.onclose = function(e){
+    console.log('Connection lost notification');
+  }
+
+  socket.onerror = function(e){
+    console.log('Error notification',e);
+  }
+
+  socket.onmessage = function(e){
+    console.log('message notification',e);
+    // const data = JSON.parse(e.data)
+    // setOnMessage(data)
+    // chatData(username)
+    // getUserChatList(baseUrl)
+  }
+
+
+
+
+
   return (
     <div className=" sticky top-0">
       <nav className="bg-indigo-800 border-gray-200 px-2 sm:px-4 py-2.5   dark:bg-gray-900 w-full">

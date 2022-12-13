@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import Axios from "axios";
 import AuthContext from "../../context/UserAuthContext";
 
@@ -7,6 +7,7 @@ const baseUrl = "http://127.0.0.1:8000/";
 
 function FriendProfile() {
   let { authTokens, user } = useContext(AuthContext);
+  const navigate = useNavigate()
   const [friendprofile, setFreindProfile] = useState([]);
   const [follow, setfollow] = useState([]);
   const [userFollowers, setUserFollowers] = useState([]);
@@ -71,41 +72,15 @@ function FriendProfile() {
     }
   };
 
-  // console.log('here is the total count',postCount.post_count);
+  //funciton to go to the friend profile component.
+  const findProfile = (userid,username) => {
+    console.log("here is the id", userid);
+    
+    // navigate("/user/friend-profile/" + userid);
+    navigate("/user/chat/"+userid+'/'+username)
+  };
 
-  //   // function to call to get the list of followers.
-  //   const handleFollowers = () => {
-  //     Axios.get(baseUrl + "accounts/followers", {
-  //       headers: {
-  //         Authorization: `Bearer ${authTokens.access}`,
-  //       },
-  //     })
-  //       .then((res) => {
-  //         console.log("folllist", res.data.Data);
-  //         setFollowersList(res.data.Data);
-  //       })
-  //       .catch((error) => {
-  //         console.log("errors", error);
-  //       });
-  //     setModalFollowers(!modalFollowers);
-  //   };
-
-  //   // function to call to get the list of following users.
-  //   const handleFollowing = () => {
-  //     Axios.get(baseUrl + "accounts/following", {
-  //       headers: {
-  //         Authorization: `Bearer ${authTokens.access}`,
-  //       },
-  //     })
-  //       .then((res) => {
-  //         console.log('fjo dadadfas',res.data);
-  //         setFollowingList(res.data.Data);
-  //       })
-  //       .catch((err) => {
-  //         console.log("errrr", err);
-  //       });
-  //     setModalFollowing(!modalFollowing);
-  //   };
+  
 
   return (
     <div>
@@ -172,7 +147,9 @@ function FriendProfile() {
                   <span className="text-sm text-slate-400">Following</span>
                 </div>
               </div>
-              <button className="bg-blue-500 text-white p-2 rounded-md">
+              <button
+               onClick={()=>findProfile(friendprofile.id,friendprofile.username)}
+               className="bg-blue-500 text-white p-2 rounded-md">
                 Message
               </button>
             </div>
