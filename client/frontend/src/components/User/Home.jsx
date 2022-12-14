@@ -47,12 +47,13 @@ function Home() {
   }
 
   //function to like post.
-  function likePost(id, likes) {
+  function likePost(id, likes, postedusername) {
     let data = {
       id: id,
       likes_no: likes + 1,
       liked_user: user.username,
       user: user.user_id,
+      posteduser:postedusername
     };
     try {
       Axios.patch(baseUrl + "home", data, {
@@ -119,11 +120,12 @@ function Home() {
   console.log("comments here", allComment);
 
   //function to add comment.
-  const addComment = (id) => {
+  const addComment = (id, posteduser) => {
     let data = {
       user: user.user_id,
       comment: comment,
       post_id: id,
+      posteduser:posteduser
     };
     try {
       Axios.post(baseUrl + "comment", data, {
@@ -258,7 +260,7 @@ function Home() {
 
                     <div className="flex bg-gren-400 w-full">
                       <button
-                        onClick={() => likePost(feed.id, feed.likes_no)}
+                        onClick={() => likePost(feed.id, feed.likes_no,feed.user.username)}
                         className="my-2 ml-2  sm:m-4 bg-yllow-400"
                         type="submit"
                       >
@@ -372,7 +374,7 @@ function Home() {
                               </div>
                               <div className="ml-auto  px-2">
                                 <button
-                                  onClick={() => addComment(feed.id)}
+                                  onClick={() => addComment(feed.id,feed.user.username)}
                                   className="text-indigo-600"
                                 >
                                   Post

@@ -1,7 +1,11 @@
-import React from "react";
+import React,{useContext,useState} from "react";
 import {FaCircle} from 'react-icons/fa'
+import AuthContext from "../../context/UserAuthContext";
 
 function ActiveFriends() {
+
+  
+
   return (
     <div className="">
       <div class="flex justify-center ">

@@ -72,7 +72,7 @@ function FriendProfile() {
     }
   };
 
-  //funciton to go to the friend profile component.
+  //funciton to go to the friend chatpage.
   const findProfile = (userid,username) => {
     console.log("here is the id", userid);
     

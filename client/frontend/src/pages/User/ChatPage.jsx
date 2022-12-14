@@ -10,19 +10,15 @@ const baseUrl = "http://127.0.0.1:8000/";
 
 function ChatPage() {
     let {user, authTokens} = useContext(AuthContext)
-    const {otherid,otherusername} = useParams()
-    const [userChatList,setUserChatList] = useState([])
-    const [username, setUsername] =useState() 
-    const [id, setId] = useState()
+    const {otherid,otherusername} = useParams()  //getting the userid and username of the person.
+    const [userChatList,setUserChatList] = useState([]) //getting all the users list where the logged in user chatted.
+    const [username, setUsername] =useState()  //setting the username of other person to get all the chatdata btween the logged and other user.
+    const [id, setId] = useState() // other person id to pass through the websocket url to connect the socket.
     const [onMessage, setOnMessage] = useState()
-    const [chatMessage, setChatMessage] = useState([])
+    const [chatMessage, setChatMessage] = useState([]) //to set all the chatdata.
 
-    const myid = user.user_id
-
-    // if (otherid!=='' && otherusername!=='') {
-    //     console.log('here is message id',otherid,otherusername);
-    // }
-    
+    const myid = user.user_id  //logged in user id to pass through the websocket to connect the socket.
+  
 
   const socket = new WebSocket('ws://127.0.0.1:8000/ws/'+myid+'/'+id+'/')
 
@@ -42,9 +38,12 @@ function ChatPage() {
   socket.onmessage = function(e){
     console.log('message',e);
     const data = JSON.parse(e.data)
-    setOnMessage(data)
+    if (data) {
+        setOnMessage(data)
     chatData(username)
-    getUserChatList(baseUrl)
+    }
+    
+    // getUserChatList(baseUrl)
   }
 
   
@@ -76,7 +75,6 @@ useEffect(()=>{
 
    //to get the username and id of the person which the logged in user want to chat.
    const get_id = (id,username)=>{
-    
     console.log('other id is',id,username);
     setId(id)
     setUsername(username)
@@ -97,7 +95,6 @@ useEffect(()=>{
 
   //to get the chat data of the loggedin user and other person.
   const chatData = (username)=>{
-    // console.log('hhhhhh',username);
     Axios.get(baseUrl+'chat/chat-data/'+username,{
       headers:{
         Authorization:`Bearer ${authTokens.access}`

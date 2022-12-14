@@ -27,6 +27,7 @@ import PrivateRoutes from './Utils/PrivateRoutes';
 import ListPostPage from './pages/Admin/ListPostPage';
 import AdminPrivateRoutes from './Utils/AdminPrivateRoutes';
 import ChatPage from './pages/User/ChatPage';
+import NotificationPage from './pages/User/NotificationPage';
 
 function App() {
   return (
@@ -47,9 +48,10 @@ function App() {
                 <Route element={<FriendProfilePage/>} path='/user/friend-profile/:userdata' />
                 <Route element={<ChatPage/>} path='/user/chat' />
                 <Route element={<ChatPage/>} path='/user/chat/:otherid/:otherusername' /> 
+                <Route element={<NotificationPage/>} path='/user/notification' />
             </Route>
             
-          </Routes>
+          </Routes>   
         </AuthProvider>  
 
         <AuthAdminProvider>

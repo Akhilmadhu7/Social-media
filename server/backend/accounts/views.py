@@ -11,6 +11,11 @@ from rest_framework import status
 from . models import Accounts, Follower, Post, LikePost, Comment
 from rest_framework import permissions
 from rest_framework.parsers import MultiPartParser, FormParser
+from chat.models import Notifications
+from chat.serializers import NotificationSerializer
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+import json
 
 
 class Hello(APIView):
@@ -192,6 +197,32 @@ class NewFriendsView(APIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
+#Function to send notifications.
+def sendNotifications(text,notify_sender,user):
+
+    #notify sender is the user one who made the actoin to get the notification.
+    #user is the on who will get the notification(notificatoin receiver).
+    #text contains the text data to show the notification.
+    
+    room_group_name = 'notify_%s' % f'{user}'  #creating a group for the notification.
+    #creating the notification instance.
+    notify_obj = Notifications.objects.create(
+        notify_receiver=user,notify_sender=notify_sender,
+        notification_text=text,thread_name=room_group_name
+    )
+    notify_obj.save()
+    notifications = Notifications.objects.filter(is_seen=False,notify_receiver=user).order_by('-id')    #getting all the unseen notifications.
+    notify_ser = NotificationSerializer(notifications,many=True)
+    #passing the serialized data to channel layer to send the notifications to the users in the group.
+    channel_layer=get_channel_layer()
+    async_to_sync (channel_layer.group_send)(
+    room_group_name,{
+        "type":"send_notifications",
+        "value":json.dumps(notify_ser.data)
+        }
+    )
+    return        
+
 
 # Follow users function
 class FollowUsers(APIView):
@@ -213,7 +244,7 @@ class FollowUsers(APIView):
         follower = request.data['follower']
         print('dddddd', follower)
         # follower_id = self.get_object(follower)
-        # checking if user following or not.
+        # checking if user following or not. if following, unfollow.
         if Follower.objects.filter(username=user, follower=follower).first():
             print('qqqqqqqqqq')
             # if following , unfollow the profile.
@@ -226,22 +257,50 @@ class FollowUsers(APIView):
             # data['Response'] = 'Unfollowed succesfully'
             data['follow'] = 'follow'
             return Response(data, status=status.HTTP_200_OK)
+        #else follow user.    
         else:
             print('yyyyy')
-            # if not following.
             follower_ser = FollowerSerializer(data=request.data)
             if follower_ser.is_valid():
                 follower_ser.save()
                 data['Data'] = follower_ser.data
                 # data['Response'] = 'Following'
                 data['follow'] = 'following'
+
+                #send notification if user follow other user.
+                #follower contains the id of the notify sender.
+                notify_sender = self.get_object(follower) #notify sender is the one who made the action.
+                
+                # room_group_name = 'notify_%s' % f'{user}'  #creating a group for the notification.
+                notify_text = f"{notify_sender} started following you"   #creating the text message if anyone follow a user.
+                # notify_obj = Notifications.objects.create(
+                #     notify_receiver=user,notify_sender=notify_sender,
+                #     notification_text=notify_text,thread_name=room_group_name
+                # )
+                # notify_obj.save()
+                # notifications = Notifications.objects.filter(is_seen=False,notify_receiver=user).order_by('-id')    #getting all the unseen notifications.
+                # notify_ser = NotificationSerializer(notifications,many=True)
+
+
+                #passing the serialized data to channel layer to send the notifications to the users in the group.
+
+
+                # channel_layer=get_channel_layer()
+                # async_to_sync (channel_layer.group_send)(
+                # room_group_name,{
+                #     "type":"send_notifications",
+                #     "value":json.dumps(notify_ser.data)
+                # }
+                # )
+                sendNotifications(notify_text,notify_sender,user)
+                
                 return Response(data, status=status.HTTP_200_OK)
             else:
                 data['Errors'] = follower_ser.errors
                 data['Response'] = 'Something went wrong'
                 return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
-
+  
 # Friends profile view
 class FriendsProfileView(APIView):
 
@@ -395,9 +454,10 @@ class Home_view(APIView):
     def patch(self, request):
         data = request.data
         print('datadatadata', data)
-        id = data['id']
-        user = data['user']
-        liked_user = data['liked_user']
+        id = data['id'] #id of the post.
+        user = data['user'] #id of the logged in user(the one who likes the post).
+        liked_user = data['liked_user'] #username of the logged in user(the one who likes the post). 
+        notify_receiver = data['posteduser']  #id of the user who posted the post(this data will be used to send notifications to this user).
 
         post = Post.objects.get(id=id)
         likedPost = LikePost.objects.filter(
@@ -414,6 +474,13 @@ class Home_view(APIView):
                 username=liked_user
             )
             likepost.save()
+            try:
+                accounts = Accounts.objects.get(id=user)    #getting the account instance of the loggedin user(the who like the post).
+            except:
+                return None    
+            notify_sender = accounts #assiging the account instance to the variable notify_sender
+            notify_text = f"{notify_sender} liked your post"    #text message for the notification.
+            sendNotifications(notify_text,notify_sender,notify_receiver)    #passing the arguements to the sendNotification function.
         else:
             post.is_liked = False
             likedPost.delete()
@@ -518,11 +585,21 @@ class AddComment_View(APIView):
 
     def post(self, request):
         print('get request', request.user)
-        user = request.user
+        user = request.data['user']
         print('request comment', request.data)
+        notify_receiver = request.data['posteduser']
+        print('notify user is',notify_receiver)
         comment_ser = CommentCreateSerializer(data=request.data, context={'request': request})
         if comment_ser.is_valid():
             comment_ser.save()
+            try:
+                accounts = Accounts.objects.get(id=user)
+            except:
+                return None
+            if accounts:
+                notify_sender = accounts #assiging the account instance to the variable notify_sender
+                notify_text = f"{notify_sender} commented on your post"    #text message for the notification.
+                sendNotifications(notify_text,notify_sender,notify_receiver)    #passing the arguements to the sendNotification function.         
             return Response(comment_ser.data, status=status.HTTP_201_CREATED)
         else:
             return Response(comment_ser.errors, status=status.HTTP_400_BAD_REQUEST)

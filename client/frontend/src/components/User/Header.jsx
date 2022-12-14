@@ -1,6 +1,6 @@
 import React from "react";
 import AuthContext from "../../context/UserAuthContext";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Axios from "axios";
 import {
@@ -19,6 +19,7 @@ function Header() {
   let { user, logoutUser, authTokens } = useContext(AuthContext);
   const [modalPost, setModalPost] = useState(false);
   const navigate = useNavigate();
+  const [notifyCount, setNotifyCount] = useState('')
   const [imgPreview, setImgPreview] = useState(""); //to show the image preview.
   const [searchData, setSearchData] = useState({
     searchValue: "",
@@ -94,30 +95,45 @@ function Header() {
     }
   };
 
-  const id = user.user_id
+  
 
-  const socket = new WebSocket('ws://127.0.0.1:8000/ws/'+id+'/')
+  const username = user.username
 
+  useEffect(() => {
+    const socket = new WebSocket('ws://127.0.0.1:8000/ws/'+username+'/')
 
-  socket.onopen = function(e){
-    console.log('Connection Established for notification',e);
-  }
+    socket.onopen = function(e){
+      console.log('Connection Established for notification',e);
+      // setActive(!active) 
+    }
+  
+    socket.onclose = function(e){
+      console.log('Connection lost notification');
+    }
+  
+    socket.onerror = function(e){
+      console.log('Error notification',e);
+    }
+  
+    socket.onmessage = function(e){
+      console.log('message notification',e);
+      const data = JSON.parse(e.data)
+      console.log('data');
+      console.log(data);
+      console.log(data.pay_load.length);   
+      setNotifyCount(data.pay_load.length)
+     
+      // const count = data.pay_load.length
+      console.log('notification length is',notifyCount);
+      // const data = JSON.parse(e.data)
+      // setOnMessage(data)
+      // chatData(username)
+      // getUserChatList(baseUrl)
+    }
+  }, [])
+  
 
-  socket.onclose = function(e){
-    console.log('Connection lost notification');
-  }
-
-  socket.onerror = function(e){
-    console.log('Error notification',e);
-  }
-
-  socket.onmessage = function(e){
-    console.log('message notification',e);
-    // const data = JSON.parse(e.data)
-    // setOnMessage(data)
-    // chatData(username)
-    // getUserChatList(baseUrl)
-  }
+  
 
 
 
@@ -198,9 +214,11 @@ function Header() {
               <li>
                 <a
                   className="block py-2 pr-4 pl-3 cursor-pointer text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
-                  onClick={() => navigate("/user/notification")}
-                >
+                  onClick={() => navigate('/user/notification')}
+                >{notifyCount && notifyCount!==0 ?
+                  <IoMdNotifications className="text-red-600" size="20px" />:
                   <IoMdNotifications className="text-white" size="20px" />
+                  }
                 </a>
               </li>
               <li className="">
