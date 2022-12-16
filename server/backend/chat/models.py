@@ -15,10 +15,10 @@ class ChatModel(models.Model):
         return self.message
 
 class ChatMessages(models.Model):
-    sender = models.ForeignKey(Accounts,related_name='sender',on_delete=models.CASCADE)
-    reciever = models.ForeignKey(Accounts,related_name='reciever',on_delete=models.CASCADE)
+    sender = models.ForeignKey(Accounts,related_name='sender',on_delete=models.CASCADE)  #the one who send the message.
+    reciever = models.ForeignKey(Accounts,related_name='reciever',on_delete=models.CASCADE)  #one who will get the message.
     message = models.CharField(max_length=120,null=True,blank=True)
-    thread_name = models.CharField(max_length=100,null=True,blank=True)
+    thread_name = models.CharField(max_length=100,null=True,blank=True)  #unique channel name for the two users to communicate.
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -39,3 +39,17 @@ class Notifications(models.Model):
 
     def __str__(self):
         return f"{self.notification_text} {str(self.notify_receiver)}"
+
+
+class ChatNotifications(models.Model):
+    message_receiver = models.CharField(max_length=120,null=True,blank=True) #the  one who will get the notification.
+    message_sender = models.ForeignKey(Accounts,related_name='notify_sender',on_delete=models.CASCADE)  #one who made the action.
+    notification_text = models.TextField()
+    thread_name = models.CharField(max_length=120,null=True,blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_seen = models.BooleanField(default=False)
+    notify_count = models.IntegerField(default=0)
+
+
+    def __str__(self):
+        return f"{self.notification_text} {str(self.message_receiver)}"

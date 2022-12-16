@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from . models import ChatModel,Notifications,ChatMessages
+from . models import ChatModel,Notifications,ChatMessages,ChatNotifications
 from accounts.serializers import UserProfileSerializer
 
 class ChatSerializer(serializers.ModelSerializer):
@@ -23,3 +23,9 @@ class NotificationSerializer(serializers.ModelSerializer):
         model = Notifications
         fields = '__all__'
 
+
+class ChatNotificationsSerializer(serializers.ModelSerializer):
+    message_sender = UserProfileSerializer()
+    class Meta:
+        model = ChatNotifications
+        fields = '__all__'

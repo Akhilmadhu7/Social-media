@@ -1,8 +1,10 @@
 import Axios from 'axios'
 import React, {useEffect, useState} from 'react'
 import { useContext } from 'react'
+
 import AuthContext from '../../context/UserAuthContext'
 import { format } from "timeago.js";
+import { useNavigate } from 'react-router-dom';
 
 
 const baseUrl = "http://127.0.0.1:8000/chat/"
@@ -11,40 +13,90 @@ function Notification() {
 
     let {user,authTokens} = useContext(AuthContext)
     const [notifyData, setNotifyData] = useState([])
-
+    const navigate = useNavigate()
+    const id = user.user_id
+    //to get all the notifications.
     useEffect(()=>{
+        console.log('authtokend notification',authTokens.access);
         try {
-            Axios.get(baseUrl+'notifications',{
+            Axios.patch(baseUrl+'notifications',id,{
                 headers:{
-                    Authorization:`Bearer ${authTokens.access}`
+                    Authorization: `Bearer ${authTokens.access}`
                 }
             }).then((res)=>{
                 console.log('notification result',res.data.Data);
                 setNotifyData(res.data.Data)
+                localStorage.removeItem('count')
             })
         } catch (error) {
             
         }
     },[])
 
+    //funciton to go to the friend profile component.
+  const findProfile = (username) => {
+    console.log("here is the id", username);
+    navigate("/user/friend-profile/" + username);
+  };
+
+
+
+//   const username = user.username
+
+//   useEffect(() => {
+//     const socket = new WebSocket('ws://127.0.0.1:8000/ws/'+username+'/')
+
+//     socket.onopen = function(e){
+//       console.log('Connection Established for notification',e);
+//       // setActive(!active) 
+//     }
+  
+//     socket.onclose = function(e){
+//       console.log('Connection lost notification');
+//     }
+  
+//     socket.onerror = function(e){
+//       console.log('Error notification',e);
+//     }
+  
+//     socket.onmessage = function(e){
+//       console.log('message notification',e);
+//       const data = JSON.parse(e.data)
+//       console.log('data');
+//       console.log(data);
+//       console.log(data.pay_load.length);   
+//       setNotifyCount(data.pay_load.length)
+     
+//       // const count = data.pay_load.length
+//       console.log('notification length is',notifyCount);
+//       // const data = JSON.parse(e.data)
+//       // setOnMessage(data)
+//       // chatData(username)
+//       // getUserChatList(baseUrl)
+//     }
+//   }, [])
+
+
   return (
     <div>
 
 
 
-<div className="max-w-lg mx-auto items-center h-screen">
+<div className="max-w-lg mx-auto items-center h-sceen">
     {notifyData?.map((notify)=>{
         return(
             <div className="flex justify-between px-3 py-1 bg-white items-center gap-1 rounded-lg border border-gray-100 my-3">
         <div className="relative w-16 h-16 rounded-full hover:bg-red-700 bg-gradient-to-r from-purple-400 via-blue-500 to-red-400 ">
             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-14 h-14 bg-gray-200 rounded-full border-2 border-white">
                 {notify.notify_sender.profile_pic ?
-                <img className="w-full h-full object-cover rounded-full"
+                <img className="w-full h-full object-cover rounded-full cursor-pointer"
+                 onClick={()=>findProfile(notify.notify_sender.username)}
                  src={notify.notify_sender.profile_pic}
                  alt=""/> :
-                 <svg
+                 <svg   
+                            onClick={()=>findProfile(notify.notify_sender.username)}
                             // className="rounded-full items-start text-gray-400 flex-shrink-0 mr-3"
-                            className="w-full h-full object-cover rounded-full"
+                            className="w-full h-full object-cover rounded-full cursor-pointer"
                             width="32"
                             height="32"
                             fill="currentColor"

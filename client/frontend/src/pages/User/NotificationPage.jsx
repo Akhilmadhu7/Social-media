@@ -1,13 +1,21 @@
-import React from 'react'
+import React , {useEffect, useState} from 'react'
 import ActiveFriends from '../../components/User/ActiveFriends'
 import Header from '../../components/User/Header'
 import Notification from '../../components/User/Notification'
 import ProfileBar from '../../components/User/ProfileBar'
+import Axios from 'axios'
+import { useContext } from 'react'
+import AuthContext from '../../context/UserAuthContext'
 
 function NotificationPage() {
+
+    let {user} = useContext(AuthContext)
+    
+
+
   return (
-    <div className='bg-slate-100 min-h-screen '>
-        <Header></Header>
+    <div className='bg-slate-100 min-h-screen '>    
+        <Header ></Header>
         
 
         <div className='grid justify-evenly lg:grid-cols-5 sm-grid-cols-1 gap-x-4'>

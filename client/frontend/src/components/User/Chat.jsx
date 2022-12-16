@@ -14,18 +14,24 @@ function Chat({ chatMessage, get_message, username }) {
     navigate("/user/friend-profile/" + username);
   };
 
+  const passMessage = (mess,ur)=>{
+    get_message(mess,ur)
+    setMessage('')
+  }
+  
+
   return (
     <div>
       <body class="flex flex-col items-center justify-center h-[90vh] bg-gray-100 text-gray-800 p-10">
         <div className="flex mr-auto mb-2" >
           <a className="inline-flex " href="#0">
-            <img 
+            {/* <img 
               className="rounded-full"
               src="https://res.cloudinary.com/dc6deairt/image/upload/v1638102932/user-48-01_nugblk.jpg"
               width="48"
               height="48"
               alt="Lauren Marsano"
-            />
+            /> */}
           </a>
           <div onClick={() => findProfile(username)}
            className=" ml-2 ">
@@ -78,7 +84,7 @@ function Chat({ chatMessage, get_message, username }) {
 
           <div class="bg-gray-300 p-4 flex">
             <input
-              // value={message}
+              value={message}
               class="flex items-center h-10 w-full rounded px-3 text-sm"
               type="text"
               placeholder="Type your message…"
@@ -86,7 +92,8 @@ function Chat({ chatMessage, get_message, username }) {
             />
             {message !== "" ? (
               <button
-                onClick={() => get_message(message, user.username)}
+                // onClick={() => get_message(message, user.username)}
+                onClick={()=>passMessage(message,user.username)}
                 className="px-2"
                 type="submit"
               >

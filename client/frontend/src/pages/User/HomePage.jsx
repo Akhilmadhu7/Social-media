@@ -12,18 +12,7 @@ function HomePage() {
 
     let {authTokens, user} = useContext(AuthContext)
     const navigate = useNavigate()
-    // console.log('userrrrrrrrr',user.l_name);
-
-    // useEffect( ()=>{
-    //     if (user) {
-    //         navigate('/home')
-            
-    //     } else {
-    //         console.log('aksdjh');
-    //         navigate('/')
-    //     }
-
-    // },[])
+    
 
   return (
     

@@ -17,9 +17,10 @@ const baseUrl = "http://127.0.0.1:8000/accounts/";
 
 function Header() {
   let { user, logoutUser, authTokens } = useContext(AuthContext);
+  let [notifyCount, setNotifyCount] = useState(()=> localStorage.getItem('count') ? (localStorage.getItem('count')) : 0)
   const [modalPost, setModalPost] = useState(false);
   const navigate = useNavigate();
-  const [notifyCount, setNotifyCount] = useState('')
+  // const [notifyCount, setNotifyCount] = useState(0)
   const [imgPreview, setImgPreview] = useState(""); //to show the image preview.
   const [searchData, setSearchData] = useState({
     searchValue: "",
@@ -95,7 +96,7 @@ function Header() {
     }
   };
 
-  
+  console.log('here is the not cou;nt',notifyCount);
 
   const username = user.username
 
@@ -120,11 +121,14 @@ function Header() {
       const data = JSON.parse(e.data)
       console.log('data');
       console.log(data);
-      console.log(data.pay_load.length);   
+      console.log(data.pay_load.length); 
+      const ab =  data.pay_load.length 
       setNotifyCount(data.pay_load.length)
+      
+      localStorage.setItem('count',data.pay_load.length)
      
-      // const count = data.pay_load.length
-      console.log('notification length is',notifyCount);
+      
+      console.log('abv count length is',ab);
       // const data = JSON.parse(e.data)
       // setOnMessage(data)
       // chatData(username)
@@ -215,10 +219,11 @@ function Header() {
                 <a
                   className="block py-2 pr-4 pl-3 cursor-pointer text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                   onClick={() => navigate('/user/notification')}
-                >{notifyCount && notifyCount!==0 ?
-                  <IoMdNotifications className="text-red-600" size="20px" />:
-                  <IoMdNotifications className="text-white" size="20px" />
-                  }
+                >
+                  {notifyCount===0 ?
+                  <IoMdNotifications className="text-white" size="20px" />: 
+                  <><IoMdNotifications className="text-red-600" size="20px" /><p className="text-white">{notifyCount && notifyCount}</p></>  
+                   }  
                 </a>
               </li>
               <li className="">

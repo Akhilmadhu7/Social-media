@@ -28,6 +28,7 @@ import ListPostPage from './pages/Admin/ListPostPage';
 import AdminPrivateRoutes from './Utils/AdminPrivateRoutes';
 import ChatPage from './pages/User/ChatPage';
 import NotificationPage from './pages/User/NotificationPage';
+import Header from './components/User/Header';
 
 function App() {
   return (
@@ -40,6 +41,8 @@ function App() {
             <Route element={<LoginPage/>} path='/' />
             <Route element={<SignupPage/>} path='/signup' />
             <Route  element={<PrivateRoutes/>} path='/user'>
+            
+          
                 <Route element={<HomePage/>} path='/user/home' />
                 <Route element={<UserProfilePage/>} path='/user/profile' />
                 <Route element={<EditProfilePage/>} path='/user/editprofile' />
@@ -49,6 +52,7 @@ function App() {
                 <Route element={<ChatPage/>} path='/user/chat' />
                 <Route element={<ChatPage/>} path='/user/chat/:otherid/:otherusername' /> 
                 <Route element={<NotificationPage/>} path='/user/notification' />
+               
             </Route>
             
           </Routes>   

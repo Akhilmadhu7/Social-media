@@ -2,9 +2,10 @@ from channels.generic.websocket import AsyncWebsocketConsumer, WebsocketConsumer
 import json
 from asgiref.sync import async_to_sync
 from channels.db import database_sync_to_async
-from . models import ChatModel,Notifications,ChatMessages
+from . models import ChatModel,Notifications,ChatMessages,ChatNotifications
 from accounts.models import Accounts
-
+from . serializers import NotificationSerializer,ChatNotificationsSerializer
+from channels.layers import get_channel_layer
 
 
 
@@ -51,6 +52,7 @@ class PersonalChatConsumer(AsyncWebsocketConsumer):
         reciever_user = data['reciever_user']
 
         await self.save_messages(username,self.room_group_name,messsage,reciever_user)
+        await self.sendChatNotificatoins(username,reciever_user)
         await self.channel_layer.group_send(
             self.room_group_name,
             {
@@ -70,7 +72,8 @@ class PersonalChatConsumer(AsyncWebsocketConsumer):
             'message':message,
             'username':username,
             'reciever_user':reciever_user
-        }))  
+        })) 
+    
 
     @database_sync_to_async
     def save_messages(self,username,thread_name,message,reciever_user):
@@ -79,14 +82,34 @@ class PersonalChatConsumer(AsyncWebsocketConsumer):
         ChatMessages.objects.create(
             sender=sender,reciever=reciever,thread_name=thread_name,message=message
         )
-        # ChatModel.objects.create(
-        #     sender=username,reciever=reciever_user,thread_name=thread_name,message=message
-        # )
+        
+        
+    @database_sync_to_async
+    def sendChatNotificatoins(self,username,reciever_user):
+        print('chat notifications working')
+        room_group_name = 'notify_%s' % f'{reciever_user}' #unique room_name.
+        sender = Accounts.objects.get(username=username) #getting the sender instance from Accounts.
+        text = f"{sender} send you a message" 
+        ChatNotifications.objects.create(
+            message_receiver=reciever_user,message_sender=sender,
+            notification_text=text,thread_name=room_group_name
+        )
+        notifications = ChatNotifications.objects.filter(is_seen=False,message_receiver=reciever_user).order_by('-id')    #getting all the unseen notifications.
+        notify_ser = ChatNotificationsSerializer(notifications,many=True)
+        #passing the serialized data to channel layer to send the notifications to the users in the group.
+        channel_layer=get_channel_layer() 
+        async_to_sync (channel_layer.group_send)(
+        room_group_name,{
+            "type":"send_notifications",
+            "value":json.dumps(notify_ser.data)
+            }
+        )
+        return
 
         
 
 
-class Notifications(AsyncWebsocketConsumer):
+class NotificationsConsumer(AsyncWebsocketConsumer):
     
     async def connect(self):
         
@@ -125,12 +148,14 @@ class Notifications(AsyncWebsocketConsumer):
     
 
     async def send_notifications(self,event):
-        # print('hereis evenet',event)
+        print('hereis evenet',event)
         data = json.loads(event.get('value'))
 
         await self.send(text_data=json.dumps({
             
             'pay_load':data
         }))  
+
+        
 
        

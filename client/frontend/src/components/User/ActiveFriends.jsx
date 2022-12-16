@@ -10,7 +10,7 @@ function ActiveFriends() {
     <div className="">
       <div class="flex justify-center ">
         <ul class="bg-white rounded-lg border border-gray-200  text-gray-900">
-          <li class="px-6 py-2 border-b border-gray-200 w-full rounded-t-lg bg-indigo-600 text-white">
+          <li class="px-6 py-2 border-b border-gray-200 w-full rounded-t-lg bg-indigo-700 text-white">
             Active Friends
           </li>
           <li class="px-6 py-2 flex border-b border-gray-200 w-fit">

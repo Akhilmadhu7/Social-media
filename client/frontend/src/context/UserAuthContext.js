@@ -67,6 +67,7 @@ export const AuthProvider = ({children}) => {
                             setAuthTokens(null)
                             console.log('routeee');
                             localStorage.removeItem('authTokens')
+                            localStorage.removeItem('count')
                             navigate('/')
                         }
                     }).catch(er=>{

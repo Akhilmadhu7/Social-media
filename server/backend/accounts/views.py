@@ -197,6 +197,33 @@ class NewFriendsView(APIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
+# #Function to send notifications.
+# def sendNotifications(text,notify_sender,user):
+
+#     #notify sender is the user one who made the actoin to get the notification.
+#     #user is the on who will get the notification(notificatoin receiver).
+#     #text contains the text data to show the notification.
+    
+#     room_group_name = 'notify_%s' % f'{user}'  #creating a group for the notification.
+#     #creating the notification instance.
+#     notify_obj = Notifications.objects.create(
+#         notify_receiver=user,notify_sender=notify_sender,
+#         notification_text=text,thread_name=room_group_name
+#     )
+#     notify_obj.save()
+#     notifications = Notifications.objects.filter(is_seen=False,notify_receiver=user)  #getting all the unseen notifications.
+#     notify_ser = NotificationSerializer(notifications,many=True)
+#     print('gfgfggfgfggfgfggfggfggfggfgfggfggfgfggfggfggf')
+#     #passing the serialized data to channel layer to send the notifications to the users in the group.
+#     channel_layer=get_channel_layer()
+#     print('klklklklkkkkklklkkkklkkkkklklk')
+#     async_to_sync (channel_layer.group_send)(
+#     room_group_name,{
+#         "type":"send_notifications",
+#         "value":json.dumps(notify_ser.data)
+#         }
+#     )
+          
 #Function to send notifications.
 def sendNotifications(text,notify_sender,user):
 
@@ -211,18 +238,20 @@ def sendNotifications(text,notify_sender,user):
         notification_text=text,thread_name=room_group_name
     )
     notify_obj.save()
+    print('klklklklkkkkklklkkkklkkkkklklk')
     notifications = Notifications.objects.filter(is_seen=False,notify_receiver=user).order_by('-id')    #getting all the unseen notifications.
     notify_ser = NotificationSerializer(notifications,many=True)
     #passing the serialized data to channel layer to send the notifications to the users in the group.
+    print('klklklklkkkkklklkkkklkkkkklklk')
     channel_layer=get_channel_layer()
     async_to_sync (channel_layer.group_send)(
+    # print('klklklklkkkkklklkkkklkkkkklklk'),
     room_group_name,{
         "type":"send_notifications",
         "value":json.dumps(notify_ser.data)
         }
     )
-    return        
-
+    return 
 
 # Follow users function
 class FollowUsers(APIView):
@@ -284,7 +313,7 @@ class FollowUsers(APIView):
 
                 #passing the serialized data to channel layer to send the notifications to the users in the group.
 
-
+                
                 # channel_layer=get_channel_layer()
                 # async_to_sync (channel_layer.group_send)(
                 # room_group_name,{
