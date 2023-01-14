@@ -1,5 +1,5 @@
 import React from "react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { FaRegPaperPlane, FaRegComment, FaRegHeart } from "react-icons/fa";
 import { IoMdHeart } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
@@ -19,11 +19,15 @@ function Home() {
   const [commentModal, setCommentModal] = useState({ id: "", status: false });
   const [reportModal, setReportModal] = useState(false);
   const navigate = useNavigate();
-  console.log("hoekasdj");
+  const scroll = useRef()
 
   useEffect(() => {
     feed(baseUrl);
   }, []);
+
+  useEffect(() => {
+    scroll.current?.scrollIntoView({ behavior: "smooth" })
+}, [commentModal])
 
   //function to call all the posts in home page.
   function feed(url) {
@@ -318,7 +322,7 @@ function Home() {
                           <div className="space-y-4 h-[200px] md:h-[300px] overflow-y-scroll">
                             {allComment.map((commemts) => {
                               return (
-                                <div className="flex">
+                                <div className="flex" ref={scroll}>
                                   <div className="flex-shrink-0 mr-3">
                                     <img
                                       className="mt-2 rounded-full w-8 h-8 sm:w-10 sm:h-10"

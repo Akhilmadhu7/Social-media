@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import AuthContext from "../../context/UserAuthContext";
 import { useNavigate } from "react-router-dom";
 import { format } from "timeago.js";
@@ -7,12 +7,17 @@ function Chat({ chatMessage, get_message, username }) {
   let { user } = useContext(AuthContext);
   const [message, setMessage] = useState([]);
   const navigate = useNavigate();
+  const scroll = useRef()
 
   //funciton to go to the friend profile component.
   const findProfile = (username) => {
     console.log("here is the id", username);
     navigate("/user/friend-profile/" + username);
   };
+
+  useEffect(() => {
+    scroll.current?.scrollIntoView({ behavior: "smooth" })
+}, [chatMessage])
 
   const passMessage = (mess,ur)=>{
     get_message(mess,ur)
@@ -47,7 +52,7 @@ function Chat({ chatMessage, get_message, username }) {
               return (
                 <>
                   {chat.sender.username !== user.username ? (
-                    <div class="flex w-full mt-2 space-x-3 max-w-xs">
+                    <div class="flex w-full mt-2 space-x-3 max-w-xs" ref={scroll}>
                       <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-300">
                         <img className="rounded-full"
                          src={chat.sender.profile_pic} />
@@ -62,7 +67,7 @@ function Chat({ chatMessage, get_message, username }) {
                       </div>
                     </div>
                   ) : (
-                    <div class="flex w-full mt-2 space-x-3 max-w-xs ml-auto justify-end">
+                    <div class="flex w-full mt-2 space-x-3 max-w-xs ml-auto justify-end" ref={scroll}>
                       <div>
                         <div class="bg-blue-600 text-white p-3 rounded-l-lg rounded-br-lg">
                           <p class="text-sm">{chat.message}</p>

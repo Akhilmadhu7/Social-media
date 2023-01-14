@@ -37,7 +37,7 @@ function Login() {
 
   return (
     <div>
-      <div className="bg-white dark:bg-gray-900 ">
+      <div className="bg-white dark:bg-gray-900   ">
         <div className="flex justify-center h-screen">
           <div
             className="hidden bg-cover lg:block lg:w-1/2"

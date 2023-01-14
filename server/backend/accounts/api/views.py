@@ -16,7 +16,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         
         token = super().get_token(user)
         
-
+        data = {}
         # Add custom claims
         token['username'] = user.username
         token['is_admin'] = user.is_admin
@@ -26,21 +26,18 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
             accounts.is_deactivated = False
             accounts.save()
             print(accounts.is_deactivated,'userserser',accounts.username)
-        return token
+        if accounts.is_verified == True:  
+            token['is_verified'] = True  
+            print('this is user')
+            return token
+        else:
+            token['is_verified'] = False  
+            print('username',accounts.username)
+            data['Response'] = 'Account not verified'
+            return token
+                
         
-        # accounts = Accounts.objects.get(username=user.username)
-        # if not accounts.is_logged:
-        #     print('loooooooogged',accounts.is_logged)
-        #     accounts.is_logged = True
-        #     accounts.save()
-        #     print('loggeeeeeeed',accounts.is_logged)
-        #     token['is_logged'] = user.is_logged
-        # else:
-        #     print('lllllogged',accounts.is_logged)
-        #     accounts.is_logged = True
-        #     accounts.save()
-        #     print('loggggggggged',accounts.is_logged)
-        #     token['is_logged'] = user.is_logged
+        
 
     
          

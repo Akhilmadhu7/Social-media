@@ -119,7 +119,7 @@ export const AuthAdminProvider = ({children}) =>{
         if (loading) {
             updateToken()
         }
-        let fourMinutes = 1000 * 60 * 4
+        let fourMinutes = 1000 * 60 * 18
         let intervel = setInterval(()=>{
             if (authTokens) {
                 console.log('function called');

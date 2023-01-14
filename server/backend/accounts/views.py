@@ -1,6 +1,6 @@
 
 from django.shortcuts import render
-import jwt
+import random
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
@@ -16,12 +16,69 @@ from chat.serializers import NotificationSerializer
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 import json
+from backend.settings import EMAIL_HOST_USER
+from django.core.mail import send_mail
 
 
 class Hello(APIView):
 
     def get(self, request):
         return Response({"Response": "Hello user"})
+
+# @api_view(['Get'])
+def email_send(email): 
+    print('veenfum')
+    sub = 'Account verification'
+    otp = ''
+    for i in range(0,6):
+        otp += str(random.randint(0,9))
+    msg = 'Your otp number is '+otp
+    try:
+        accounts = Accounts.objects.get(email=email)
+    except:
+        return None
+    if accounts:
+        accounts.otp = otp
+        accounts.save() 
+    else:
+        pass                   
+    send_mail(sub,msg,EMAIL_HOST_USER,[email])
+    return True
+
+#otp verification
+@api_view(['POST'])
+def otp_verification(request):
+    print('reaa',request.data)
+    data = {}
+    otp_no = request.data['otp']
+    try:
+        accounts = Accounts.objects.get(otp=otp_no)
+    except:
+        print('bad, response is not success')
+        data['Error'] = 'Invalid otp number'     
+        return Response(data, status=status.HTTP_400_BAD_REQUEST) 
+    if accounts:
+        accounts.is_verified = True
+        accounts.save()
+        print('hello respponse is success')
+        data['Response'] = 'Account verified'
+        return Response(data, status=status.HTTP_200_OK) 
+    # else:
+    #     print('bad, response is not success')
+    #     data['Error'] = 'Invalid otp number'     
+    #     return Response(data, status=status.HTTP_400_BAD_REQUEST)  
+
+
+#resend otp funciton
+@api_view(['POST'])
+def resend_otp(request):
+    data = {}
+    email = request.data['email']
+    print('here is the email',email)
+    resend = email_send(email)
+    if resend:
+        data['Response'] = 'Otp resend succesfully'
+        return Response(data, status=status.HTTP_200_OK)
 
 
 
@@ -32,11 +89,19 @@ class UserRegister(APIView):
         serializer = AccountSerializer(data=request.data)
 
         data = {}
+        # mail_send = email_send(data['email'])
+        # if mail_send:
+        #     verify_account = otp_verification(mail_send)
         if serializer.is_valid():
             accounts = serializer.save()
             data['username'] = accounts.username
             data['Response'] = 'Account registered'
-            return Response(data, status=status.HTTP_201_CREATED)
+            mail = email_send(request.data['email'])
+            if mail == True:
+                return Response(data, status=status.HTTP_201_CREATED)
+            else:
+                data['Response'] = 'Something went wrong'
+                return Response(data,status=status.HTTP_403_FORBIDDEN)    
         else:
             print('sdjhfg')
             data['Response'] = serializer.errors
@@ -52,7 +117,6 @@ class UserProfile(APIView):
     def get_object(self, id):
         try:
             return Accounts.objects.get(id=id, is_active=True)
-            return
         except Accounts.DoesNotExist:
             Response({"Message": "User does not exist"})
 
@@ -135,7 +199,7 @@ class ChangePassword(APIView):
             return Accounts.objects.get(id=user_id)
 
         except Accounts.DoesNotExist:
-            raise ValueError({"Message": "User does not exist"})
+            return Response({"Message": "User does not exist"},status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request):
         self.object = self.get_object(request)
@@ -183,7 +247,7 @@ class NewFriendsView(APIView):
             # returning the users who are related with user profile and not followed by the user
             return suggestion_list
         except Accounts.DoesNotExist:
-            raise ValueError({"Error": "User does not exist"})
+            return Response({"Error": "User does not exist"})
 
     def get(self, request):
         data = {}
@@ -197,32 +261,7 @@ class NewFriendsView(APIView):
 
         return Response(data, status=status.HTTP_200_OK)
 
-# #Function to send notifications.
-# def sendNotifications(text,notify_sender,user):
 
-#     #notify sender is the user one who made the actoin to get the notification.
-#     #user is the on who will get the notification(notificatoin receiver).
-#     #text contains the text data to show the notification.
-    
-#     room_group_name = 'notify_%s' % f'{user}'  #creating a group for the notification.
-#     #creating the notification instance.
-#     notify_obj = Notifications.objects.create(
-#         notify_receiver=user,notify_sender=notify_sender,
-#         notification_text=text,thread_name=room_group_name
-#     )
-#     notify_obj.save()
-#     notifications = Notifications.objects.filter(is_seen=False,notify_receiver=user)  #getting all the unseen notifications.
-#     notify_ser = NotificationSerializer(notifications,many=True)
-#     print('gfgfggfgfggfgfggfggfggfggfgfggfggfgfggfggfggf')
-#     #passing the serialized data to channel layer to send the notifications to the users in the group.
-#     channel_layer=get_channel_layer()
-#     print('klklklklkkkkklklkkkklkkkkklklk')
-#     async_to_sync (channel_layer.group_send)(
-#     room_group_name,{
-#         "type":"send_notifications",
-#         "value":json.dumps(notify_ser.data)
-#         }
-#     )
           
 #Function to send notifications.
 def sendNotifications(text,notify_sender,user):
@@ -238,20 +277,18 @@ def sendNotifications(text,notify_sender,user):
         notification_text=text,thread_name=room_group_name
     )
     notify_obj.save()
-    print('klklklklkkkkklklkkkklkkkkklklk')
     notifications = Notifications.objects.filter(is_seen=False,notify_receiver=user).order_by('-id')    #getting all the unseen notifications.
     notify_ser = NotificationSerializer(notifications,many=True)
     #passing the serialized data to channel layer to send the notifications to the users in the group.
-    print('klklklklkkkkklklkkkklkkkkklklk')
     channel_layer=get_channel_layer()
     async_to_sync (channel_layer.group_send)(
-    # print('klklklklkkkkklklkkkklkkkkklklk'),
     room_group_name,{
         "type":"send_notifications",
         "value":json.dumps(notify_ser.data)
         }
     )
     return 
+
 
 # Follow users function
 class FollowUsers(APIView):
@@ -443,21 +480,26 @@ class Home_view(APIView):
         post_data = Post.objects.filter(is_reported=False).order_by('-id')
         user_list = []
         post_list = []
+        post_liked = []
         accounts = Accounts.objects.all()
+        likedpost = LikePost.objects.filter(username=username)  
         for user in accounts:
             if user.is_deactivated == False:
                 user_list.append(user)
             else :
-                pass       
+                pass               
         for post in post_data:
             if post.user in user_list:
                 post_list.append(post)      
             else:
                 pass    
+        for post in post_list:
+            for liked_p in likedpost:
+                if liked_p.post_id == post.id:
+                    post.is_liked
         post_ser = PostSerializer(
             post_list, many=True, context={'request': request})
         # data['Data'] = post_ser.data    
-
         return Response(post_ser.data, status=status.HTTP_200_OK)
 
     # function to upload a Post.
@@ -479,7 +521,7 @@ class Home_view(APIView):
             data['Response'] = 'Something went wrong'
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
 
-    # Patch method to like post model and add likes user to LikePost model.
+    # Patch method to like post model and add liked user to LikePost model.
     def patch(self, request):
         data = request.data
         print('datadatadata', data)
@@ -689,4 +731,20 @@ def deactivate_account(request,id):
         return Response(data,status=status.HTTP_200_OK) 
           
         
+
+#forgot password(implementation not completed)
+@api_view(['POST'])
+def forgot_password(request):
+    data = {}
+    email = request.data['email']
+    try:
+        accounts = Accounts.objects.get(email=email)
+    except Accounts.DoesNotExist:
+        return None
+    if accounts:
+        pass
+    else:
+        data['Errors'] = 'Invalid data'
+        return Response(data, status=status.HTTP_404_NOT_FOUND)
+
 

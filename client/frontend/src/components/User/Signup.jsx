@@ -4,6 +4,7 @@ import Axios from 'axios'
 import { useForm } from "react-hook-form";
 import Swal from 'sweetalert2'
 import AuthContext from '../../context/UserAuthContext';
+import Otp from './Otp';
 
 
 const baseUrl = 'http://127.0.0.1:8000/'
@@ -11,8 +12,9 @@ const baseUrl = 'http://127.0.0.1:8000/'
 function Signup() {
   const navigate = useNavigate()
   let {username} = useContext(AuthContext)
-
+  const[otpModal, setOtpModal] = useState(false)
   const [errorData, setErrorData] = useState([])
+  const [otpValue, setOtpValue] = useState("")
 
   const {
     register,
@@ -52,7 +54,11 @@ function Signup() {
         password: userData.password,
         password2: userData.password2
       }).then((res) =>{
-        navigate('/')
+        // navigate('/')
+        if (res.status===201) {
+          setOtpModal(true)
+          // navigate('/otp-verify')
+        }
         
       }).catch((error)=>{
         console.log(error.response)
@@ -64,6 +70,8 @@ function Signup() {
       console.log('errors',error);
     }
   }
+
+  
 
   return (
     
@@ -136,6 +144,9 @@ function Signup() {
                     <small className="text-red-600">{errorData.l_name}</small>
                 </div>
               </div>
+              {otpModal && 
+              <Otp setOtpModal={setOtpModal} email={userData.email}></Otp>
+              }
               <div className="mb-2  justify-around grid sm:grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="mb-2">
                   <label
@@ -190,6 +201,7 @@ function Signup() {
                 </div>
               </div>
               <div className="mb-2  justify-around grid sm:grid-cols-1 md:grid-cols-2'">
+              
               <div>
                   <label
                     for="email"
@@ -294,7 +306,7 @@ function Signup() {
               </div>
             </div>
           </form>
-
+                  
           <p className="mt-8 text-xs font-light text-center text-gray-700">
             {" "}
             Already have an account?{" "}

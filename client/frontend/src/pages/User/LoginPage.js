@@ -4,7 +4,7 @@ import Login from '../../components/User/Login'
 
 function LoginPage() {
   return (
-    <div className='bg-indigo-800 h-full'>
+    <div className='bg-indigo-800 h-screen'>
       <header className=' pt-5 pb-5'>
         <div className='flex justify-between'>
           <div className='ml-12 bg-red-'>

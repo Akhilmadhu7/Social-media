@@ -17,7 +17,7 @@ function Notification() {
     const id = user.user_id
     //to get all the notifications.
     useEffect(()=>{
-        console.log('authtokend notification',authTokens.access);
+        
         try {
             Axios.patch(baseUrl+'notifications',id,{
                 headers:{
@@ -41,40 +41,6 @@ function Notification() {
 
 
 
-//   const username = user.username
-
-//   useEffect(() => {
-//     const socket = new WebSocket('ws://127.0.0.1:8000/ws/'+username+'/')
-
-//     socket.onopen = function(e){
-//       console.log('Connection Established for notification',e);
-//       // setActive(!active) 
-//     }
-  
-//     socket.onclose = function(e){
-//       console.log('Connection lost notification');
-//     }
-  
-//     socket.onerror = function(e){
-//       console.log('Error notification',e);
-//     }
-  
-//     socket.onmessage = function(e){
-//       console.log('message notification',e);
-//       const data = JSON.parse(e.data)
-//       console.log('data');
-//       console.log(data);
-//       console.log(data.pay_load.length);   
-//       setNotifyCount(data.pay_load.length)
-     
-//       // const count = data.pay_load.length
-//       console.log('notification length is',notifyCount);
-//       // const data = JSON.parse(e.data)
-//       // setOnMessage(data)
-//       // chatData(username)
-//       // getUserChatList(baseUrl)
-//     }
-//   }, [])
 
 
   return (

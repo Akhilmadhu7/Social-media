@@ -38,6 +38,7 @@ export const AuthProvider = ({children}) => {
             setUser(jwt_decode(data.access))
             localStorage.setItem('authTokens', JSON.stringify(data))
             navigate('/user/home')
+            
         } 
         else{
             console.log('response',response);
@@ -45,7 +46,8 @@ export const AuthProvider = ({children}) => {
         }
     }
     if (user) {
-        console.log('is logggggg',user.is_logged);
+        console.log('user',user);
+        console.log('is logggggg',user.is_verified);
     }
 
     let logoutUser = ()=>{
@@ -76,11 +78,6 @@ export const AuthProvider = ({children}) => {
                 } catch (error) {
                     console.log('herer err',error);
                 }
-                // setUser(null)
-                // setAuthTokens(null)
-                // console.log('routeee');
-                // localStorage.removeItem('authTokens')
-                // navigate('/')
             }
         })
         
@@ -119,9 +116,10 @@ export const AuthProvider = ({children}) => {
         if (loading) {
             updateToken()
         }
-        let fourMinutes = 1000 * 60 * 4
+        let fourMinutes = 1000 * 60 * 18
         let intervel = setInterval(()=>{
             if (authTokens) {
+                console.log('hellllooo');
                 updateToken()
             }
         }, fourMinutes)

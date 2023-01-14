@@ -29,6 +29,7 @@ import AdminPrivateRoutes from './Utils/AdminPrivateRoutes';
 import ChatPage from './pages/User/ChatPage';
 import NotificationPage from './pages/User/NotificationPage';
 import Header from './components/User/Header';
+import Otp from './components/User/Otp';
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
           <Routes>
             <Route element={<LoginPage/>} path='/' />
             <Route element={<SignupPage/>} path='/signup' />
+            {/* <Route element={<Otp/>} path='/otp-verify' /> */}
             <Route  element={<PrivateRoutes/>} path='/user'>
             
           
@@ -52,6 +54,7 @@ function App() {
                 <Route element={<ChatPage/>} path='/user/chat' />
                 <Route element={<ChatPage/>} path='/user/chat/:otherid/:otherusername' /> 
                 <Route element={<NotificationPage/>} path='/user/notification' />
+                
                
             </Route>
             

@@ -9,8 +9,10 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 def upload_to(instance, filename):
     return 'profile_image/{filename}'.format(filename=filename)
 
+
 def post_pic(instance, filename):
     return 'post_image/{filename}'.format(filename=filename)
+
 
 class UserManager(BaseUserManager):
     def _create_user(self, username, email, password, is_active, is_staff, is_admin, is_superadmin, **extra_fields):
@@ -22,7 +24,6 @@ class UserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(username=username, email=email, is_active=is_active,
                           is_admin=is_admin, is_staff=is_staff, is_superadmin=is_superadmin, **extra_fields
-
                           )
         user.set_password(password)
         user.save(using=self.db)
@@ -61,6 +62,8 @@ class Accounts(AbstractBaseUser):
     state = models.CharField(max_length=200, null=True, blank=True)
     country = models.CharField(max_length=200, null=True, blank=True)
     is_deactivated = models.BooleanField(default=False)
+    otp = models.CharField(max_length=10, null=True, blank=True)
+    is_verified = models.BooleanField(default=False)
 
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now_add=True)
@@ -84,30 +87,30 @@ class Accounts(AbstractBaseUser):
         return True
 
 
-
 class Follower(models.Model):
-    follower = models.ForeignKey(Accounts,related_name = 'follower', on_delete=models.CASCADE) #person who is following(logged in user)
-    username = models.CharField(max_length = 120)  #person who has been followed(visited profile person)
+    # person who is following(logged in user)
+    follower = models.ForeignKey(
+        Accounts, related_name='follower', on_delete=models.CASCADE)
+    # person who has been followed(visited profile person)
+    username = models.CharField(max_length=120)
 
     def __str__(self):
         return self.username
-     
-
 
 
 class Post(models.Model):
-    user = models.ForeignKey(Accounts,related_name='user',on_delete=models.CASCADE)
-    post_image = models.ImageField(upload_to=post_pic,null=True,blank=True)
-    caption = models.TextField(blank=True,default='')
+    user = models.ForeignKey(
+        Accounts, related_name='user', on_delete=models.CASCADE)
+    post_image = models.ImageField(upload_to=post_pic, null=True, blank=True)
+    caption = models.TextField(blank=True, default='')
     likes_no = models.IntegerField(default=0)
     is_liked = models.BooleanField(default=False)
     is_reported = models.BooleanField(default=False)
-    report_count = models.IntegerField(default = 0)
-    created_at = models.DateTimeField(default = datetime.now)
+    report_count = models.IntegerField(default=0)
+    created_at = models.DateTimeField(default=datetime.now)
 
     def __str__(self):
         return self.user.username
-
 
 
 class LikePost(models.Model):
@@ -116,18 +119,17 @@ class LikePost(models.Model):
 
     def __str__(self):
         return self.username
-    
 
 
 class Comment(models.Model):
 
-    post_id = models.ForeignKey(Post, related_name='post', on_delete=models.CASCADE)
-    user = models.ForeignKey(Accounts,related_name='users',on_delete=models.CASCADE)
+    post_id = models.ForeignKey(
+        Post, related_name='post', on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        Accounts, related_name='users', on_delete=models.CASCADE)
     # username = models.CharField(max_length=120)
     comment = models.TextField()
     comment_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.user.username
-    
-    

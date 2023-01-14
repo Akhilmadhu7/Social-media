@@ -9,8 +9,16 @@ urlpatterns = [
     #url for create a new account.
     path('register',views.UserRegister.as_view(),name='register'),
 
+    #otp verification url
+    path('otp-verify',views.otp_verification,name='otp-verify'),
+
+    #resend otp url
+    path('resend-otp',views.resend_otp,name='resend-otp'),
+
     #user profile url
     path('userprofile/<int:id>',views.UserProfile.as_view(),name='userprofile'),
+    
+    #for changing password
     path('change-password',views.ChangePassword.as_view(),name='changepassword'),
 
     #url for search users.
@@ -48,6 +56,7 @@ urlpatterns = [
     path('show/<int:id>',views.ViewComment.as_view(),name='comment'),
 
     #deactivate account url
-    path('deactivate-account/<int:id>',views.deactivate_account,name='deactivate-account')
+    path('deactivate-account/<int:id>',views.deactivate_account,name='deactivate-account'),
+
 
 ]

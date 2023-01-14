@@ -91,6 +91,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     profile_pic = serializers.ImageField(
         max_length=None, allow_null=True, use_url=True, required=False)
+        
     full_name = serializers.SerializerMethodField('get_full_name')
 
     class Meta:

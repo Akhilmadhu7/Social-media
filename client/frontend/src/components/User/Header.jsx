@@ -1,6 +1,6 @@
 import React from "react";
 import AuthContext from "../../context/UserAuthContext";
-import { useContext, useState, useEffect} from "react";
+import { useContext, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Axios from "axios";
 import {
@@ -17,7 +17,9 @@ const baseUrl = "http://127.0.0.1:8000/accounts/";
 
 function Header() {
   let { user, logoutUser, authTokens } = useContext(AuthContext);
-  let [notifyCount, setNotifyCount] = useState(()=> localStorage.getItem('count') ? (localStorage.getItem('count')) : 0)
+  let [notifyCount, setNotifyCount] = useState(() =>
+    localStorage.getItem("count") ? localStorage.getItem("count") : 0
+  );
   const [modalPost, setModalPost] = useState(false);
   const navigate = useNavigate();
   // const [notifyCount, setNotifyCount] = useState(0)
@@ -96,52 +98,44 @@ function Header() {
     }
   };
 
-  console.log('here is the not cou;nt',notifyCount);
+  console.log("here is the not cou;nt", notifyCount);
 
-  const username = user.username
+  const username = user.username;
 
   useEffect(() => {
-    const socket = new WebSocket('ws://127.0.0.1:8000/ws/'+username+'/')
+    const socket = new WebSocket("ws://127.0.0.1:8000/ws/" + username + "/");
 
-    socket.onopen = function(e){
-      console.log('Connection Established for notification',e);
-      // setActive(!active) 
-    }
-  
-    socket.onclose = function(e){
-      console.log('Connection lost notification');
-    }
-  
-    socket.onerror = function(e){
-      console.log('Error notification',e);
-    }
-  
-    socket.onmessage = function(e){
-      console.log('message notification',e);
-      const data = JSON.parse(e.data)
-      console.log('data');
+    socket.onopen = function (e) {
+      console.log("Connection Established for notification", e);
+      // setActive(!active)
+    };
+
+    socket.onclose = function (e) {
+      console.log("Connection lost notification");
+    };
+
+    socket.onerror = function (e) {
+      console.log("Error notification", e);
+    };
+
+    socket.onmessage = function (e) {
+      console.log("message notification", e);
+      const data = JSON.parse(e.data);
+      console.log("data");
       console.log(data);
-      console.log(data.pay_load.length); 
-      const ab =  data.pay_load.length 
-      setNotifyCount(data.pay_load.length)
-      
-      localStorage.setItem('count',data.pay_load.length)
-     
-      
-      console.log('abv count length is',ab);
+      console.log(data.pay_load.length);
+      const ab = data.pay_load.length;
+      setNotifyCount(data.pay_load.length);
+
+      localStorage.setItem("count", data.pay_load.length);
+
+      console.log("count length is", ab);
       // const data = JSON.parse(e.data)
       // setOnMessage(data)
       // chatData(username)
       // getUserChatList(baseUrl)
-    }
-  }, [])
-  
-
-  
-
-
-
-
+    };
+  }, []);
 
   return (
     <div className=" sticky top-0">
@@ -202,7 +196,7 @@ function Header() {
                   <FaUserFriends className="text-white" size="20px" />
                 </a>
               </li>
-             
+
               <li>
                 <Link to="/user/chat">
                   <a
@@ -218,12 +212,16 @@ function Header() {
               <li>
                 <a
                   className="block py-2 pr-4 pl-3 cursor-pointer text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
-                  onClick={() => navigate('/user/notification')}
+                  onClick={() => navigate("/user/notification")}
                 >
-                  {notifyCount===0 ?
-                  <IoMdNotifications className="text-white" size="20px" />: 
-                  <><IoMdNotifications className="text-red-600" size="20px" /><p className="text-white">{notifyCount && notifyCount}</p></>  
-                   }  
+                  {notifyCount === 0 ? (
+                    <IoMdNotifications className="text-white" size="20px" />
+                  ) : (
+                    <>
+                      <IoMdNotifications className="text-red-600" size="20px" />
+                      <p className="text-white">{notifyCount && notifyCount}</p>
+                    </>
+                  )}
                 </a>
               </li>
               <li className="">

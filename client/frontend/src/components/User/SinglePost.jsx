@@ -19,7 +19,7 @@ const SinglePost = ({
   commentData,
 }) => {
   let { user, authTokens } = useContext(AuthContext);
-  console.log("sinlepost worked", singleData.post_image);
+  console.log("sinlepost worked", singleData);
   console.log("comments here", commentData);
   const navigate = useNavigate();
 
@@ -27,12 +27,14 @@ const SinglePost = ({
   const [comment, setComment] = useState([]);
   const [deleteModal, setDeleteModal] = useState(false);
 
-  const likeHandler = (likes, id) => {
+  //function to like user post.
+  const likeHandler = (likes, id,postedusername) => {
     let data = {
       id: id,
       likes_no: likes + 1,
       liked_user: user.username,
       user: user.user_id,
+      posteduser:postedusername
     };
     try {
       Axios.patch(baseUrl + "home", data, {
@@ -52,6 +54,7 @@ const SinglePost = ({
     }
   };
 
+  //fucntion to find user profile.
   const findProfile = (username) => {
     if (username === user.username) {
       console.log("usernauseruser", username);
@@ -64,11 +67,14 @@ const SinglePost = ({
     }
   };
 
-  const addComment = (id) => {
+
+  //function to add comment.
+  const addComment = (id,posteduser) => {
     let data = {
       user: user.user_id,
       comment: comment,
       post_id: id,
+      posteduser:posteduser
     };
     try {
       Axios.post(baseUrl + "comment", data, {
@@ -85,6 +91,7 @@ const SinglePost = ({
     } catch (error) {}
   };
 
+  //function to deletecomment
   const deleteComment = (id) => {
     try {
       Axios.delete(baseUrl + "show/" + id, {
@@ -94,16 +101,20 @@ const SinglePost = ({
       }).then((res) => {
         console.log("deleted", res.data);
         singlePost(singleData.id);
-      });
+      }).catch((err)=>{
+        console.log('error ',err);
+      })
     } catch (error) {
-      console.log("delete error");
+      console.log("delete error",error);
     }
   };
 
+  //fucntion to confirm delete post delete modal
   const handlerDeleteModal = () => {
     setDeleteModal(!deleteModal);
   };
 
+  //function to delete post.
   const deletePost = (id) => {
     console.log("here is the post id",id);
     try {
@@ -274,7 +285,7 @@ const SinglePost = ({
                 } cursor-pointer`}
                 //   className={`w-5 ${singleData?.includes(singleData) ? 'text-main' : 'text-red-500'}  text-red-600 cursor-pointer`}
                 onClick={() => {
-                  likeHandler(singleData.likes_no, singleData.id);
+                  likeHandler(singleData.likes_no, singleData.id,singleData.user.username);
                 }}
               />{" "}
               <p className="text-[10px] pl-1 text-black">
@@ -292,7 +303,7 @@ const SinglePost = ({
               </div>
               <div className="ml-auto  px-2">
                 <button
-                  onClick={() => addComment(singleData.id)}
+                  onClick={() => addComment(singleData.id,singleData.user.username)}
                   className="text-indigo-600"
                 >
                   Post
